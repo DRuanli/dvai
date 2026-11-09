@@ -16,6 +16,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 
+from ..data.anes import clean_open_end
 from .instrument import SurveyInstrument
 from .persona import Persona
 from .prompt import RespondentPrompt, parse_answer, respondent_document
@@ -129,10 +130,11 @@ class SyntheticSurvey:
                              "error": parse_answer(r.raw, self.instrument).error})
                 continue
             r, p = best
+            opn = {k: clean_open_end(v) for k, v in p.open.items()}  # same as human text
             rows.append({"resp_id": rid, "source_id": r.source_id, "parse_ok": True,
                          "attempt": r.attempt, **p.thermometers,
-                         **{f"text_{k}": v for k, v in p.open.items()},
-                         "text": respondent_document(p.open, self.instrument),
+                         **{f"text_{k}": v for k, v in opn.items()},
+                         "text": respondent_document(opn, self.instrument),
                          "generator": model_id, "condition": self.prompt.condition})
         return pd.DataFrame(rows)
 

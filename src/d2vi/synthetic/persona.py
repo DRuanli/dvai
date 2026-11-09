@@ -41,10 +41,14 @@ class Persona:
         if level not in ("demographic", "political"):
             raise ValueError(f"unknown conditioning level {level!r}")
         parts = []
+        top = self.age is not None and self.age >= 80  # ANES top-codes age at 80
         if self.age is not None and self.sex is not None:
-            parts.append(f"I am a {self.age}-year-old {self.sex}.")
+            parts.append(f"I am a {self.sex} aged 80 or older." if top
+                         else f"I am a {self.age}-year-old {self.sex}.")
         elif self.age is not None:
-            parts.append(f"I am {self.age} years old.")
+            parts.append("I am 80 or older." if top else f"I am {self.age} years old.")
+        elif self.sex is not None:
+            parts.append(f"I am a {self.sex}.")
         if self.race:
             parts.append(f"Racially or ethnically, I identify as {self.race}.")
         if self.education:

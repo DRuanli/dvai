@@ -1,0 +1,41 @@
+{
+  "files": {
+    "anes_csv.zip": "31082da127f1ebcfb1d2736ba650d52cd67a4a6ab13fbe639c2db2515779773c",
+    "openends.xlsx": "84566697ae79c45780ffef9e6788c151d604d8236fffae8887b7840e7d326cb6"
+  },
+  "respondents": 5521,
+  "exclusions": {
+    "eligible": 4926,
+    "paper interview": 245,
+    "no open-ended text": 236,
+    "redaction tag": 57,
+    "missing thermometer": 56,
+    "chatbot hallmark": 1
+  },
+  "eligible_by_mode": {
+    "web": 3979,
+    "face-to-face": 881,
+    "phone": 66
+  },
+  "words_median_by_mode": {
+    "face-to-face": 99.0,
+    "phone": 102.5,
+    "web": 51.0
+  },
+  "outcome_means": {
+    "y_therm_harris": 0.4799,
+    "y_therm_trump": 0.3917,
+    "y_therm_dem_party": 0.4623,
+    "y_therm_rep_party": 0.4307
+  },
+  "outcome_sds": {
+    "y_therm_harris": 0.3779,
+    "y_therm_trump": 0.3944,
+    "y_therm_dem_party": 0.331,
+    "y_therm_rep_party": 0.3245
+  },
+  "pool_sha256": "347d1a14fbe7c7ec0a816d97b2604d4e2cf4f8a7e9c45b2b3741a8655b015aa4",
+  "chatbot_hallmark_respondents": {
+    "web": 1
+  }
+}

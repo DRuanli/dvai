@@ -11,6 +11,8 @@ dist/
 # raw corpora and large caches are downloaded by scripts, never committed
 data/raw/
 data/cache/
+# survey microdata and texts that may not be redistributed (ANES)
+data/private/
 *.zip
 *.jsonl
 

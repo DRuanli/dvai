@@ -27,9 +27,10 @@ from .persona import Persona
 __all__ = ["RespondentPrompt", "ParsedAnswer", "parse_answer", "respondent_document",
            "is_nothing"]
 
-_NOTHING = re.compile(r"^\s*(no|nope|none|nothing|nothing really|not really|n/?a|na|-+|"
+_NOTHING = re.compile(r"^\s*(no|n|nope|none|nothing|nothing really|not really|n/?a|na|-+|"
                       r"no comment|nothing in particular|not that i know of|i don'?t know|"
-                      r"dk|idk)\s*[.!]*\s*$", re.IGNORECASE)
+                      r"dk|idk|that'?s it|that is it|that'?s all|that is all|nothing else|"
+                      r"no more|no,? that'?s it)\s*[.!]*\s*$", re.IGNORECASE)
 
 STYLE = {
     "plain": "",
@@ -74,8 +75,8 @@ class RespondentPrompt:
                   "would, in the first person.")
         user = (f"About you: {persona.describe(self.level)}\n\n"
                 f"Feeling thermometer. {ins.thermometer_intro}\nRate:\n{therm}\n\n"
-                f"Open-ended questions. If there is nothing in particular, leave the answer "
-                f"empty.\n{open_}\n\n"
+                f"Open-ended questions. {ins.open_intro} If there is nothing in particular, "
+                f"leave the answer empty.\n{open_}\n\n"
                 f"{STYLE[self.style]}"
                 f"Reply with a single JSON object and nothing else, in this form:\n{schema}")
         return [{"role": "system", "content": system}, {"role": "user", "content": user}]
