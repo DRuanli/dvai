@@ -4,7 +4,7 @@ import pytest
 from d2vi.sampling.audit import PerfectVerifier, _capped_inclusion, make_design
 from d2vi.sampling.mixture import IIDMixture
 
-DESIGNS = ["srs", {"name": "proportional", "n_strata": 10}, "top_decile",
+DESIGNS = ["srs", {"name": "proportional", "n_strata": 10}, "top_decile", "adaptive",
            {"name": "neyman", "n_strata": 5}, "pps"]
 
 

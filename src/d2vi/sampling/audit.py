@@ -36,6 +36,7 @@ __all__ = [
     "ProportionalStratified",
     "TopDecileSplit",
     "TwoStageNeyman",
+    "AdaptiveNeyman",
     "ScoreRankPPS",
     "make_design",
 ]
@@ -336,6 +337,69 @@ class TwoStageNeyman(AuditDesign):
                                   rng, preselected=pre)
 
 
+class AdaptiveNeyman(AuditDesign):
+    """Two-stage Neyman allocation with a feasibility constraint (Propositions 3-4).
+
+    Strata are fixed by score quantile cut points (default: bottom 50%, 50-80%, 80-90%,
+    top 10%). A proportional pilot (``pilot_frac`` of the budget, at least
+    ``min_per_stratum`` per stratum) estimates the machine rate ``p_h`` of each stratum
+    with Jeffreys smoothing. The remaining budget follows the Neyman shares
+    ``N_h sqrt(p_h (1 - p_h))``, subject to an expected audited machine count of at least
+    ``k_target``: while the constraint fails, one record moves from the stratum with the
+    lowest ``p_h`` (above its pilot floor) to the stratum with the highest ``p_h`` (ties go
+    to the higher-score stratum). At low contamination the design therefore behaves like
+    the top-decile split, and at high contamination like Neyman allocation. Pilot and
+    second-stage records form a simple random sample within each stratum.
+    """
+
+    def __init__(self, cuts: tuple[float, ...] = (0.5, 0.8, 0.9), pilot_frac: float = 0.3,
+                 min_per_stratum: int = 2, k_target: float = 12.0) -> None:
+        self.cuts = tuple(float(c) for c in cuts)
+        self.pilot_frac = float(pilot_frac)
+        self.min_per_stratum = int(min_per_stratum)
+        self.k_target = float(k_target)
+        self.name = "adaptive"
+
+    def _strata(self, score: np.ndarray, m: int) -> np.ndarray:
+        n = score.shape[0]
+        ranks = np.empty(n)
+        ranks[np.argsort(score, kind="stable")] = (np.arange(n) + 0.5) / n
+        cuts = list(self.cuts)
+        while cuts and (len(cuts) + 1) * self.min_per_stratum > m:
+            cuts.pop(0)  # merge the lowest strata when the budget is very small
+        return np.searchsorted(np.asarray(cuts), ranks, side="right")
+
+    def _select(self, obs, m, rng, verifier):
+        strata = self._strata(obs.score, m)
+        keys, sizes = np.unique(strata, return_counts=True)
+        floor = np.minimum(np.full_like(sizes, self.min_per_stratum), sizes)
+        m_pilot = min(max(int(round(self.pilot_frac * m)), int(floor.sum())), m)
+        pilot_alloc = _largest_remainder(sizes.astype(float), m_pilot, sizes, floor=floor)
+        pilot = _stratified_srswor(strata, dict(zip(keys.tolist(), pilot_alloc.tolist(),
+                                                    strict=True)), rng)
+        labels = verifier.verify(pilot.idx, rng)
+        p_hat = np.empty(keys.shape[0])
+        for j, h in enumerate(keys):
+            in_h = pilot.strata == h
+            p_hat[j] = (float(labels[in_h].sum()) + 0.5) / (float(in_h.sum()) + 1.0)
+        alloc = _largest_remainder(sizes * np.sqrt(p_hat * (1 - p_hat)), m, sizes,
+                                   floor=pilot_alloc)
+        order_lo = np.lexsort((keys, p_hat))            # lowest p first, then lower score
+        order_hi = np.lexsort((-keys, -p_hat))          # highest p first, then higher score
+        for _ in range(m):
+            if float(np.dot(alloc, p_hat)) >= self.k_target:
+                break
+            donor = next((j for j in order_lo if alloc[j] > pilot_alloc[j]), None)
+            receiver = next((j for j in order_hi if alloc[j] < sizes[j]), None)
+            if donor is None or receiver is None or p_hat[receiver] <= p_hat[donor]:
+                break
+            alloc[donor] -= 1
+            alloc[receiver] += 1
+        pre = {int(h): pilot.idx[pilot.strata == h] for h in keys}
+        return _stratified_srswor(strata, dict(zip(keys.tolist(), alloc.tolist(), strict=True)),
+                                  rng, preselected=pre)
+
+
 class ScoreRankPPS(AuditDesign):
     """Fixed-size systematic PPS with size measure ``floor + rank(score)/N``.
 
@@ -392,6 +456,7 @@ def make_design(spec: str | dict) -> AuditDesign:
         "proportional": ProportionalStratified,
         "top_decile": TopDecileSplit,
         "neyman": TwoStageNeyman,
+        "adaptive": AdaptiveNeyman,
         "pps": ScoreRankPPS,
     }
     if name not in registry:
