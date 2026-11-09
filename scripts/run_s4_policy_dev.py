@@ -88,22 +88,53 @@ def regret(raw: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("max_excess_srmse")
 
 
+def _cluster_upper(flags: np.ndarray, clusters: np.ndarray, n_boot: int = 2000,
+                   seed: int = 1) -> float:
+    """One-sided 95% upper bound of a rate by a cluster bootstrap (clusters = replications,
+    whose four outcomes share one audit)."""
+    keys, inv = np.unique(clusters, return_inverse=True)
+    hits = np.bincount(inv, weights=flags.astype(float))
+    size = np.bincount(inv).astype(float)
+    rng = np.random.default_rng(seed)
+    draws = rng.integers(0, keys.shape[0], size=(n_boot, keys.shape[0]))
+    rates = hits[draws].sum(1) / size[draws].sum(1)
+    return float(np.quantile(rates, 0.95))
+
+
 def certification(raw: pd.DataFrame) -> pd.DataFrame:
+    """False certification (|b_del| >= tau), near the boundary (tau <= |b_del| < 1.1 tau),
+    worst cell, and power (|b_del| < tau / 2). Bounds: cluster bootstrap by replication;
+    Clopper-Pearson for the near-boundary rate (ignoring clustering, as a check)."""
+    from scipy import stats
+
     c = raw[raw.estimator.str.startswith("cert_")].copy()
     c["abs_b"] = c["deletion_bias"].abs()
+    c["cluster"] = c[["det", "domain", "generator", "eps", "rep"]].astype(str).agg("|".join, 1)
     rows = []
     for name, g in c.groupby("estimator"):
-        t = g["tau"]
-        bad = g[g.abs_b >= t]
-        good = g[g.abs_b < t / 2]
-        n_bad = len(bad)
-        fcr = float(bad.certified.astype(bool).mean()) if n_bad else np.nan
-        upper = fcr + 1.96 * np.sqrt(fcr * (1 - fcr) / n_bad) if n_bad else np.nan
-        rows.append({"certifier": name, "n_biased": n_bad, "false_cert_rate": fcr,
-                     "false_cert_upper95": upper,
-                     "power_small_bias": float(good.certified.astype(bool).mean())
-                     if len(good) else np.nan,
-                     "certified_overall": float(g.certified.astype(bool).mean())})
+        cert = g["certified"].astype(bool)
+        bad = g["abs_b"] >= g["tau"]
+        near = bad & (g["abs_b"] < 1.1 * g["tau"])
+        good = g["abs_b"] < g["tau"] / 2
+        n_bad, n_near = int(bad.sum()), int(near.sum())
+        k_near = int(cert[near].sum())
+        per_cell = (g[bad].assign(cert=cert[bad])
+                    .groupby(["det", "domain", "generator", "eps", "outcome"])["cert"]
+                    .agg(["mean", "size"]))
+        per_cell = per_cell[per_cell["size"] >= 30]
+        rows.append({
+            "certifier": name, "n_biased": n_bad,
+            "false_cert_rate": float(cert[bad].mean()) if n_bad else np.nan,
+            "false_cert_upper95_cluster": _cluster_upper(cert[bad].to_numpy(),
+                                                         g.loc[bad, "cluster"].to_numpy())
+            if n_bad else np.nan,
+            "n_near_boundary": n_near,
+            "near_boundary_rate": k_near / n_near if n_near else np.nan,
+            "near_boundary_upper95_cp": float(stats.beta.ppf(0.95, k_near + 1, n_near - k_near))
+            if n_near else np.nan,
+            "worst_cell_rate": float(per_cell["mean"].max()) if len(per_cell) else np.nan,
+            "power_small_bias": float(cert[good].mean()) if good.any() else np.nan,
+            "certified_overall": float(cert.mean())})
     return pd.DataFrame(rows)
 
 

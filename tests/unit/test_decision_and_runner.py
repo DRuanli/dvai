@@ -36,7 +36,7 @@ def test_policy_returns_a_feasible_choice(pool):
     audit = make_design("srs").draw(rs.observed, 18, rng, PerfectVerifier(rs.a))
     pr = MSEPolicy().choose(EstimationContext(rs.observed, audit, rng), "sent")
     assert np.isfinite(pr.estimate.point)
-    assert pr.choice in {"naive", "deletion", "rc_ppi_pp", "hajek"}
+    assert pr.choice in {"naive", "deletion", "rc_ppi_pp", "flag_ppi"}
 
 
 def test_rao_wu_replicate_and_interval(pool):
@@ -71,6 +71,6 @@ def test_summary_and_regret(pool):
                  n_rep=20)
     summ = summarize(df)
     assert {"rmse", "srmse", "coverage", "feasible_rate"} <= set(summ.columns)
-    reg = regret_table(summ, ["naive", "deletion", "rc_ppi_pp", "policy_plugin"])
+    reg = regret_table(summ, ["naive", "deletion", "rc_ppi_pp", "policy_debiased"])
     assert reg["max_regret"].min() == pytest.approx(reg["max_regret"].min())
     assert (reg["max_regret"] >= 0).all()

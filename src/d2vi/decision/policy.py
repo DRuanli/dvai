@@ -13,9 +13,11 @@
 4. Choose the smallest estimated MSE. With ``require_certification=True`` deletion is a
    candidate only when the TOST certifier certifies it.
 
-The configuration used in the paper is chosen on the development corpora and frozen
-before the held-out evaluation (``configs/protocol``). The policy picks a point estimate;
-the uncertainty statement reported with it is the anchor's interval.
+The configuration used in the paper was chosen on the development corpora (stage S4) and
+is the default here: ``bias_sq="debiased"``, certification not required
+(``configs/protocol``; ``tests/unit/test_protocol_defaults.py`` keeps the two in step).
+The policy picks a point estimate; the uncertainty statement reported with it is the
+anchor's interval.
 """
 
 from __future__ import annotations
@@ -42,7 +44,7 @@ class PolicyResult:
 
 
 class MSEPolicy:
-    def __init__(self, bias_sq: str = "plugin", require_certification: bool = False,
+    def __init__(self, bias_sq: str = "debiased", require_certification: bool = False,
                  certifier: TOSTCertifier | None = None) -> None:
         if bias_sq not in ("plugin", "debiased"):
             raise ValueError("bias_sq must be 'plugin' or 'debiased'")

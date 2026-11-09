@@ -14,7 +14,7 @@ Example configuration::
     designs: [srs, top_decile]
     mixture: iid
     estimators: [naive, deletion, hajek, flag_ppi, rc_ppi, rc_ppi_pp]
-    policies: [{bias_sq: plugin}]
+    policies: [{bias_sq: debiased}]
     certifiers: [{tau_sd: 0.2}]
     n_rep: 1000
     n_jobs: 4

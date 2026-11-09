@@ -31,11 +31,18 @@ def test_capped_inclusion_sums_to_budget():
 
 
 @pytest.mark.parametrize("spec", DESIGNS)
-def test_horvitz_thompson_total_is_unbiased(pool, spec):
-    """E[sum_s w x] = sum_U x for every design (checked by Monte Carlo)."""
+@pytest.mark.parametrize("target", ["outcome", "label", "label_x_outcome"])
+def test_horvitz_thompson_total_is_unbiased(pool, spec, target):
+    """E[sum_s w x] = sum_U x for every design (checked by Monte Carlo).
+
+    ``label`` and ``label_x_outcome`` matter for two-stage designs, whose second stage
+    depends on the pilot labels: weighting by N_h / m_h made the machine total biased
+    (finding F15); an outcome unrelated to the labels cannot show it.
+    """
     rng = np.random.default_rng(11)
     rs = IIDMixture().sample(pool, 300, 0.1, rng)
-    x = rs.observed.outcome("sent") + 2.0
+    y = rs.observed.outcome("sent") + 2.0
+    x = {"outcome": y, "label": rs.a, "label_x_outcome": rs.a * y}[target]
     true_total = x.sum()
     design = make_design(spec)
     totals = []

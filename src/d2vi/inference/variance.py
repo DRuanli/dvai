@@ -54,6 +54,7 @@ class _Stratum:
     m: int                 # audited records
     contrib: float         # Hajek-approximation variance contribution
     unit: float            # contrib = unit * s2 for equal probabilities: N_h^2 (1 - f_h) / m_h
+    equal: bool = True     # all records of the stratum share one inclusion probability
 
     @property
     def s2(self) -> float:
@@ -79,7 +80,9 @@ def _strata(a: np.ndarray, b: np.ndarray, audit: AuditSample) -> list[_Stratum]:
         bbar = np.sum(c * wb) / c.sum()
         contrib = m_h / (m_h - 1) * np.sum(c * (wa - abar) * (wb - bbar))
         unit = float(np.sum(c * w[sel] ** 2))  # = N_h^2 (1 - f_h) / m_h
-        out.append(_Stratum(sel, m_h, float(contrib), unit))
+        rho_h = audit.rho[sel]
+        out.append(_Stratum(sel, m_h, float(contrib), unit,
+                            bool(np.ptp(rho_h) <= 1e-12 * max(rho_h.max(), 1e-300))))
     return out
 
 
@@ -162,8 +165,12 @@ def variance_report(z: np.ndarray, audit: AuditSample, kappa: float = 1.0,
     contrib = np.array([s.contrib for s in st])
     out = {"var": float(contrib.sum()), "df": base_df, "df_satt": _satterthwaite(contrib, m)}
 
+    # shrinkage only where s2 is a sample variance of z: strata with one inclusion
+    # probability (collapsed strata with mixed probabilities and PPS keep their s2)
+    equal = np.array([s.equal for s in st])
+
     def shrunk(target: np.ndarray) -> np.ndarray:
-        return ((m - 1) * s2 + kappa * target) / (m - 1 + kappa)
+        return np.where(equal, ((m - 1) * s2 + kappa * target) / (m - 1 + kappa), s2)
 
     pooled = float(np.sum((m - 1) * s2) / np.sum(m - 1))
     v = unit * shrunk(np.full_like(s2, pooled))
@@ -187,9 +194,16 @@ def ht_variance(a: np.ndarray, audit: AuditSample) -> float:
 
 
 def degrees_of_freedom(audit: AuditSample) -> int:
-    """Audited records minus strata, at least 1."""
+    """Audited records minus strata, at least 1, counting only strata that contribute
+    variance (records with inclusion probability 1, such as the pilot of a two-stage
+    design, carry none)."""
     strata = collapse_strata(audit.strata)
-    return max(int(audit.m - np.unique(strata).shape[0]), 1)
+    df = 0
+    for h in np.unique(strata):
+        sel = strata == h
+        if np.any(audit.rho[sel] < 1.0):
+            df += int(sel.sum()) - 1
+    return max(df, 1)
 
 
 def t_interval(point: float, se: float, df: float, level: float = 0.95) -> tuple[float, float]:

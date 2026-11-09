@@ -296,45 +296,97 @@ class TopDecileSplit(AuditDesign):
         return _stratified_srswor(strata, {1: m_top, 0: m_rest}, rng)
 
 
+PILOT_OFFSET = 1000  # stratum id of the pilot records of stratum h: h + PILOT_OFFSET
+
+
+def _two_stage(strata: np.ndarray, keys: np.ndarray, sizes: np.ndarray,
+               pilot_alloc: np.ndarray, rng: np.random.Generator, verifier: Verifier,
+               allocate) -> _Selection:
+    """Pilot, then a label-dependent second stage, with stage-wise (conditional) weights.
+
+    The pilot is a stratified simple random sample of ``pilot_alloc``. ``allocate(p_hat,
+    k_pilot)`` returns the second-stage sizes ``m2_h``, which may depend on the pilot
+    labels. Given the pilot, the second stage is a simple random sample of ``m2_h`` of the
+    ``N_h - n1_h`` records not in the pilot. Weights are inverse conditional inclusion
+    probabilities: 1 for a pilot record (its label is known exactly) and
+    ``(N_h - n1_h) / m2_h`` for a second-stage record. Conditional on the pilot every
+    Horvitz-Thompson total is then unbiased, hence unbiased unconditionally. Weighting all
+    records by ``N_h / (n1_h + m2_h)`` instead is biased when ``m2_h`` depends on the pilot
+    labels (finding F15). Pilot records form their own strata (id ``h + PILOT_OFFSET``)
+    with inclusion probability 1, so they add nothing to the variance, which comes from the
+    second stage only.
+    """
+    pilot = _stratified_srswor(strata, dict(zip(keys.tolist(), pilot_alloc.tolist(),
+                                                strict=True)), rng)
+    labels = verifier.verify(pilot.idx, rng)
+    p_hat = np.empty(keys.shape[0])
+    for j, h in enumerate(keys):
+        in_h = pilot.strata == h
+        p_hat[j] = (float(labels[in_h].sum()) + 0.5) / (float(in_h.sum()) + 1.0)
+    m2 = np.asarray(allocate(p_hat, float(labels.sum())), dtype=int)
+    idx, rho, h_of, sizes_out = [], [], [], {}
+    for j, h in enumerate(keys):
+        h = int(h)
+        in_pilot = pilot.idx[pilot.strata == h]
+        rest = np.setdiff1d(np.flatnonzero(strata == h), in_pilot)
+        if m2[j] < 1 or m2[j] > rest.shape[0]:
+            raise RuntimeError(f"second-stage size {m2[j]} invalid in stratum {h}")
+        second = rng.choice(rest, size=int(m2[j]), replace=False)
+        idx += [in_pilot, second]
+        rho += [np.ones(in_pilot.shape[0]), np.full(second.shape[0], m2[j] / rest.shape[0])]
+        h_of += [np.full(in_pilot.shape[0], h + PILOT_OFFSET), np.full(second.shape[0], h)]
+        sizes_out[h] = int(rest.shape[0])
+        sizes_out[h + PILOT_OFFSET] = int(in_pilot.shape[0])
+    idx, rho, h_of = np.concatenate(idx), np.concatenate(rho), np.concatenate(h_of)
+    order = np.argsort(idx)
+    return _Selection(idx=idx[order].astype(int), rho=rho[order], strata=h_of[order],
+                      stratum_sizes=sizes_out, kind="stratified")
+
+
+def _budget_split(m: int, n_strata: int, pilot_frac: float, min_pilot: int,
+                  min_second: int) -> int:
+    """Pilot size: ``pilot_frac * m``, at least ``min_pilot`` per stratum, leaving at least
+    ``min_second`` per stratum for the second stage."""
+    m_pilot = max(int(round(pilot_frac * m)), n_strata * min_pilot)
+    return min(m_pilot, m - n_strata * min_second)
+
+
 class TwoStageNeyman(AuditDesign):
     """Pilot audit, then Neyman allocation of the remaining budget across score strata.
 
-    The pilot (``pilot_frac`` of the budget, proportional allocation) estimates the
-    machine rate ``p_h`` in each stratum. The rest of the budget is allocated with
-    ``m_h`` proportional to ``N_h * sqrt(p_h (1 - p_h))`` (Proposition 4 with the
-    outcome-agnostic proxy ``S_rh ~ sqrt(p_h (1 - p_h))``), with at least
-    ``min_per_stratum`` records per stratum. Within a stratum the pilot and second-stage
-    records together form a simple random sample.
+    The pilot (``pilot_frac`` of the budget, proportional, at least ``min_per_stratum`` per
+    stratum) estimates the machine rate ``p_h`` of each stratum (Jeffreys smoothing). The
+    second stage allocates the rest with ``m2_h`` proportional to
+    ``(N_h - n1_h) sqrt(p_h (1 - p_h))`` (Proposition 4 with the outcome-agnostic proxy
+    ``S_rh ~ sqrt(p_h (1 - p_h))``), at least ``min_second`` per stratum. Weights are
+    stage-wise (:func:`_two_stage`).
     """
 
     def __init__(self, n_strata: int = 5, pilot_frac: float = 0.3,
-                 min_per_stratum: int = 2) -> None:
+                 min_per_stratum: int = 2, min_second: int = 2) -> None:
         self.n_strata = int(n_strata)
         self.pilot_frac = float(pilot_frac)
         self.min_per_stratum = int(min_per_stratum)
+        self.min_second = int(min_second)
         self.name = f"neyman{self.n_strata}"
 
     def _select(self, obs, m, rng, verifier):
-        h_eff = max(1, min(self.n_strata, m // max(self.min_per_stratum, 1)))
+        per = self.min_per_stratum + self.min_second
+        h_eff = max(1, min(self.n_strata, m // per))
         strata = _score_quantile_strata(obs.score, h_eff)
         keys, sizes = np.unique(strata, return_counts=True)
+        m_pilot = _budget_split(m, keys.shape[0], self.pilot_frac, self.min_per_stratum,
+                                self.min_second)
         floor = np.minimum(np.full_like(sizes, self.min_per_stratum), sizes)
-        m_pilot = max(int(round(self.pilot_frac * m)), int(floor.sum()))
-        m_pilot = min(m_pilot, m)
         pilot_alloc = _largest_remainder(sizes.astype(float), m_pilot, sizes, floor=floor)
-        pilot = _stratified_srswor(strata, dict(zip(keys.tolist(), pilot_alloc.tolist(),
-                                                    strict=True)), rng)
-        labels = verifier.verify(pilot.idx, rng)
-        p_hat = np.empty(keys.shape[0])
-        for j, h in enumerate(keys):
-            in_h = pilot.strata == h
-            k, n_h = float(labels[in_h].sum()), float(in_h.sum())
-            p_hat[j] = (k + 0.5) / (n_h + 1.0)  # Jeffreys-type smoothing
-        shares = sizes * np.sqrt(p_hat * (1 - p_hat))
-        alloc = _largest_remainder(shares, m, sizes, floor=pilot_alloc)
-        pre = {int(h): pilot.idx[pilot.strata == h] for h in keys}
-        return _stratified_srswor(strata, dict(zip(keys.tolist(), alloc.tolist(), strict=True)),
-                                  rng, preselected=pre)
+        caps = sizes - pilot_alloc
+
+        def allocate(p_hat, k_pilot):
+            floor2 = np.minimum(np.full_like(caps, self.min_second), caps)
+            return _largest_remainder(caps * np.sqrt(p_hat * (1 - p_hat)), m - m_pilot,
+                                      caps, floor=floor2)
+
+        return _two_stage(strata, keys, sizes, pilot_alloc, rng, verifier, allocate)
 
 
 class AdaptiveNeyman(AuditDesign):
@@ -343,20 +395,22 @@ class AdaptiveNeyman(AuditDesign):
     Strata are fixed by score quantile cut points (default: bottom 50%, 50-80%, 80-90%,
     top 10%). A proportional pilot (``pilot_frac`` of the budget, at least
     ``min_per_stratum`` per stratum) estimates the machine rate ``p_h`` of each stratum
-    with Jeffreys smoothing. The remaining budget follows the Neyman shares
-    ``N_h sqrt(p_h (1 - p_h))``, subject to an expected audited machine count of at least
-    ``k_target``: while the constraint fails, one record moves from the stratum with the
-    lowest ``p_h`` (above its pilot floor) to the stratum with the highest ``p_h`` (ties go
-    to the higher-score stratum). At low contamination the design therefore behaves like
-    the top-decile split, and at high contamination like Neyman allocation. Pilot and
-    second-stage records form a simple random sample within each stratum.
+    with Jeffreys smoothing. The second stage (at least ``min_second`` per stratum) follows
+    the Neyman shares ``(N_h - n1_h) sqrt(p_h (1 - p_h))``, subject to an expected audited
+    machine count (pilot machines found plus ``sum m2_h p_h``) of at least ``k_target``:
+    while the constraint fails, one record moves from the stratum with the lowest ``p_h``
+    (above its floor) to the stratum with the highest ``p_h`` (ties go to the higher-score
+    stratum). Weights are stage-wise (:func:`_two_stage`). When the budget cannot give every
+    stratum its two floors, the lowest strata are merged.
     """
 
     def __init__(self, cuts: tuple[float, ...] = (0.5, 0.8, 0.9), pilot_frac: float = 0.3,
-                 min_per_stratum: int = 2, k_target: float = 16.0) -> None:
+                 min_per_stratum: int = 2, k_target: float = 16.0,
+                 min_second: int = 2) -> None:
         self.cuts = tuple(float(c) for c in cuts)
         self.pilot_frac = float(pilot_frac)
         self.min_per_stratum = int(min_per_stratum)
+        self.min_second = int(min_second)
         self.k_target = float(k_target)
         self.name = "adaptive"
 
@@ -365,39 +419,38 @@ class AdaptiveNeyman(AuditDesign):
         ranks = np.empty(n)
         ranks[np.argsort(score, kind="stable")] = (np.arange(n) + 0.5) / n
         cuts = list(self.cuts)
-        while cuts and (len(cuts) + 1) * self.min_per_stratum > m:
+        per = self.min_per_stratum + self.min_second
+        while cuts and (len(cuts) + 1) * per > m:
             cuts.pop(0)  # merge the lowest strata when the budget is very small
         return np.searchsorted(np.asarray(cuts), ranks, side="right")
 
     def _select(self, obs, m, rng, verifier):
         strata = self._strata(obs.score, m)
         keys, sizes = np.unique(strata, return_counts=True)
+        m_pilot = _budget_split(m, keys.shape[0], self.pilot_frac, self.min_per_stratum,
+                                self.min_second)
         floor = np.minimum(np.full_like(sizes, self.min_per_stratum), sizes)
-        m_pilot = min(max(int(round(self.pilot_frac * m)), int(floor.sum())), m)
         pilot_alloc = _largest_remainder(sizes.astype(float), m_pilot, sizes, floor=floor)
-        pilot = _stratified_srswor(strata, dict(zip(keys.tolist(), pilot_alloc.tolist(),
-                                                    strict=True)), rng)
-        labels = verifier.verify(pilot.idx, rng)
-        p_hat = np.empty(keys.shape[0])
-        for j, h in enumerate(keys):
-            in_h = pilot.strata == h
-            p_hat[j] = (float(labels[in_h].sum()) + 0.5) / (float(in_h.sum()) + 1.0)
-        alloc = _largest_remainder(sizes * np.sqrt(p_hat * (1 - p_hat)), m, sizes,
-                                   floor=pilot_alloc)
-        order_lo = np.lexsort((keys, p_hat))            # lowest p first, then lower score
-        order_hi = np.lexsort((-keys, -p_hat))          # highest p first, then higher score
-        for _ in range(m):
-            if float(np.dot(alloc, p_hat)) >= self.k_target:
-                break
-            donor = next((j for j in order_lo if alloc[j] > pilot_alloc[j]), None)
-            receiver = next((j for j in order_hi if alloc[j] < sizes[j]), None)
-            if donor is None or receiver is None or p_hat[receiver] <= p_hat[donor]:
-                break
-            alloc[donor] -= 1
-            alloc[receiver] += 1
-        pre = {int(h): pilot.idx[pilot.strata == h] for h in keys}
-        return _stratified_srswor(strata, dict(zip(keys.tolist(), alloc.tolist(), strict=True)),
-                                  rng, preselected=pre)
+        caps = sizes - pilot_alloc
+
+        def allocate(p_hat, k_pilot):
+            floor2 = np.minimum(np.full_like(caps, self.min_second), caps)
+            alloc = _largest_remainder(caps * np.sqrt(p_hat * (1 - p_hat)), m - m_pilot,
+                                       caps, floor=floor2)
+            order_lo = np.lexsort((keys, p_hat))        # lowest p first, then lower score
+            order_hi = np.lexsort((-keys, -p_hat))      # highest p first, then higher score
+            for _ in range(m):
+                if k_pilot + float(np.dot(alloc, p_hat)) >= self.k_target:
+                    break
+                donor = next((j for j in order_lo if alloc[j] > floor2[j]), None)
+                receiver = next((j for j in order_hi if alloc[j] < caps[j]), None)
+                if donor is None or receiver is None or p_hat[receiver] <= p_hat[donor]:
+                    break
+                alloc[donor] -= 1
+                alloc[receiver] += 1
+            return alloc
+
+        return _two_stage(strata, keys, sizes, pilot_alloc, rng, verifier, allocate)
 
 
 class ScoreRankPPS(AuditDesign):
