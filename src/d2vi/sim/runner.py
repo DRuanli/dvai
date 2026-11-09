@@ -119,7 +119,7 @@ class Experiment:
                 rows.append(row)
             for cert in self.certifiers:
                 cr = cert.certify(ctx, o)
-                rows.append({**common, "estimator": f"cert_tost{cert.tau_sd:g}", "outcome": o,
+                rows.append({**common, "estimator": cert.name, "outcome": o,
                              "point": cr.b_hat, "se": cr.se, "feasible": np.isfinite(cr.b_hat),
                              "certified": cr.certified, "tau": cr.tau, "reason": cr.reason})
         return rows

@@ -23,7 +23,13 @@ from __future__ import annotations
 
 import numpy as np
 
-from ..inference.variance import ht_covariance, ht_variance, t_interval, variance_report
+from ..inference.variance import (
+    DEFAULT_TARGETS,
+    ht_covariance,
+    ht_variance,
+    t_interval,
+    variance_report,
+)
 from .base import EstimateResult, EstimationContext, Estimator
 from .propensity import CrossFitPropensity
 
@@ -34,6 +40,7 @@ __all__ = [
     "RCPPI",
     "GREGRatio",
     "tune_lambda",
+    "interval_inputs",
 ]
 
 
@@ -60,9 +67,12 @@ class DifferenceRatioEstimator(Estimator):
     lam: float = 1.0
     level: float = 0.95
     min_human: float = 2.0
-    # interval rule chosen on development data in S4: shrunk stratum variances with
-    # Satterthwaite degrees of freedom ("lin" = plain linearisation, df = m - H)
-    variance_rule: str = "shrink_satt"
+    # interval rule (stage S4): "lin" = linearised variance, df = m - H; "pool" = stratum
+    # variances shrunk to the pooled variance; any key of ``variance_targets`` = shrunk to
+    # the variance anticipated under a Bernoulli origin model; the last two with
+    # Satterthwaite degrees of freedom (see :func:`d2vi.inference.variance.variance_report`)
+    variance_rule: str = "model"
+    variance_targets: dict = DEFAULT_TARGETS
 
     def _predictor(self, ctx: EstimationContext, outcome: str):
         """Return ``(eta_all, eta_aud, reason)``; ``eta_all is None`` means infeasible."""
@@ -91,19 +101,28 @@ class DifferenceRatioEstimator(Estimator):
                 return EstimateResult.infeasible(self.name, outcome, "non-positive denominator")
             mu = num / den
         z = ((1 - a_aud) - lam * (1 - eta_aud)) * (y[idx] - mu)
-        vr = variance_report(z, audit)
-        se_lin = float(np.sqrt(max(vr["var"], 0.0)) / den)
-        se_shrink = float(np.sqrt(max(vr["var_shrink"], 0.0)) / den)
-        if self.variance_rule == "lin":
-            se, df = se_lin, vr["df"]
-        else:
-            se, df = se_shrink, vr["df_satt"]
+        se, df, extras = interval_inputs(z, y[idx] - mu, audit, den, self.variance_rule,
+                                         self.variance_targets)
         lo, hi = t_interval(mu, se, df, self.level)
         return EstimateResult(self.name, outcome, float(mu), se, lo, hi, True, "",
                               extras={"lam": lam, "den": float(den),
-                                      "n_machine_audit": audit.n_machine, "df": vr["df"],
-                                      "df_satt": vr["df_satt"], "se_lin": se_lin,
-                                      "se_shrink": se_shrink})
+                                      "n_machine_audit": audit.n_machine, **extras})
+
+
+def interval_inputs(z, dz, audit, den: float, rule: str,
+                    targets: dict | None = None) -> tuple[float, float, dict]:
+    """``(se, df, extras)`` for the chosen interval rule; extras hold every rule's SE/df."""
+    targets = DEFAULT_TARGETS if targets is None else targets
+    rules = {"lin": ("var", "df"), "pool": ("var_pool", "df_pool"),
+             **{t: (f"var_{t}", f"df_{t}") for t in targets}}
+    if rule not in rules:
+        raise ValueError(f"unknown variance rule {rule!r}; choose from {sorted(rules)}")
+    vr = variance_report(z, audit, dz=dz, targets=targets)
+    extras = {"df_satt": vr["df_satt"]}
+    for name, (vk, dk) in rules.items():
+        extras[f"se_{name}"] = float(np.sqrt(max(vr[vk], 0.0)) / den)
+        extras[f"df_{name}"] = float(vr[dk])
+    return extras[f"se_{rule}"], extras[f"df_{rule}"], extras
 
 
 class AuditHajek(DifferenceRatioEstimator):
@@ -182,8 +201,8 @@ class GREGRatio(DifferenceRatioEstimator):
             return EstimateResult.infeasible(self.name, outcome, "non-positive denominator")
         mu = num / den
         z = (t - pt[idx]) - mu * (d - pd_[idx])
-        vr = variance_report(z, audit)
-        se = float(np.sqrt(max(vr["var"], 0.0)) / den)
-        lo, hi = t_interval(mu, se, vr["df"], self.level)
+        se, df, extras = interval_inputs(z, y[idx] - mu, audit, den, self.variance_rule,
+                                         self.variance_targets)
+        lo, hi = t_interval(mu, se, df, self.level)
         return EstimateResult(self.name, outcome, float(mu), se, lo, hi, True, "",
-                              extras={"den": float(den)})
+                              extras={"den": float(den), **extras})

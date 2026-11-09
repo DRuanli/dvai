@@ -41,8 +41,8 @@ def one(pool, eps, rep, n_boot):
         res = est.estimate(ctx, "read")
         if not res.feasible:
             continue
-        q = stats.t.ppf(0.975, max(res.extras["df_satt"], 1))
-        half = q * res.extras["se_shrink"]
+        q = stats.t.ppf(0.975, max(res.extras["df_model"], 1))
+        half = q * res.extras["se_model"]
         rows.append(dict(variant=name, err=res.point - truth,
                          cover=abs(res.point - truth) <= half, width=2 * half))
     if n_boot:

@@ -3,7 +3,8 @@
 Grid: adaptive design with k_target in {12, 16, 20} and the top-decile split, crossed
 with RC-PPI++ feasibility thresholds min_class in {4, 6} (training-fold minimum 2 and 3).
 Accuracy is reported intention-to-treat: when RC-PPI++ is infeasible the two-phase Hajek
-estimate is used, as the policy does. Writes ``results/S4_tuning_dev_summary.csv``.
+estimate is used, as the policy does. Runs on both development corpora (Ghostbuster with
+two detectors, HC3). Writes ``results/S4_tuning_dev_summary.csv``.
 """
 
 from __future__ import annotations
@@ -35,17 +36,13 @@ def estimators():
 def main(n_rep: int = 200, n_jobs: int = 2) -> None:
     t0 = time.time()
     frames = []
+    cols = ["doc_id", "a", "score", "flag", "length"] + [f"y_{o}" for o in OUTCOMES]
     for det, path in base.POOLS.items():
-        feat = pd.read_parquet(path)
-        for dom in ("essay", "reuter", "wp"):
-            for gen in ("gpt", "claude"):
-                sub = feat[(feat.domain == dom) & feat.source.isin(["human", gen])]
-                cols = ["doc_id", "a", "score", "flag", "length"] + [f"y_{o}" for o in OUTCOMES]
-                exp = Experiment(FeaturePool(sub[cols]), estimators(), outcomes=OUTCOMES)
-                specs = [CellSpec(f"ghostbuster-{dom}", f"{det}/{gen}", e, 900, 0.05, d,
-                                  tags={"domain": dom, "generator": gen, "det": det})
-                         for e in base.EPS for d in DESIGNS]
-                frames.append(exp.run(specs, n_rep, n_jobs))
+        for corpus, label, tags, sub in base._pools(det, path):
+            exp = Experiment(FeaturePool(sub[cols]), estimators(), outcomes=OUTCOMES)
+            specs = [CellSpec(corpus, label, e, 900, 0.05, d, tags=tags)
+                     for e in base.EPS for d in DESIGNS]
+            frames.append(exp.run(specs, n_rep, n_jobs))
     raw = pd.concat(frames, ignore_index=True)
     d = base.add_intervals(raw[raw.feasible.astype(bool) & (raw.estimator != "hajek")])
     key = ["det", "design", "domain", "generator", "eps", "rep", "outcome"]
@@ -58,7 +55,7 @@ def main(n_rep: int = 200, n_jobs: int = 2) -> None:
         g = pd.DataFrame({"e2": e2, "feas": rc.feasible.astype(float)}).groupby(
             ["det", "design", "eps"]).agg(itt_srmse=("e2", lambda v: float(np.sqrt(v.mean()))),
                                           feasible=("feas", "mean")).reset_index()
-        cov = (d[d.estimator == name].groupby(["det", "design", "eps"])["cov_shrink_satt"]
+        cov = (d[d.estimator == name].groupby(["det", "design", "eps"])["cov_model"]
                .mean().rename("coverage").reset_index())
         rows.append(g.merge(cov, on=["det", "design", "eps"], how="left").assign(estimator=name))
     out = pd.concat(rows, ignore_index=True)

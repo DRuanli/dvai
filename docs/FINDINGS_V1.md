@@ -19,3 +19,9 @@ affects numbers, so that its effect on the published tables can be measured (sta
 | F11 | Metadata inconsistent | README mentions another venue and "12x"; package metadata lists a different co-author from the manuscript | Confusing for reviewers | Metadata rewritten; authors Nguyen Le and My Vu, as in the manuscript |
 | F12 | Package and paper diverge | Core module implements moment correction and a simulator; RC-PPI only inside the CLI | Tool does not implement the paper | RC-PPI is the core estimator |
 | F13 | Undisclosed power tuning | With a random audit, `ppi_py.ppi_mean_pointestimate` is called with its default `lam=None` (PPI++); the stratified branch uses `lam = 1` | Paper describes both as standard PPI | `FlagPPI(tune=...)` and `RCPPI(tune=...)` are explicit |
+
+## Findings on the revision code (v2), recorded as they are found
+
+| ID | Finding | Evidence | Effect | Fixed in |
+|---|---|---|---|---|
+| F14 | The first stratum-variance shrinkage (`shrink_satt`, 9 Nov 2026) shrank towards a pooled *sum of squares* rather than a pooled variance | `contrib / scale` returned `(m_h - 1) s_h^2`; a test with two strata of equal variance but sizes 3 and 31 gives a 5.4-fold inflation; the original test used equal sizes and missed it. Found because HC3 intervals under the adaptive design were about 9 times wider than needed (coverage 0.999) | Interim S4 choice of the interval rule rested on inflated intervals; point estimates, feasibility and the design choice unaffected | `variance_report` rewritten (stratum sample variance, pooled and model-based targets, floor); regression test `test_pooled_shrinkage_is_neutral_when_strata_share_a_variance_even_with_unequal_sizes`; S4 interval comparison rerun on all development corpora |

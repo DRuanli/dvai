@@ -18,7 +18,7 @@ import numpy as np
 from scipy import stats
 
 from ..estimators.base import EstimationContext, Estimator
-from ..estimators.design_based import RCPPI
+from ..estimators.design_based import RCPPI, AuditHajek
 from ..estimators.simple import Deletion
 
 __all__ = ["CertificationResult", "TOSTCertifier", "LegacyCertifier"]
@@ -34,16 +34,38 @@ class CertificationResult:
 
 
 class TOSTCertifier:
+    """TOST certification of deletion against an audit anchor.
+
+    ``quantile="t"`` uses the Student quantile with the anchor's degrees of freedom (the
+    same rule as its interval); ``"z"`` the normal quantile. With ``fallback=True`` the
+    two-phase Hajek estimator is the anchor when RC-PPI++ is infeasible, as in the policy.
+    """
+
     def __init__(self, tau_sd: float = 0.2, alpha: float = 0.05,
-                 anchor: Estimator | None = None) -> None:
+                 anchor: Estimator | None = None, quantile: str = "t",
+                 fallback: bool = True) -> None:
+        if quantile not in ("t", "z"):
+            raise ValueError("quantile must be 't' or 'z'")
         self.tau_sd = float(tau_sd)
         self.alpha = float(alpha)
         self.anchor = anchor or RCPPI(tune=True)
+        self.quantile = quantile
+        self.fallback = bool(fallback)
+        self.name = (f"cert_tost{self.tau_sd:g}" + ("" if quantile == "t" else "_z")
+                     + ("" if self.fallback else "_nofb"))
+
+    def _anchor(self, ctx: EstimationContext, outcome: str):
+        res = self.anchor.estimate(ctx, outcome)
+        est = self.anchor
+        if (not res.feasible or not np.isfinite(res.se)) and self.fallback:
+            est = AuditHajek()
+            res = est.estimate(ctx, outcome)
+        return est, res
 
     def certify(self, ctx: EstimationContext, outcome: str) -> CertificationResult:
         y = ctx.obs.outcome(outcome)
         tau = self.tau_sd * float(np.std(y, ddof=1))
-        anchor = self.anchor.estimate(ctx, outcome)
+        est, anchor = self._anchor(ctx, outcome)
         if not anchor.feasible or not np.isfinite(anchor.se):
             return CertificationResult(False, float("nan"), float("nan"), tau,
                                        f"anchor infeasible: {anchor.reason}")
@@ -51,8 +73,12 @@ class TOSTCertifier:
         if not deletion.feasible:
             return CertificationResult(False, float("nan"), anchor.se, tau, deletion.reason)
         b_hat = deletion.point - anchor.point
-        z = stats.norm.ppf(1 - self.alpha)
-        ok = abs(b_hat) + z * anchor.se < tau
+        if self.quantile == "t":
+            df = anchor.extras.get(f"df_{getattr(est, 'variance_rule', 'lin')}", np.inf)
+            q = stats.t.ppf(1 - self.alpha, max(float(df), 1.0))
+        else:
+            q = stats.norm.ppf(1 - self.alpha)
+        ok = abs(b_hat) + q * anchor.se < tau
         return CertificationResult(bool(ok), float(b_hat), float(anchor.se), tau,
                                    "" if ok else "equivalence not shown")
 
@@ -63,6 +89,8 @@ class LegacyCertifier:
     ``b_hat`` and ``sd`` come from a nonparametric bootstrap of the audited humans'
     design-weighted mean. Kept only to measure its false-certification rate (E5).
     """
+
+    name = "cert_legacy"
 
     def __init__(self, n_boot: int = 200, tau_sd: float = 0.15) -> None:
         self.n_boot = int(n_boot)
