@@ -1,6 +1,6 @@
 """The code defaults must equal the protocol configuration (G4 review, finding M1).
 
-Reads ``configs/protocol/frozen.yaml`` when it exists, otherwise ``draft.yaml``.
+Reads ``configs/protocol/frozen.yaml``.
 """
 
 import inspect
@@ -17,8 +17,7 @@ from d2vi.inference.variance import DEFAULT_TARGETS, variance_report
 from d2vi.sampling.audit import make_design
 
 ROOT = Path(__file__).resolve().parents[2] / "configs" / "protocol"
-CFG = yaml.safe_load(((ROOT / "frozen.yaml") if (ROOT / "frozen.yaml").exists()
-                      else (ROOT / "draft.yaml")).read_text())
+CFG = yaml.safe_load((ROOT / "frozen.yaml").read_text())
 
 
 def test_default_design_parameters_are_the_class_defaults():
