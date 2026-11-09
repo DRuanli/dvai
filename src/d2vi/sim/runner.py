@@ -45,7 +45,7 @@ class CellSpec:
     eps: float
     n: int
     budget: float
-    design: Any = "srs"
+    design: Any = "proportional"   # frozen default: 10 score strata
     mixture: Any = "iid"
     tags: dict = field(default_factory=dict, hash=False, compare=False)
     # verification error (experiment E11, Proposition 6): probability that a human record
@@ -101,8 +101,11 @@ class Experiment:
     def run_replication(self, spec: CellSpec, rep: int) -> list[dict]:
         rng_data, rng_audit = self._seeds(spec, rep)
         rs = make_mixture(spec.mixture).sample(self.pool, spec.n, spec.eps, rng_data)
-        verifier = (PerfectVerifier(rs.a) if spec.phi0 == 0 and spec.phi1 == 0
-                    else NoisyVerifier(rs.a, spec.phi0, spec.phi1))
+        if spec.phi0 == 0 and spec.phi1 == 0:
+            verifier = PerfectVerifier(rs.a)
+        else:  # own stream: same audited records and folds as the error-free cell
+            tag = zlib.crc32(f"flip|{spec.data_key}".encode())
+            verifier = NoisyVerifier(rs.a, spec.phi0, spec.phi1, seed=[self.root_seed, tag, rep])
         audit = make_design(spec.design).draw(rs.observed, spec.m, rng_audit, verifier)
         ctx = EstimationContext(rs.observed, audit, rng_audit)
         base = spec.describe()

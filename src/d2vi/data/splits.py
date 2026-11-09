@@ -1,4 +1,4 @@
-"""Calibration / evaluation splits for held-out corpora (frozen protocol, section 1a).
+"""Calibration / evaluation splits for held-out corpora (frozen protocol, section 2).
 
 Detectors are trained, and zero-shot thresholds calibrated, only on calibration records;
 evaluation pools are drawn only from the remaining records. For corpora with a single

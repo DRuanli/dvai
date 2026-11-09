@@ -71,7 +71,8 @@ def test_proposition6_only_missed_machines_bias_the_estimate(pool):
         errs = []
         for _ in range(60):
             audit = make_design("srs").draw(rs.observed, 4000, rng,
-                                            NoisyVerifier(rs.a, phi0, phi1))
+                                            NoisyVerifier(rs.a, phi0, phi1,
+                                                          seed=int(rng.integers(2**31))))
             errs.append(AuditHajek().estimate(EstimationContext(rs.observed, audit, rng),
                                               "sent").point - mu_h)
         predicted = phi1 * eps * (mu_a - mu_h) / ((1 - phi0) * (1 - eps) + phi1 * eps)

@@ -20,7 +20,8 @@ Writes one raw file per pool to ``results/raw/S4c/`` (resumable) and
 ``results/S4c_regret.csv``, ``results/S4c_regret_by_budget.csv``,
 ``results/S4c_certification.csv``, ``results/S4c_feasibility.csv``,
 ``results/S4c_interval_rules.csv`` (linearised, Satterthwaite, pooled and model-based
-shrinkage on the chosen design).
+shrinkage on the chosen design), ``results/S4c_fallback_cells.csv`` (flag-PPI vs Hajek
+fallback) and ``results/S4c_manifest.json`` (design and grid of the run).
 """
 
 from __future__ import annotations
@@ -47,8 +48,8 @@ EPS = (0.01, 0.02, 0.05, 0.10, 0.20, 0.30, 0.45)
 BUDGETS = (0.02, 0.05, 0.10)
 CELL = ["det", "budget", "eps", "domain", "generator", "outcome"]
 RAW = Path("results/raw/S4c")
-KEEP = CELL + ["rep", "estimator", "point", "ci_low", "ci_high", "feasible", "truth", "sd_h",
-               "deletion_bias", "certified", "tau", "choice", "x_se_lin", "x_df_lin",
+KEEP = CELL + ["design", "rep", "estimator", "point", "ci_low", "ci_high", "feasible", "truth",
+               "sd_h", "deletion_bias", "certified", "tau", "choice", "x_se_lin", "x_df_lin",
                "x_df_satt", "x_se_pool", "x_df_pool", "x_se_model", "x_df_model"]
 RULES = {"lin": ("x_se_lin", "x_df_lin"), "satt": ("x_se_lin", "x_df_satt"),
          "pool": ("x_se_pool", "x_df_pool"), "model": ("x_se_model", "x_df_model")}
@@ -130,6 +131,22 @@ def interval_rules(raw: pd.DataFrame) -> pd.DataFrame:
     return pd.concat(out, ignore_index=True)
 
 
+def fallback_compare(raw: pd.DataFrame) -> pd.DataFrame:
+    """Per cell: ITT standardised RMSE of RC-PPI++ with the flag-PPI and with the Hajek
+    fallback, and the feasibility rate (evidence for the frozen fallback)."""
+    key = CELL + ["rep"]
+    d = raw[raw.estimator.isin(["rc_ppi_pp", "flag_ppi", "hajek"])]
+    w = d.pivot_table(index=key, columns="estimator", values="point")
+    rc = d[d.estimator == "rc_ppi_pp"].set_index(key).reindex(w.index)
+    ok = rc["feasible"].astype(bool)
+    out = {}
+    for fb in ("flag_ppi", "hajek"):
+        e2 = ((w["rc_ppi_pp"].where(ok, w[fb]) - rc["truth"]) / rc["sd_h"]) ** 2
+        out[f"srmse_{fb}_fallback"] = e2.groupby(level=CELL).mean().pow(0.5)
+    out["feasible"] = ok.astype(float).groupby(level=CELL).mean()
+    return pd.DataFrame(out).reset_index()
+
+
 def regret(cell: pd.DataFrame, by: list[str] | None = None) -> pd.DataFrame:
     rows = []
     best = cell[SINGLE].min(axis=1)
@@ -174,6 +191,13 @@ def main() -> None:
                "cells_better_than_other": float((cell[name] < cell[other]).mean())}
         for name, other in (("rc_ppi_pp", "rc_ppi_pp_mc6"), ("rc_ppi_pp_mc6", "rc_ppi_pp"))}).T
     feas.to_csv("results/S4c_feasibility.csv")
+    fbc = pd.concat([fallback_compare(pd.read_parquet(f)) for f in files], ignore_index=True)
+    fbc.to_csv("results/S4c_fallback_cells.csv", index=False)
+    print(fbc.groupby("eps")[["srmse_flag_ppi_fallback", "srmse_hajek_fallback"]].mean()
+          .round(4))
+    Path("results/S4c_manifest.json").write_text(json.dumps(
+        {"design": design, "reps": args.reps, "budgets": BUDGETS, "eps": EPS,
+         "pools": [f.name for f in files]}, indent=2))
     ir = pd.concat([interval_rules(pd.read_parquet(f)) for f in files], ignore_index=True)
     irs = ir.groupby(["estimator", "budget"]).agg(
         **{f"mean_{r}": (f"cov_{r}", "mean") for r in RULES},

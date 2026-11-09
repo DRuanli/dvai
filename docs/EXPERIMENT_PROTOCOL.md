@@ -1,7 +1,7 @@
-# Experiment protocol — CANDIDATE FOR FREEZE (second G4 review pending)
+# Experiment protocol — FROZEN on 9 November 2026 (git tag `protocol-freeze`)
 
 This protocol was fixed at the end of stage S4, on the development corpora only, before any
-held-out corpus was run. The machine-readable version is `configs/protocol/frozen.yaml`;
+held-out corpus was run, after two rounds of an independent review (gate G4). The machine-readable version is `configs/protocol/frozen.yaml`;
 `tests/unit/test_protocol_defaults.py` checks that the code defaults equal it. Every later
 change goes to the Deviations table (section 8) and the results it affects are labelled
 exploratory.
@@ -112,12 +112,12 @@ Scope: the primary grid of section 4 (default design; N = 900; iid mixtures; bud
 and 10%; all seven contamination rates) on every held-out text corpus x detector pool and
 on ANES. Other designs, mixtures, budgets and N are secondary.
 
-| ID | Claim | Test | Threshold |
+| ID | Claim | Decision rule | Reported with |
 |---|---|---|---|
-| PE1 | RC-PPI++ (ITT) is non-inferior to flag-PPI on the same audit | Ratio of mean cell standardised MSE; Wilcoxon signed-rank on the per-corpus log ratio; cluster bootstrap by corpus | Upper one-sided 95% bound of the ratio < 1.10 |
-| PE2 | The intervals of RC-PPI++ (ITT) are valid | Mean coverage over cells; share of cells with coverage ≥ 0.90; median width ratio | Mean ≥ 0.93 and ≥ 90% of cells ≥ 0.90; width ratio reported |
-| PE3 | TOST (τ = 0.2 SD) controls false certification | Certification rate over replications with \|b_del\| ≥ τ; near the boundary (τ ≤ \|b_del\| < 1.1 τ); worst cell | Cluster-bootstrap upper 95% bound ≤ 0.075 overall and near the boundary |
-| PE4 | The policy has the lowest worst-case regret | Maximum excess sRMSE over cells, policy vs each single estimator; cluster bootstrap by corpus | Descriptive |
+| PE1 | RC-PPI++ is non-inferior to flag-PPI on the same audit | For each corpus, the ratio R of mean cell standardised MSE (RC-PPI++ over flag-PPI). PE1 holds if a one-sided Wilcoxon signed-rank test of the per-corpus log R against log 1.10 rejects at α = 0.05 for **both** (a) the ITT comparison and (b) the per-protocol comparison: replications in which RC-PPI++ is feasible, both estimators on those same replications, cells with at least 50 such replications | Pooled R with a BCa cluster-bootstrap interval by corpus; feasibility rate per cell; per-corpus R |
+| PE2 | The intervals of RC-PPI++ (ITT) are valid | Mean coverage over cells ≥ 0.93 and ≥ 90% of cells with coverage ≥ 0.90 | Monte Carlo SE; median width ratio, overall and per budget |
+| PE3 | TOST (τ = 0.2 SD) controls false certification | Cluster-bootstrap (by replication) upper 95% bound ≤ 0.075, both over all replications with \|b_del\| ≥ τ and near the boundary (τ ≤ \|b_del\| < 1.1 τ) | Worst cell; Clopper–Pearson bound as a check; power at \|b_del\| < τ/2 |
+| PE4 | The policy has the lowest worst-case regret | Maximum excess sRMSE over cells, policy vs each single estimator; descriptive | Per budget and pooled; cluster bootstrap by corpus |
 
 Secondary comparisons: Holm correction within each family; Friedman then Wilcoxon–Holm
 across corpora; effect sizes with intervals.
@@ -135,11 +135,11 @@ before they ran.
 
 | Parameter | Candidates | Choice | Evidence (development data) |
 |---|---|---|---|
-| Audit design | SRS; proportional (10 strata); top-decile split; two-stage Neyman (5); adaptive constrained Neyman (k_target 0, 8, 16; 16 with four second-stage records) | Proportional, 10 score-quantile strata, at least 2 records per stratum | `S4b_design_dev_summary.csv`. Rule: lowest mean cell ITT sRMSE among designs whose ITT interval has mean coverage ≥ 0.93 and ≥ 90% of cells ≥ 0.90. Proportional is the only design that passes at all three budgets (cells ≥ 0.90: 100%, 100%, 98%) and has the lowest sRMSE among those that pass (0.100, 0.058, 0.034 at 2, 5, 10%). SRS is about as accurate (0.100, 0.055, 0.035) but its intervals fail (84%, 74%, 83% of cells ≥ 0.90); top-decile 0.119, 0.058, 0.037 with 89%, 88%, 82% |
+| Audit design | SRS; proportional (10 strata); top-decile split; two-stage Neyman (5); adaptive constrained Neyman (k_target 0, 8, 16; 16 with four second-stage records) | Proportional, 10 score-quantile strata, at least 2 records per stratum | `S4b_design_dev_summary.csv`. Rule: lowest mean cell ITT sRMSE among designs whose ITT interval has mean coverage ≥ 0.93 and ≥ 90% of cells ≥ 0.90. Proportional, two-stage Neyman and the adaptive designs with k_target 0, 8 and 16 pass at all three budgets; proportional has the lowest sRMSE among those that pass (0.100, 0.058, 0.034 at 2, 5, 10%; cells ≥ 0.90: 100%, 100%, 98%), by a margin far beyond Monte Carlo error (G4 review: paired bootstrap against adaptive k_target 0, −0.045 ± 0.001 at 2%). The two-stage designs lose to it because with stage-wise weights only second-stage records estimate the non-pilot part of a stratum; e.g. one adaptive configuration has a cell with sRMSE 22 at 2%. SRS is about as accurate (0.100, 0.055, 0.035) but its intervals fail (84%, 74%, 83% of cells ≥ 0.90); top-decile 0.119, 0.058, 0.037 with 89%, 88%, 82% |
 | Cross-fitting folds | 2, 5 | 5 | `S4b_design_dev_cells.csv`: with the proportional design, five folds give lower ITT sRMSE in 67% of cells (mean ratio 0.96) and are feasible more often (each training fold holds 4/5 of the audit) |
 | Regularisation | C ∈ {1, 0.1} | C = 1 | Round 1, exploratory (`S4_explore_propensity_variance.csv`): C = 0.1 raised RMSE by 10-30% |
 | Feasibility threshold | 4 per class (2 per fold); 6 (3 per fold) | 4 / 2 | `S4c_feasibility.csv`: mean cell ITT sRMSE 0.064 vs 0.066; lower in 52% of cells, higher in 26% |
-| Fallback when RC-PPI++ is infeasible | two-phase Hájek; flag-PPI | Flag-PPI on the same audit | Recomputed from the round-3 replications: mean cell ITT sRMSE 0.064 (flag-PPI) vs 0.122 (Hájek); at 1% contamination 0.047 vs 0.159. RC-PPI++ is feasible in 0%, 0%, 10%, 69% and 100% of replications at 1, 2, 5, 10 and ≥ 20% contamination (budget 5%) |
+| Fallback when RC-PPI++ is infeasible | two-phase Hájek; flag-PPI | Flag-PPI on the same audit | `S4c_fallback_cells.csv`: mean cell ITT sRMSE 0.064 (flag-PPI) vs 0.122 (Hájek); at 1% contamination 0.047 vs 0.159. RC-PPI++ is feasible in 0%, 0%, 10%, 69% and 100% of replications at 1, 2, 5, 10 and ≥ 20% contamination (budget 5%) |
 | Interval rule | linearised (df = m − H); Satterthwaite df; shrinkage to the pooled stratum variance; shrinkage to the anticipated variance with Jeffreys stratum rates (round 1 also: empirical-Bayes rates, a floor, Rao-Wu) | Shrinkage (one pseudo-record) to the variance anticipated under a Bernoulli origin model with Jeffreys stratum rates; Satterthwaite df | `S4c_interval_rules.csv`, proportional design: the only rule valid for both estimators the ITT interval can come from. Cells ≥ 0.90 at 2/5/10%: flag-PPI 100/99/96% (linearised 20/39/67%, pooled 28/54/77%); feasible RC-PPI++ 100/100/99% (pooled 91/95/96%). Cost: median width 1.65, 1.22, 1.10 times the oracle width for RC-PPI++. Round 1 on the valid designs (SRS, top-decile): empirical-Bayes rates never improved the worst cell (e.g. HC3 top-decile 0.857 vs 0.880) |
 | Policy | squared bias plugin / debiased; certification required or not | Debiased, certification not required | `S4c_regret.csv`. Rule: lowest worst-cell excess sRMSE, ties by pooled sRMSE. Debiased 0.166 SD worst excess, pooled sRMSE 0.072 (lowest of all rules; RC-PPI++ ITT 0.209 / 0.079, flag-PPI 0.284 / 0.100, naive 0.755 / 0.161, deletion 0.846 / 0.185); requiring certification 0.167 / 0.074; plugin 0.190 / 0.074. The interval the policy reports covers 97.9% on average, 98.9% of cells ≥ 0.90 |
 | Certifier | TOST τ ∈ {0.1, 0.2, 0.3} SD, Student or normal quantile, with or without fallback; v1 rule | TOST, τ = 0.2 SD (substantive, not tuned), Student quantile with the anchor's Satterthwaite df, flag-PPI anchor when RC-PPI++ is infeasible | `S4c_certification.csv`: false certification 0.38% of 22,668 replications with \|b_del\| ≥ τ (cluster-bootstrap upper bound 0.45%); near the boundary 1.4% (upper 1.7%); worst cell 5.1%; certifies 72% of replications with \|b_del\| < τ/2. The v1 rule certifies 0.1% of all replications |
@@ -158,12 +158,17 @@ before they ran.
 * The fallback was first the two-phase Hájek estimator; it dominated the error at 1-2%
   contamination, where RC-PPI++ is mostly infeasible.
 * Primary endpoints were restricted to the regime tested on development data (G4 review,
-  M3); PE4 is measured as excess sRMSE in human-SD units (M4); the detector and threshold
+  M3); PE1 is decided on both the ITT and the per-protocol comparison, because ITT alone
+  is pulled towards a ratio of 1 where RC-PPI++ is mostly infeasible (second G4 review,
+  MA1; on development data the ratio is 0.62 ITT and 0.48 per protocol); PE4 is measured as excess sRMSE in human-SD units and reported per budget (M4; on
+  development data the policy has the lowest worst-case excess pooled over budgets but not
+  at 10%, where ITT RC-PPI++ is lower, 0.087 vs 0.090); the detector and threshold
   rule for held-out corpora was written down (M5); the policy default in the code was
   aligned with the protocol and a test now checks all defaults (M1).
 * Known limitations: (i) at 1-2% contamination RC-PPI++ is almost never feasible with
   18-90 audited records, so the ITT rule reports flag-PPI there; (ii) the chosen interval
-  rule is conservative at small budgets (median width 1.65 times the oracle at 2%);
+  rule is conservative at small budgets: at 2% the interval actually reported (ITT, mostly
+  flag-PPI) has median width 2.1 times the oracle width (1.65 for feasible RC-PPI++);
   (iii) in the worst development cells coverage is 0.80-0.83 (TF-IDF and Fast-DetectGPT,
   10% budget, 1-2% contamination, where the fallback flag-PPI interval is used).
 

@@ -1,0 +1,38 @@
+{
+  "design": {
+    "name": "proportional",
+    "n_strata": 10
+  },
+  "reps": 200,
+  "budgets": [
+    0.02,
+    0.05,
+    0.1
+  ],
+  "eps": [
+    0.01,
+    0.02,
+    0.05,
+    0.1,
+    0.2,
+    0.3,
+    0.45
+  ],
+  "pools": [
+    "fast_detectgpt__ghostbuster-essay__fast_detectgpt-claude.parquet",
+    "fast_detectgpt__ghostbuster-essay__fast_detectgpt-gpt.parquet",
+    "fast_detectgpt__ghostbuster-reuter__fast_detectgpt-claude.parquet",
+    "fast_detectgpt__ghostbuster-reuter__fast_detectgpt-gpt.parquet",
+    "fast_detectgpt__ghostbuster-wp__fast_detectgpt-claude.parquet",
+    "fast_detectgpt__ghostbuster-wp__fast_detectgpt-gpt.parquet",
+    "roberta_hc3__hc3-finance__roberta_hc3.parquet",
+    "roberta_hc3__hc3-open_qa__roberta_hc3.parquet",
+    "roberta_hc3__hc3-reddit_eli5__roberta_hc3.parquet",
+    "tfidf_lr__ghostbuster-essay__tfidf_lr-claude.parquet",
+    "tfidf_lr__ghostbuster-essay__tfidf_lr-gpt.parquet",
+    "tfidf_lr__ghostbuster-reuter__tfidf_lr-claude.parquet",
+    "tfidf_lr__ghostbuster-reuter__tfidf_lr-gpt.parquet",
+    "tfidf_lr__ghostbuster-wp__tfidf_lr-claude.parquet",
+    "tfidf_lr__ghostbuster-wp__tfidf_lr-gpt.parquet"
+  ]
+}

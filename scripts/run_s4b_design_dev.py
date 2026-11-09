@@ -12,7 +12,8 @@ again on the regime of the primary endpoints:
 * designs: SRS, proportional (10 strata), top-decile split, two-stage Neyman (5 strata),
   adaptive constrained Neyman with k_target 0, 8, 16, and k_target 16 with four
   second-stage records per stratum;
-* estimators: naive, deletion, Hajek, flag-PPI, RC-PPI++ with 2 and with 5 folds.
+* estimators: naive, deletion, Hajek, flag-PPI, RC-PPI++ with 2 folds (``rc_ppi_pp``)
+  and with 5 folds (``rc_ppi_pp_k5``).
 
 Selection rule, fixed before this run: RC-PPI++ is scored intention-to-treat (flag-PPI on
 the same audit when RC-PPI++ is infeasible). Among designs whose interval for that rule
@@ -50,10 +51,13 @@ CELL = ["det", "design_label", "budget", "eps", "domain", "generator", "outcome"
 
 
 def estimators():
-    out = [make_estimator(e) for e in ("naive", "deletion", "hajek", "flag_ppi", "rc_ppi_pp")]
+    # both arms explicit: the package default changed from 2 to 5 folds after this run
+    out = [make_estimator(e) for e in ("naive", "deletion", "hajek", "flag_ppi")]
+    k2 = RCPPI(tune=True, propensity=CrossFitPropensity(n_folds=2))
+    k2.name = "rc_ppi_pp"
     k5 = RCPPI(tune=True, propensity=CrossFitPropensity(n_folds=5))
     k5.name = "rc_ppi_pp_k5"
-    return out + [k5]
+    return out + [k2, k5]
 
 
 RAW = Path("results/raw/S4b")

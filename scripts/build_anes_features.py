@@ -7,7 +7,7 @@ Usage (from the repository root, after notebooks F03 and F04)::
 where ``<synthetic dir>`` holds the ``anes_synth_*.parquet`` files of F03.
 
 Reads the human pool ``data/private/anes2024_human.parquet``
-(``scripts/build_anes_human_pool.py``). Follows the frozen protocol (section 1a):
+(``scripts/build_anes_human_pool.py``). Follows the frozen protocol (section 2):
 
 * calibration split: 30% of every stratum (source x condition), seeded by ``doc_id``;
 * Fast-DetectGPT: threshold = 95th percentile of human calibration scores;

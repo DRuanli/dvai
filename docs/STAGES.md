@@ -16,3 +16,13 @@ not move on until the gate passes or the deviation is written down.
 | S7 Analysis | Generated LaTeX tables, PDF figures, regime map; claim–evidence matrix | `paper/generated/` | G7: every claim has evidence |
 | S8 Writing | Revised manuscript with highlighted changes; highlights; AI-use declaration; point-by-point response with page/line references; language editing | Manuscript, response letter | G8: full cross-reading |
 | S9 Check and submit | Clean-clone reproduction of at least one main table; independent referee-style audit; Zenodo DOI; submission | Submission package | G9: no critical issue open |
+
+## Status
+
+| Stage | Status (9 November 2026) |
+|---|---|
+| S0, S1 | Done |
+| S2 | Development corpora done (Ghostbuster TF-IDF and Fast-DetectGPT, HC3 RoBERTa); ANES human pool built; synthetic respondents and held-out corpora pending |
+| S3 | Done: Tables 2, D.2 and 3 of the first submission reproduced exactly |
+| S4 | Done: protocol frozen (`configs/protocol/frozen.yaml`, tag `protocol-freeze`) after two G4 review rounds (findings F14-F16) |
+| S5-S9 | Pending |

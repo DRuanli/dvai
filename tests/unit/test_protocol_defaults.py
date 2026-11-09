@@ -55,3 +55,14 @@ def test_policy_fallback_and_certifier_defaults():
     assert cert.tau_sd == pytest.approx(c["tau_sd"]) and cert.alpha == pytest.approx(c["alpha"])
     assert cert.quantile == c["quantile"]
     assert cert.fallback == (c["fallback"] == CFG["fallback_when_infeasible"])
+
+
+def test_runner_cell_default_design_is_the_protocol_default():
+    from d2vi.sim.runner import CellSpec
+
+    spec = dict(CFG["audit"]["default_design"])
+    design = make_design(CellSpec("c", "d", 0.1, 900, 0.05).design)
+    assert type(design) is type(make_design(spec["name"]))
+    for key, value in spec.items():
+        if key != "name":
+            assert getattr(design, key) == value

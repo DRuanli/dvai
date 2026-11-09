@@ -4,7 +4,8 @@ Within each design stratum ``h`` with ``m_h >= 2`` audited records, a replicate 
 ``m_h - 1`` records with replacement and multiplies the weight of record ``i`` by
 ``m_h / (m_h - 1) * c_i``, where ``c_i`` is its multiplicity (Rao and Wu, 1988). The
 estimator, including the cross-fitted propensity model, is recomputed on every replicate.
-Strata with a single record keep their weight unchanged. The finite-population
+Strata with a single record, and certainty strata (inclusion probability 1, such as the
+pilot of a two-stage design), keep their records and weights unchanged. The finite-population
 correction is ignored, which makes the interval slightly conservative.
 """
 
@@ -26,8 +27,8 @@ def rao_wu_replicate(audit: AuditSample, rng: np.random.Generator) -> AuditSampl
     for h in np.unique(strata):
         members = np.flatnonzero(strata == h)
         m_h = members.shape[0]
-        if m_h < 2:
-            mult[members] = 1.0
+        if m_h < 2 or np.all(audit.rho[members] >= 1.0):
+            mult[members] = 1.0  # single record, or a certainty stratum (two-stage pilot)
             continue
         draws = rng.choice(members, size=m_h - 1, replace=True)
         np.add.at(mult, draws, 1.0)

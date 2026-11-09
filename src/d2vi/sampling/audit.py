@@ -130,19 +130,25 @@ class NoisyVerifier(Verifier):
     """Random verification error, independent of the outcome given the origin.
 
     ``phi0`` is the probability that a human record is labelled machine; ``phi1`` the
-    probability that a machine record is labelled human (Proposition 6). Graded labels are
-    first rounded at 0.5.
+    probability that a machine record is labelled human (Proposition 6). The flips are
+    drawn once per record from the verifier's own random stream (``seed``), so a record
+    verified twice gets the same label, and the audit's random stream - hence the audited
+    records and the cross-fitting folds - is the same as without error (common random
+    numbers for experiment E11). Defined for binary origins only.
     """
 
-    def __init__(self, a: np.ndarray, phi0: float = 0.0, phi1: float = 0.0) -> None:
-        self._a = (np.asarray(a, dtype=float) >= 0.5).astype(float)
+    def __init__(self, a: np.ndarray, phi0: float = 0.0, phi1: float = 0.0,
+                 seed: int | np.random.SeedSequence = 0) -> None:
+        a = np.asarray(a, dtype=float)
+        if not np.all((a == 0) | (a == 1)):
+            raise ValueError("verification error is defined for binary origins only")
         self.phi0, self.phi1 = float(phi0), float(phi1)
+        u = np.random.default_rng(seed).random(a.shape[0])
+        flip = np.where(a == 1, u < self.phi1, u < self.phi0)
+        self._labels = np.where(flip, 1.0 - a, a)
 
     def verify(self, idx: np.ndarray, rng: np.random.Generator) -> np.ndarray:
-        true = self._a[idx]
-        u = rng.random(idx.shape[0])
-        flip = np.where(true == 1, u < self.phi1, u < self.phi0)
-        return np.where(flip, 1.0 - true, true)
+        return self._labels[idx].copy()
 
 
 @dataclass(frozen=True)

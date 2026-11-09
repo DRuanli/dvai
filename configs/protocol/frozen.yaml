@@ -5,7 +5,7 @@
 # tests/unit/test_protocol_defaults.py checks that the code defaults equal this file.
 # Later changes go to the Deviations table of the protocol, never here.
 audit:
-  default_design: {name: proportional, n_strata: 10}   # S4b: only design valid at all budgets
+  default_design: {name: proportional, n_strata: 10}   # S4b: most accurate valid design
   compared: [srs, {name: proportional, n_strata: 10}, top_decile, {name: neyman, n_strata: 5},
              {name: adaptive, k_target: 16, cuts: [0.5, 0.8, 0.9], pilot_frac: 0.3,
               min_per_stratum: 2, min_second: 2}, pps]
@@ -58,9 +58,13 @@ detectors:
              threshold: 0.5}
   roberta_openai: {model: openai-community/roberta-base-openai-detector, threshold: 0.5}
 endpoints:
-  PE1: {comparison: rc_ppi_pp_itt_vs_flag_ppi, metric: ratio_mean_cell_standardised_mse,
-        margin: 1.10, alpha_one_sided: 0.05}
+  PE1: {comparison: rc_ppi_pp_vs_flag_ppi, metric: per_corpus_ratio_mean_cell_standardised_mse,
+        margin: 1.10, test: wilcoxon_signed_rank_one_sided, alpha: 0.05,
+        must_hold_for: [itt, per_protocol], per_protocol_min_feasible_reps: 50,
+        estimate_interval: bca_cluster_bootstrap_by_corpus}
   PE2: {estimator: rc_ppi_pp_itt, mean_coverage_min: 0.93, share_cells_ge_090_min: 0.90}
-  PE3: {certifier: tost_0.2, upper95_max: 0.075, near_boundary: [1.0, 1.1]}
-  PE4: {metric: max_excess_standardised_rmse, comparison: policy_vs_each_single_estimator}
+  PE3: {certifier: tost_0.2, upper95_max: 0.075, bound: cluster_bootstrap_by_replication,
+        apply_to: [all_biased, near_boundary_1.0_to_1.1_tau]}
+  PE4: {metric: max_excess_standardised_rmse, comparison: policy_vs_each_single_estimator,
+        report: [pooled, per_budget]}
 seed: 20261109

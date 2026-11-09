@@ -76,11 +76,25 @@ def test_summary_and_regret(pool):
     assert (reg["max_regret"] >= 0).all()
 
 
-def test_verification_error_cells_share_the_audit_and_flip_labels(pool):
-    exp = Experiment(pool, [make_estimator("hajek")])
-    clean = exp.run_cell(CellSpec("synthetic", "toy", 0.2, 600, 0.10, "proportional"), 4)
-    noisy = exp.run_cell(CellSpec("synthetic", "toy", 0.2, 600, 0.10, "proportional",
-                                  phi0=0.2, phi1=0.2), 4)
-    # same response sets and audited records; labels (hence machine counts) differ
+def test_verification_error_cells_share_audit_and_folds(pool):
+    """E11 pairing: with phi > 0 but no flip realised, every estimate equals the clean one."""
+    ests = [make_estimator("hajek"), make_estimator("rc_ppi_pp")]
+    exp = Experiment(pool, ests)
+    clean = exp.run_cell(CellSpec("synthetic", "toy", 0.2, 600, 0.10), 4)
+    tiny = exp.run_cell(CellSpec("synthetic", "toy", 0.2, 600, 0.10, phi0=1e-12, phi1=1e-12), 4)
+    pd.testing.assert_series_equal(clean["point"], tiny["point"])
+    noisy = exp.run_cell(CellSpec("synthetic", "toy", 0.2, 600, 0.10, phi0=0.2, phi1=0.2), 4)
     np.testing.assert_allclose(clean["truth"], noisy["truth"])
     assert not np.allclose(clean["m_machine"], noisy["m_machine"])
+
+
+def test_noisy_verifier_labels_are_fixed_per_record():
+    from d2vi.sampling.audit import NoisyVerifier
+    a = np.r_[np.zeros(500), np.ones(500)]
+    v = NoisyVerifier(a, 0.1, 0.1, seed=3)
+    idx = np.arange(1000)
+    first = v.verify(idx, np.random.default_rng(0))
+    np.testing.assert_array_equal(first, v.verify(idx, np.random.default_rng(9)))
+    assert 0.05 < np.mean(first != a) < 0.15
+    with pytest.raises(ValueError):
+        NoisyVerifier(np.r_[0.0, 0.5], 0.1, 0.1)

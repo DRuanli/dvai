@@ -103,8 +103,9 @@ def _cluster_upper(flags: np.ndarray, clusters: np.ndarray, n_boot: int = 2000,
 
 def certification(raw: pd.DataFrame) -> pd.DataFrame:
     """False certification (|b_del| >= tau), near the boundary (tau <= |b_del| < 1.1 tau),
-    worst cell, and power (|b_del| < tau / 2). Bounds: cluster bootstrap by replication;
-    Clopper-Pearson for the near-boundary rate (ignoring clustering, as a check)."""
+    worst cell, and power (|b_del| < tau / 2). Upper bounds: cluster bootstrap by
+    replication (decisive), and Clopper-Pearson for the near-boundary rate ignoring the
+    clustering (a check)."""
     from scipy import stats
 
     c = raw[raw.estimator.str.startswith("cert_")].copy()
@@ -131,6 +132,9 @@ def certification(raw: pd.DataFrame) -> pd.DataFrame:
             if n_bad else np.nan,
             "n_near_boundary": n_near,
             "near_boundary_rate": k_near / n_near if n_near else np.nan,
+            "near_boundary_upper95_cluster": _cluster_upper(cert[near].to_numpy(),
+                                                            g.loc[near, "cluster"].to_numpy())
+            if n_near else np.nan,
             "near_boundary_upper95_cp": float(stats.beta.ppf(0.95, k_near + 1, n_near - k_near))
             if n_near else np.nan,
             "worst_cell_rate": float(per_cell["mean"].max()) if len(per_cell) else np.nan,
