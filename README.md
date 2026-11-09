@@ -19,8 +19,10 @@ estimates the human-population mean from a small **verification audit** instead:
   false-certification rate;
 - an **audit-anchored selection policy** among naive, deletion and RC-PPI++.
 
-> Status: revision in progress. Stage S1 (core library) is implemented and tested.
-> Results in the paper will be regenerated from this repository; see `docs/STAGES.md`.
+> Status: revision in progress. S0-S1 done; S2 (features) and S3 (reproduction) under way.
+> The first submission's Tables 2 and D.2 are reproduced exactly from
+> `data/features/ghostbuster_tfidf.parquet` (`docs/reproduction_report.md`). Results in the
+> paper will be regenerated from this repository; see `docs/STAGES.md`.
 
 ## Install
 
@@ -41,6 +43,20 @@ ruff check src tests
 Lemma 1 and Proposition 2 as exact finite-population identities, and Theorem 1–2,
 Propositions 3, 5 and 6 by Monte Carlo. Synthetic data are used only in tests; every
 result in the paper comes from real corpora.
+
+## Features and reproduction
+
+```bash
+# Study 1 features on CPU (about 2 minutes); see the script header for downloads
+python scripts/compute_features_ghostbuster.py --root data/raw/ghostbuster-data \
+    --subj-dir data/raw/subjectivity --out data/features/ghostbuster_tfidf.parquet
+# E0: v1 code path and corrected pipeline, then the report
+python scripts/run_e0_reproduction.py --seeds 200 --reps 200 --jobs 2
+python scripts/report_e0.py
+```
+
+GPU features (HC3 with the RoBERTa detector, Ghostbuster with Fast-DetectGPT) are
+computed in the Colab notebooks under `colab/`.
 
 ## Run an experiment
 

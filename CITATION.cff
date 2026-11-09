@@ -1,11 +1,13 @@
 cff-version: 1.2.0
 message: "If you use this software or the D2VI protocol, please cite the paper below."
 title: "D2VI: Detect, Then What? Valid Social Measurement from AI-Contaminated Response Data"
-# Author list must match the manuscript submitted to Neurocomputing (NEUCOM-D-26-20926).
-# TODO(S0): confirm the full author list before the first release.
+# Author list matches the manuscript submitted to Neurocomputing (NEUCOM-D-26-20926).
 authors:
   - family-names: Le
     given-names: Nguyen
+    affiliation: "Faculty of Information Technology, Ton Duc Thang University"
+  - family-names: Vu
+    given-names: My
     affiliation: "Faculty of Information Technology, Ton Duc Thang University"
 version: 2.0.0.dev0
 license: MIT

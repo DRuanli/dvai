@@ -1,0 +1,88 @@
+{
+  "corpus": "ghostbuster-data",
+  "corpus_commit": "86ebd72590556a81622986fab736ab9227a948af",
+  "detector": "tfidf_lr (cross-domain, trained on human vs gpt of the other two domains)",
+  "detector_params": {
+    "max_features": 30000,
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 1,
+    "sublinear_tf": true,
+    "c": 1.0,
+    "seed": 0
+  },
+  "threshold": 0.5,
+  "outcomes": [
+    "sent",
+    "read",
+    "trust",
+    "subj"
+  ],
+  "flag_rates": [
+    {
+      "domain": "essay",
+      "source": "claude",
+      "n": 1000,
+      "flag_rate": 0.938
+    },
+    {
+      "domain": "essay",
+      "source": "gpt",
+      "n": 1000,
+      "flag_rate": 1.0
+    },
+    {
+      "domain": "essay",
+      "source": "human",
+      "n": 993,
+      "flag_rate": 0.7795
+    },
+    {
+      "domain": "reuter",
+      "source": "claude",
+      "n": 1000,
+      "flag_rate": 0.011
+    },
+    {
+      "domain": "reuter",
+      "source": "gpt",
+      "n": 1000,
+      "flag_rate": 0.133
+    },
+    {
+      "domain": "reuter",
+      "source": "human",
+      "n": 1000,
+      "flag_rate": 0.0
+    },
+    {
+      "domain": "wp",
+      "source": "claude",
+      "n": 1000,
+      "flag_rate": 0.005
+    },
+    {
+      "domain": "wp",
+      "source": "gpt",
+      "n": 1000,
+      "flag_rate": 0.127
+    },
+    {
+      "domain": "wp",
+      "source": "human",
+      "n": 1000,
+      "flag_rate": 0.0
+    }
+  ],
+  "rows": 8993,
+  "sha256": "84430ebc9d70a7dad83711264e128ce0731743c2c02fb8899df7ab20fce10f62",
+  "d2vi_version": "2.0.0.dev0",
+  "sklearn": "1.9.1",
+  "textstat": "0.7.13",
+  "vaderSentiment": "3.3.2",
+  "nrclex": "4.1.0",
+  "python": "3.13.18",
+  "seconds": 89.0
+}

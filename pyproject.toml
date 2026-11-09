@@ -9,7 +9,7 @@ description = "D2VI (Detect, then Validly Infer): audit-based estimation of huma
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
-authors = [{ name = "Nguyen Le" }]
+authors = [{ name = "Nguyen Le" }, { name = "My Vu" }]
 dependencies = [
   "numpy>=1.24",
   "pandas>=2.0",
