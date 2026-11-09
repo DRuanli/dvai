@@ -45,13 +45,14 @@ class CrossFitPropensity:
         Inverse L2 regularisation strength of the logistic regression.
     min_class:
         Feasibility rule: at least this many audited machine and human records
-        (sums of shares for graded labels).
+        (sums of shares for graded labels). The default 4 was chosen on development data
+        in stage S4 (the first submission used 6).
     min_class_fold:
         Feasibility rule: at least this many of each class in every training fold.
     """
 
     def __init__(self, features: tuple[str, ...] = ("score", "loglen"), n_folds: int = 2,
-                 c: float = 1.0, min_class: float = 6.0, min_class_fold: float = 3.0) -> None:
+                 c: float = 1.0, min_class: float = 4.0, min_class_fold: float = 2.0) -> None:
         self.features = tuple(features)
         self.n_folds = int(n_folds)
         self.c = float(c)

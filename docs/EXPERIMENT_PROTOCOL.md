@@ -62,6 +62,18 @@ Default audit design; feasibility threshold `k`; power-tuning clip; variance met
 policy variant (`bias_sq`, certification required or not). The certification tolerance
 is a substantive choice, not tuned: τ = 0.2 SD(Y), with sensitivity τ ∈ {0.1, 0.3}.
 
+Interim choices on Ghostbuster (both detectors), 9 November 2026, to be confirmed on HC3
+(`configs/protocol/draft.yaml`):
+
+| Parameter | Candidates | Choice | Evidence |
+|---|---|---|---|
+| Interval rule | linearised; Satterthwaite df; shrunk stratum variances; both; Rao–Wu bootstrap | Shrunk variances + Satterthwaite df | `results/S4_variance_dev_summary.csv`, `results/S4_explore_propensity_variance.csv` |
+| Audit design | SRS; top-decile split; two-stage Neyman; adaptive constrained Neyman | Adaptive, `k_target = 16` | `results/S4_design_dev_summary.csv`, `results/S4_tuning_dev_summary.csv` |
+| Feasibility threshold | 6 (3 per fold); 4 (2 per fold) | 4 (2 per fold) | `results/S4_tuning_dev_summary.csv` |
+| Cross-fitting folds, regularisation | K ∈ {2, 5}, C ∈ {1, 0.1} | K = 2, C = 1 | `results/S4_explore_propensity_variance.csv` |
+| Fallback when RC-PPI++ is infeasible | Hájek | Hájek | — |
+| Policy variant | `bias_sq` plugin / debiased; certification required or not | pending | — |
+
 ## 7. Deviations
 
 | Date | Change | Reason | Results affected (labelled exploratory) |

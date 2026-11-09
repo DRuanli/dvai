@@ -353,7 +353,7 @@ class AdaptiveNeyman(AuditDesign):
     """
 
     def __init__(self, cuts: tuple[float, ...] = (0.5, 0.8, 0.9), pilot_frac: float = 0.3,
-                 min_per_stratum: int = 2, k_target: float = 12.0) -> None:
+                 min_per_stratum: int = 2, k_target: float = 16.0) -> None:
         self.cuts = tuple(float(c) for c in cuts)
         self.pilot_frac = float(pilot_frac)
         self.min_per_stratum = int(min_per_stratum)

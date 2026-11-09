@@ -1,24 +1,29 @@
-# Candidate defaults, to be chosen on development corpora in stage S4 and then frozen
-# into configs/protocol/frozen.yaml (with a git tag). Not frozen yet.
+# Defaults chosen on development data (Ghostbuster x TF-IDF and Fast-DetectGPT) in stage
+# S4 on 2026-11-09. To be confirmed on HC3 (the second development corpus) and then frozen
+# into configs/protocol/frozen.yaml with the git tag `protocol-freeze`. Evidence:
+# results/S4_variance_dev_summary.csv, results/S4_design_dev_summary.csv,
+# results/S4_tuning_dev_summary.csv, results/S4_explore_propensity_variance.csv.
 audit:
-  default_design: top_decile        # candidates: srs, proportional, top_decile, neyman, pps
+  default_design: {name: adaptive, k_target: 16, cuts: [0.5, 0.8, 0.9], pilot_frac: 0.3}
+  compared: [srs, top_decile, {name: neyman, n_strata: 5}, adaptive]
   budgets: [0.01, 0.02, 0.05, 0.10]
 propensity:
   features: [score, loglen]
-  n_folds: 2
-  c: 1.0
-  min_class: 6                      # candidates: 4, 6, 8
-  min_class_fold: 3
+  n_folds: 2               # 5 folds did not help (exploration)
+  c: 1.0                   # stronger regularisation did not help
+  min_class: 4             # chosen over 6: better intention-to-treat accuracy, coverage kept
+  min_class_fold: 2
 power_tuning:
   clip: [0.0, 1.0]
 variance:
-  method: linearized                # candidates: linearized, rao_wu
+  rule: shrink_satt        # chosen over lin, satt, shrink; Rao-Wu explored and not adopted
   level: 0.95
+fallback_when_infeasible: hajek
 certification:
   test: tost
   alpha: 0.05
-  tau_sd: 0.2                       # substantive choice (Cohen's small effect); not tuned
+  tau_sd: 0.2              # substantive choice (Cohen's small effect); not tuned
 policy:
-  bias_sq: plugin                   # candidates: plugin, debiased
-  require_certification: false      # candidates: false, true
+  bias_sq: plugin          # candidates: plugin, debiased (to be chosen in S4)
+  require_certification: false
 seed: 20261109

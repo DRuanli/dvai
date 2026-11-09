@@ -60,6 +60,9 @@ class DifferenceRatioEstimator(Estimator):
     lam: float = 1.0
     level: float = 0.95
     min_human: float = 2.0
+    # interval rule chosen on development data in S4: shrunk stratum variances with
+    # Satterthwaite degrees of freedom ("lin" = plain linearisation, df = m - H)
+    variance_rule: str = "shrink_satt"
 
     def _predictor(self, ctx: EstimationContext, outcome: str):
         """Return ``(eta_all, eta_aud, reason)``; ``eta_all is None`` means infeasible."""
@@ -89,13 +92,18 @@ class DifferenceRatioEstimator(Estimator):
             mu = num / den
         z = ((1 - a_aud) - lam * (1 - eta_aud)) * (y[idx] - mu)
         vr = variance_report(z, audit)
-        se = float(np.sqrt(max(vr["var"], 0.0)) / den)
-        lo, hi = t_interval(mu, se, vr["df"], self.level)
+        se_lin = float(np.sqrt(max(vr["var"], 0.0)) / den)
+        se_shrink = float(np.sqrt(max(vr["var_shrink"], 0.0)) / den)
+        if self.variance_rule == "lin":
+            se, df = se_lin, vr["df"]
+        else:
+            se, df = se_shrink, vr["df_satt"]
+        lo, hi = t_interval(mu, se, df, self.level)
         return EstimateResult(self.name, outcome, float(mu), se, lo, hi, True, "",
                               extras={"lam": lam, "den": float(den),
                                       "n_machine_audit": audit.n_machine, "df": vr["df"],
-                                      "df_satt": vr["df_satt"],
-                                      "se_shrink": float(np.sqrt(max(vr["var_shrink"], 0)) / den)})
+                                      "df_satt": vr["df_satt"], "se_lin": se_lin,
+                                      "se_shrink": se_shrink})
 
 
 class AuditHajek(DifferenceRatioEstimator):
