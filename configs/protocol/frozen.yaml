@@ -1,0 +1,66 @@
+# Experiment protocol, machine-readable part. Frozen at the end of stage S4 (git tag
+# `protocol-freeze`); chosen on the development corpora only (Ghostbuster x TF-IDF and
+# Fast-DetectGPT; HC3 x RoBERTa). Text, evidence and selection rules:
+# docs/EXPERIMENT_PROTOCOL.md (sections 4-7); result files: results/README.md.
+# tests/unit/test_protocol_defaults.py checks that the code defaults equal this file.
+# Later changes go to the Deviations table of the protocol, never here.
+audit:
+  default_design: {name: proportional, n_strata: 10}   # S4b: only design valid at all budgets
+  compared: [srs, {name: proportional, n_strata: 10}, top_decile, {name: neyman, n_strata: 5},
+             {name: adaptive, k_target: 16, cuts: [0.5, 0.8, 0.9], pilot_frac: 0.3,
+              min_per_stratum: 2, min_second: 2}, pps]
+  two_stage_weights: stage-wise   # pilot weight 1, second stage (N_h - n1_h) / m2_h (F15)
+  primary_budgets: [0.02, 0.05, 0.10]
+  secondary_budgets: [0.01]
+propensity:
+  features: [score, loglen]
+  n_folds: 5               # S4b: lower ITT sRMSE than 2 folds in 67% of cells
+  c: 1.0
+  min_class: 4             # S4c: mean ITT sRMSE 0.064 vs 0.066 for 6 / 3
+  min_class_fold: 2
+power_tuning:
+  clip: [0.0, 1.0]
+variance:
+  rule: model              # shrink stratum variances (kappa pseudo-records) to the variance
+                           # anticipated under a Bernoulli origin model, Jeffreys stratum
+                           # rates, equal-probability strata only; Satterthwaite df
+  kappa: 1.0
+  target_prior: jeffreys
+  level: 0.95
+fallback_when_infeasible: flag_ppi   # S4c: mean ITT sRMSE 0.064 vs 0.122 with Hajek
+intention_to_treat: true   # RC-PPI++ endpoints use flag-PPI (point and interval) when infeasible
+certification:
+  test: tost
+  alpha: 0.05
+  tau_sd: 0.2              # substantive choice (Cohen's small effect); not tuned
+  sensitivity_tau_sd: [0.1, 0.3]
+  quantile: t              # Student quantile with the anchor's Satterthwaite df
+  fallback: flag_ppi       # anchor when RC-PPI++ is infeasible
+policy:
+  bias_sq: debiased        # S4c: worst excess sRMSE 0.166 SD, pooled sRMSE 0.072 (lowest)
+  require_certification: false
+grid:
+  primary: {N: 900, mixture: iid, eps: [0.01, 0.02, 0.05, 0.10, 0.20, 0.30, 0.45],
+            budgets: [0.02, 0.05, 0.10], replications: 1000}
+  secondary:
+    small_budget: {budgets: [0.01], eps: [0.01, 0.02, 0.05, 0.10, 0.20, 0.30, 0.45],
+                   replications: 500}
+    large_n: {N: 2000, eps: [0.05, 0.20], budgets: [0.05], replications: 500}
+    designs: {eps: [0.02, 0.05, 0.10, 0.20, 0.30], budgets: [0.05], replications: 500}
+    mixtures: {mixture: [adversarial, clustered, multigen], eps: [0.05, 0.20],
+               budgets: [0.05], replications: 500}
+    verification_error: {phi: [0.0, 0.01, 0.03, 0.05, 0.10], eps: [0.05, 0.20],
+                         budgets: [0.05], replications: 500}
+detectors:
+  calibration_share: 0.30          # single-domain corpora; otherwise the other domains
+  fast_detectgpt: {model: EleutherAI/gpt-neo-2.7B, max_tokens: 400, threshold: human_p95}
+  tfidf_lr: {ngram: [1, 2], max_features: 30000, min_df: 1, sublinear_tf: true,
+             threshold: 0.5}
+  roberta_openai: {model: openai-community/roberta-base-openai-detector, threshold: 0.5}
+endpoints:
+  PE1: {comparison: rc_ppi_pp_itt_vs_flag_ppi, metric: ratio_mean_cell_standardised_mse,
+        margin: 1.10, alpha_one_sided: 0.05}
+  PE2: {estimator: rc_ppi_pp_itt, mean_coverage_min: 0.93, share_cells_ge_090_min: 0.90}
+  PE3: {certifier: tost_0.2, upper95_max: 0.075, near_boundary: [1.0, 1.1]}
+  PE4: {metric: max_excess_standardised_rmse, comparison: policy_vs_each_single_estimator}
+seed: 20261109

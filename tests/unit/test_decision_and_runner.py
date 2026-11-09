@@ -74,3 +74,13 @@ def test_summary_and_regret(pool):
     reg = regret_table(summ, ["naive", "deletion", "rc_ppi_pp", "policy_debiased"])
     assert reg["max_regret"].min() == pytest.approx(reg["max_regret"].min())
     assert (reg["max_regret"] >= 0).all()
+
+
+def test_verification_error_cells_share_the_audit_and_flip_labels(pool):
+    exp = Experiment(pool, [make_estimator("hajek")])
+    clean = exp.run_cell(CellSpec("synthetic", "toy", 0.2, 600, 0.10, "proportional"), 4)
+    noisy = exp.run_cell(CellSpec("synthetic", "toy", 0.2, 600, 0.10, "proportional",
+                                  phi0=0.2, phi1=0.2), 4)
+    # same response sets and audited records; labels (hence machine counts) differ
+    np.testing.assert_allclose(clean["truth"], noisy["truth"])
+    assert not np.allclose(clean["m_machine"], noisy["m_machine"])

@@ -22,7 +22,7 @@ from joblib import Parallel, delayed
 from ..decision.certify import TOSTCertifier
 from ..decision.policy import MSEPolicy
 from ..estimators.base import EstimationContext, Estimator
-from ..sampling.audit import PerfectVerifier, make_design
+from ..sampling.audit import NoisyVerifier, PerfectVerifier, make_design
 from ..sampling.mixture import FeaturePool, make_mixture
 
 __all__ = ["CellSpec", "Experiment"]
@@ -48,6 +48,10 @@ class CellSpec:
     design: Any = "srs"
     mixture: Any = "iid"
     tags: dict = field(default_factory=dict, hash=False, compare=False)
+    # verification error (experiment E11, Proposition 6): probability that a human record
+    # is labelled machine (phi0) and that a machine record is labelled human (phi1)
+    phi0: float = 0.0
+    phi1: float = 0.0
 
     @property
     def data_key(self) -> str:
@@ -55,6 +59,8 @@ class CellSpec:
 
     @property
     def audit_key(self) -> str:
+        # verification error is not part of the key: the same records are audited with and
+        # without label flips (common random numbers for experiment E11)
         return f"{self.budget:g}|{_spec_str(self.design)}"
 
     @property
@@ -95,8 +101,9 @@ class Experiment:
     def run_replication(self, spec: CellSpec, rep: int) -> list[dict]:
         rng_data, rng_audit = self._seeds(spec, rep)
         rs = make_mixture(spec.mixture).sample(self.pool, spec.n, spec.eps, rng_data)
-        audit = make_design(spec.design).draw(rs.observed, spec.m, rng_audit,
-                                              PerfectVerifier(rs.a))
+        verifier = (PerfectVerifier(rs.a) if spec.phi0 == 0 and spec.phi1 == 0
+                    else NoisyVerifier(rs.a, spec.phi0, spec.phi1))
+        audit = make_design(spec.design).draw(rs.observed, spec.m, rng_audit, verifier)
         ctx = EstimationContext(rs.observed, audit, rng_audit)
         base = spec.describe()
         base.update(rep=rep, eps_real=rs.contamination(), m_machine=audit.n_machine,
