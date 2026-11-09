@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from ..inference.variance import degrees_of_freedom, ht_covariance, ht_variance, t_interval
+from ..inference.variance import ht_covariance, ht_variance, t_interval, variance_report
 from .base import EstimateResult, EstimationContext, Estimator
 from .propensity import CrossFitPropensity
 
@@ -88,12 +88,14 @@ class DifferenceRatioEstimator(Estimator):
                 return EstimateResult.infeasible(self.name, outcome, "non-positive denominator")
             mu = num / den
         z = ((1 - a_aud) - lam * (1 - eta_aud)) * (y[idx] - mu)
-        var = ht_variance(z, audit)
-        se = float(np.sqrt(max(var, 0.0)) / den)
-        lo, hi = t_interval(mu, se, degrees_of_freedom(audit), self.level)
+        vr = variance_report(z, audit)
+        se = float(np.sqrt(max(vr["var"], 0.0)) / den)
+        lo, hi = t_interval(mu, se, vr["df"], self.level)
         return EstimateResult(self.name, outcome, float(mu), se, lo, hi, True, "",
                               extras={"lam": lam, "den": float(den),
-                                      "n_machine_audit": audit.n_machine})
+                                      "n_machine_audit": audit.n_machine, "df": vr["df"],
+                                      "df_satt": vr["df_satt"],
+                                      "se_shrink": float(np.sqrt(max(vr["var_shrink"], 0)) / den)})
 
 
 class AuditHajek(DifferenceRatioEstimator):
@@ -172,7 +174,8 @@ class GREGRatio(DifferenceRatioEstimator):
             return EstimateResult.infeasible(self.name, outcome, "non-positive denominator")
         mu = num / den
         z = (t - pt[idx]) - mu * (d - pd_[idx])
-        se = float(np.sqrt(max(ht_variance(z, audit), 0.0)) / den)
-        lo, hi = t_interval(mu, se, degrees_of_freedom(audit), self.level)
+        vr = variance_report(z, audit)
+        se = float(np.sqrt(max(vr["var"], 0.0)) / den)
+        lo, hi = t_interval(mu, se, vr["df"], self.level)
         return EstimateResult(self.name, outcome, float(mu), se, lo, hi, True, "",
                               extras={"den": float(den)})
