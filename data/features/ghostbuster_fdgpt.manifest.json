@@ -1,0 +1,96 @@
+{
+  "inputs": {
+    "data/features/ghostbuster_fdgpt_scores.parquet": "2da5d8e68f63870625c1f5e6625c8230537111f469506e6c689a68dac4394481",
+    "data/features/ghostbuster_tfidf.parquet": "84430ebc9d70a7dad83711264e128ce0731743c2c02fb8899df7ab20fce10f62"
+  },
+  "detector": "Fast-DetectGPT analytic criterion, EleutherAI/gpt-neo-2.7B, 400 tokens",
+  "threshold_rule": "per target domain: 95th percentile of human raw scores in the other domains",
+  "thresholds": {
+    "essay": 1.462,
+    "reuter": 1.3995,
+    "wp": 1.4412
+  },
+  "thresholds_v1_sample": {
+    "essay": 1.442,
+    "reuter": 1.4077,
+    "wp": 1.3998
+  },
+  "dropped_unscorable": 6,
+  "operating_points": [
+    {
+      "domain": "essay",
+      "source": "claude",
+      "n": 1000,
+      "flag_rate": 0.739,
+      "n_v1": 600,
+      "flag_rate_v1": 0.7567
+    },
+    {
+      "domain": "essay",
+      "source": "gpt",
+      "n": 1000,
+      "flag_rate": 0.988,
+      "n_v1": 600,
+      "flag_rate_v1": 0.995
+    },
+    {
+      "domain": "essay",
+      "source": "human",
+      "n": 993,
+      "flag_rate": 0.0363,
+      "n_v1": 597,
+      "flag_rate_v1": 0.0419
+    },
+    {
+      "domain": "reuter",
+      "source": "claude",
+      "n": 1000,
+      "flag_rate": 0.659,
+      "n_v1": 600,
+      "flag_rate_v1": 0.65
+    },
+    {
+      "domain": "reuter",
+      "source": "gpt",
+      "n": 1000,
+      "flag_rate": 0.991,
+      "n_v1": 600,
+      "flag_rate_v1": 0.9917
+    },
+    {
+      "domain": "reuter",
+      "source": "human",
+      "n": 1000,
+      "flag_rate": 0.061,
+      "n_v1": 600,
+      "flag_rate_v1": 0.0533
+    },
+    {
+      "domain": "wp",
+      "source": "claude",
+      "n": 995,
+      "flag_rate": 0.4804,
+      "n_v1": 599,
+      "flag_rate_v1": 0.4992
+    },
+    {
+      "domain": "wp",
+      "source": "gpt",
+      "n": 999,
+      "flag_rate": 0.8669,
+      "n_v1": 600,
+      "flag_rate_v1": 0.8783
+    },
+    {
+      "domain": "wp",
+      "source": "human",
+      "n": 1000,
+      "flag_rate": 0.049,
+      "n_v1": 600,
+      "flag_rate_v1": 0.055
+    }
+  ],
+  "rows": 8987,
+  "sha256": "675ec9051b323eb09fcc9f6356d003707b9ea006cb4b9ae13e31a1d2c4e70923",
+  "d2vi_version": "2.0.0.dev1"
+}

@@ -124,5 +124,27 @@ Coverage of 95% design-based intervals:
   top-decile design. Stage S4 must address this before the protocol is frozen (candidates:
   Rao-Wu bootstrap, a small-sample degrees-of-freedom rule, or a variance floor).
 
+## 5. Fast-DetectGPT pairing
+
+Scores from notebook F02 (GPT-Neo-2.7B, 400 tokens); threshold = 95th percentile of
+human scores in the other domains, as in v1. On the v1 sample (first 600 files per
+domain and class) the sensitivity lost when the generator changes from GPT to Claude is
+essay: 23.8, reuter: 34.2, wp: 37.9 points, matching the first
+submission's statement that the detector "loses 24 to 38 points of sensitivity".
+6 documents shorter than 20 tokens cannot be scored and are dropped.
+
+| domain | source | n | flag_rate | n_v1 | flag_rate_v1 |
+|---|---|---|---|---|---|
+| essay | claude | 1000 | 0.739 | 600 | 0.757 |
+| essay | gpt | 1000 | 0.988 | 600 | 0.995 |
+| essay | human | 993 | 0.036 | 597 | 0.042 |
+| reuter | claude | 1000 | 0.659 | 600 | 0.650 |
+| reuter | gpt | 1000 | 0.991 | 600 | 0.992 |
+| reuter | human | 1000 | 0.061 | 600 | 0.053 |
+| wp | claude | 995 | 0.480 | 599 | 0.499 |
+| wp | gpt | 999 | 0.867 | 600 | 0.878 |
+| wp | human | 1000 | 0.049 | 600 | 0.055 |
+
+
 These are development results. Defaults are chosen on them in stage S4; held-out corpora
 are not touched until the protocol is frozen.

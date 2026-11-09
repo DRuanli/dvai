@@ -1,0 +1,13 @@
+{
+  "corpus": "ghostbuster-data (codeload zip, master)",
+  "detector": "Fast-DetectGPT analytic, EleutherAI/gpt-neo-2.7B, 400 tokens",
+  "threshold": "computed downstream: 95th percentile of human scores in the other domains (v1 rule)",
+  "versions": {
+    "python": "3.13.16",
+    "d2vi": "2.0.0.dev0",
+    "transformers": "5.22.1",
+    "torch": "2.14.1+cu130"
+  },
+  "rows": 8993,
+  "sha256": "2da5d8e68f63870625c1f5e6625c8230537111f469506e6c689a68dac4394481"
+}
