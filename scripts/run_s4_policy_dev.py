@@ -6,8 +6,12 @@ contamination 0.01-0.30. Candidates:
 
 * policies - squared bias ``plugin`` or ``debiased``, with or without requiring TOST
   certification before deletion may be chosen;
-* certifiers - TOST with tau = 0.1, 0.2, 0.3 SD (Student quantile, Hajek fallback), TOST
-  with the normal quantile and no fallback, and the v1 rule.
+* certifiers - TOST with tau = 0.1, 0.2, 0.3 SD (Student quantile, flag-PPI fallback),
+  TOST with the normal quantile and no fallback, and the v1 rule.
+
+RC-PPI++ is scored intention-to-treat: flag-PPI on the same audit when it is infeasible.
+The first run of this script (9 Nov 2026) used the Hajek fallback; it is kept as
+``results/S4_policy_dev_regret_hajekfb.csv``.
 
 Outputs ``results/raw/S4_policy_dev.parquet``, ``results/S4_policy_dev_regret.csv`` (per
 policy: worst, P90 and mean regret against the best single estimator of each cell, as a
@@ -61,9 +65,9 @@ CELL = ["det", "domain", "generator", "eps", "outcome"]
 def regret(raw: pd.DataFrame) -> pd.DataFrame:
     key = CELL + ["rep"]
     est = raw[~raw.estimator.str.startswith("cert_")].copy()
-    hj = est[est.estimator == "hajek"].set_index(key)["point"]
+    fb = est[est.estimator == "flag_ppi"].set_index(key)["point"]
     rc = est[est.estimator == "rc_ppi_pp"].set_index(key)
-    itt = rc["point"].where(rc["feasible"].astype(bool), hj)  # RC-PPI++ as the policy runs it
+    itt = rc["point"].where(rc["feasible"].astype(bool), fb)  # RC-PPI++ as the policy runs it
     est = est.set_index(key)
     est.loc[est.estimator == "rc_ppi_pp", "point"] = itt.reindex(
         est[est.estimator == "rc_ppi_pp"].index).to_numpy()

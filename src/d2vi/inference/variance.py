@@ -124,7 +124,8 @@ def anticipated_s2(z: np.ndarray, dz: np.ndarray, labels: np.ndarray, sel: np.nd
     return float(np.mean(ds ** 2) * p * (1 - p) + np.var(z0 - p * ds, ddof=1))
 
 
-DEFAULT_TARGETS = {"model": {"prior": "eb", "alpha": 1.0}}
+# chosen on the development corpora in S4 (results/S4_variance_dev_summary.csv)
+DEFAULT_TARGETS = {"model": {"prior": "jeffreys"}}
 
 
 def variance_report(z: np.ndarray, audit: AuditSample, kappa: float = 1.0,

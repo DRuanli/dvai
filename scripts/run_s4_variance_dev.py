@@ -47,15 +47,17 @@ TARGETS = {"jeffreys": {"prior": "jeffreys"}, "eb05": {"prior": "eb", "alpha": 0
            "eb1": {"prior": "eb", "alpha": 1.0}, "eb2": {"prior": "eb", "alpha": 2.0},
            "eb4": {"prior": "eb", "alpha": 4.0}}
 RULES = {"lin": ("x_se_lin", "x_df_lin"), "satt": ("x_se_lin", "x_df_satt"),
-         "pool": ("x_se_pool", "x_df_pool"),
+         "pool": ("x_se_pool", "x_df_pool"), "model": ("x_se_model", "x_df_model"),
          **{t: (f"x_se_{t}", f"x_df_{t}") for t in TARGETS}}
+# "model" is the default rule of the estimators (Jeffreys target); runs of this script
+# record it under the name "jeffreys", other scripts under "model"
 
 
 def estimators():
     out = []
     for name in ESTIMATORS:
         e = make_estimator(name)
-        e.variance_targets, e.variance_rule = TARGETS, "eb1"
+        e.variance_targets, e.variance_rule = TARGETS, "jeffreys"
         out.append(e)
     return out
 EPS = (0.05, 0.10, 0.20, 0.30)
@@ -94,6 +96,8 @@ def add_intervals(df: pd.DataFrame, level: float = 0.95) -> pd.DataFrame:
     d = df[df.feasible.astype(bool)].copy()
     q = 0.5 + level / 2
     for name, (se_col, df_col) in RULES.items():
+        if se_col not in d:
+            continue
         half = stats.t.ppf(q, d[df_col].clip(lower=1)) * d[se_col]
         d[f"cov_{name}"] = (d["point"] - half <= d["truth"]) & (d["truth"] <= d["point"] + half)
         d[f"w_{name}"] = 2 * half / d["sd_h"]
@@ -105,7 +109,7 @@ def summarize(d: pd.DataFrame) -> pd.DataFrame:
     mean interval width (in human-SD units) relative to the empirical oracle width
     ``2 * 1.96 * SD(point)`` of the cell."""
     cell = ["det", "design", "estimator", "eps", "domain", "generator", "outcome"]
-    rules = list(RULES)
+    rules = [r for r in RULES if f"cov_{r}" in d]
     d = d.assign(err=(d["point"] - d["truth"]) / d["sd_h"])
     per = d.groupby(cell).agg(n=("point", "size"), sd_err=("err", "std"),
                               **{f"cov_{r}": (f"cov_{r}", "mean") for r in rules},

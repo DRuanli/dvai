@@ -1,7 +1,10 @@
 """Audit-anchored selection among naive, deletion and RC-PPI++ (Algorithm 3).
 
-1. Compute the anchor (RC-PPI++; if infeasible, the two-phase Hajek estimator; if that is
-   also infeasible, report the naive mean and say so).
+1. Compute the anchor (RC-PPI++; if infeasible, flag-PPI on the same audit; if that is
+   also infeasible, report the naive mean and say so). Flag-PPI replaced the two-phase
+   Hajek estimator as fallback in stage S4: with 45 audited records the Hajek estimator
+   has about five times its error at 1-2% contamination, where RC-PPI++ is mostly
+   infeasible (``results/S4_policy_dev_regret_hajekfb.csv``).
 2. Estimate the bias of naive and deletion against the anchor, ``b_k = mu_k - mu_anchor``.
 3. Estimate each candidate's MSE: ``bias^2`` for naive and deletion (fixed numbers for
    the finite-population estimand), the anchor's variance for the anchor. With
@@ -22,7 +25,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from ..estimators.base import EstimateResult, EstimationContext
-from ..estimators.design_based import RCPPI, AuditHajek
+from ..estimators.design_based import RCPPI, FlagPPI
 from ..estimators.simple import Deletion, Naive
 from .certify import TOSTCertifier
 
@@ -46,7 +49,7 @@ class MSEPolicy:
         self.bias_sq = bias_sq
         self.require_certification = bool(require_certification)
         self.anchor = RCPPI(tune=True)
-        self.fallback = AuditHajek()
+        self.fallback = FlagPPI()
         self.certifier = certifier or TOSTCertifier(anchor=self.anchor)
         self.name = "policy_" + bias_sq + ("_cert" if self.require_certification else "")
 
@@ -57,7 +60,7 @@ class MSEPolicy:
         note = ""
         if not anchor.feasible:
             anchor = self.fallback.estimate(ctx, outcome)
-            note = "anchor fell back to hajek"
+            note = "anchor fell back to flag_ppi"
         if not anchor.feasible or not np.isfinite(anchor.se):
             res = EstimateResult(self.name, outcome, naive.point, feasible=True,
                                  reason="no feasible audit estimator; naive reported",

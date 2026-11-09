@@ -18,7 +18,7 @@ import numpy as np
 from scipy import stats
 
 from ..estimators.base import EstimationContext, Estimator
-from ..estimators.design_based import RCPPI, AuditHajek
+from ..estimators.design_based import RCPPI, FlagPPI
 from ..estimators.simple import Deletion
 
 __all__ = ["CertificationResult", "TOSTCertifier", "LegacyCertifier"]
@@ -37,8 +37,8 @@ class TOSTCertifier:
     """TOST certification of deletion against an audit anchor.
 
     ``quantile="t"`` uses the Student quantile with the anchor's degrees of freedom (the
-    same rule as its interval); ``"z"`` the normal quantile. With ``fallback=True`` the
-    two-phase Hajek estimator is the anchor when RC-PPI++ is infeasible, as in the policy.
+    same rule as its interval); ``"z"`` the normal quantile. With ``fallback=True``
+    flag-PPI is the anchor when RC-PPI++ is infeasible, as in the policy.
     """
 
     def __init__(self, tau_sd: float = 0.2, alpha: float = 0.05,
@@ -58,7 +58,7 @@ class TOSTCertifier:
         res = self.anchor.estimate(ctx, outcome)
         est = self.anchor
         if (not res.feasible or not np.isfinite(res.se)) and self.fallback:
-            est = AuditHajek()
+            est = FlagPPI()
             res = est.estimate(ctx, outcome)
         return est, res
 

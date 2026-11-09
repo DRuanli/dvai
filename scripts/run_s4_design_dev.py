@@ -34,6 +34,8 @@ def main() -> None:
         raw = base.run(args.reps, args.jobs)
         raw.to_parquet("results/raw/S4_design_dev.parquet", index=False)
     d = base.add_intervals(raw)
+    if "cov_model" not in d:          # replications of run_s4_variance_dev.py
+        d["cov_model"] = d["cov_jeffreys"]
     d["err2"] = (d["point"] - d["truth"]) ** 2
     d["serr2"] = d["err2"] / d["sd_h"] ** 2
     feas = (raw.groupby(["det", "design", "estimator", "eps"])["feasible"].mean()
