@@ -40,7 +40,8 @@ class CrossFitPropensity:
     features:
         Observable features used as covariates.
     n_folds:
-        Number of cross-fitting folds (2 in the original paper).
+        Number of cross-fitting folds. The default 5 was chosen on development data in
+        stage S4 (``results/S4b_design_dev_summary.csv``); the original paper used 2.
     c:
         Inverse L2 regularisation strength of the logistic regression.
     min_class:
@@ -51,7 +52,7 @@ class CrossFitPropensity:
         Feasibility rule: at least this many of each class in every training fold.
     """
 
-    def __init__(self, features: tuple[str, ...] = ("score", "loglen"), n_folds: int = 2,
+    def __init__(self, features: tuple[str, ...] = ("score", "loglen"), n_folds: int = 5,
                  c: float = 1.0, min_class: float = 4.0, min_class_fold: float = 2.0) -> None:
         self.features = tuple(features)
         self.n_folds = int(n_folds)

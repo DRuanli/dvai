@@ -109,7 +109,8 @@ def certification(raw: pd.DataFrame) -> pd.DataFrame:
 
     c = raw[raw.estimator.str.startswith("cert_")].copy()
     c["abs_b"] = c["deletion_bias"].abs()
-    c["cluster"] = c[["det", "domain", "generator", "eps", "rep"]].astype(str).agg("|".join, 1)
+    cell_keys = [k for k in ("det", "budget", "domain", "generator", "eps") if k in c]
+    c["cluster"] = c[cell_keys + ["rep"]].astype(str).agg("|".join, 1)
     rows = []
     for name, g in c.groupby("estimator"):
         cert = g["certified"].astype(bool)
@@ -119,7 +120,7 @@ def certification(raw: pd.DataFrame) -> pd.DataFrame:
         n_bad, n_near = int(bad.sum()), int(near.sum())
         k_near = int(cert[near].sum())
         per_cell = (g[bad].assign(cert=cert[bad])
-                    .groupby(["det", "domain", "generator", "eps", "outcome"])["cert"]
+                    .groupby(cell_keys + ["outcome"])["cert"]
                     .agg(["mean", "size"]))
         per_cell = per_cell[per_cell["size"] >= 30]
         rows.append({

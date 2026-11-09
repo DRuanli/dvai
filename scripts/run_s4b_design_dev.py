@@ -19,13 +19,15 @@ the same audit when RC-PPI++ is infeasible). Among designs whose interval for th
 has mean coverage >= 0.93 and >= 90% of cells >= 0.90, choose the lowest mean cell
 standardised RMSE; the worst cell is reported. Folds: the same rule between K = 2 and 5.
 
-Writes ``results/raw/S4b_design_dev.parquet`` and ``results/S4b_design_dev_summary.csv``.
+Writes one raw file per pool to ``results/raw/S4b/`` (resumable) and
+``results/S4b_design_dev_cells.csv`` and ``results/S4b_design_dev_summary.csv``.
 """
 
 from __future__ import annotations
 
 import argparse
 import time
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -54,16 +56,27 @@ def estimators():
     return out + [k5]
 
 
-def run(n_rep: int, n_jobs: int) -> pd.DataFrame:
-    frames = []
+RAW = Path("results/raw/S4b")
+KEEP = ["det", "design_label", "budget", "eps", "domain", "generator", "outcome", "rep",
+        "estimator", "point", "ci_low", "ci_high", "feasible", "truth", "sd_h", "m_machine",
+        "deletion_bias"]
+
+
+def run(n_rep: int, n_jobs: int) -> None:
+    """One parquet file per pool (resumable: finished pools are skipped)."""
+    RAW.mkdir(parents=True, exist_ok=True)
     for det, path in base.POOLS.items():
         for corpus, label, tags, sub in base._pools(det, path):
+            out = RAW / f"{det}__{corpus}__{label.replace('/', '-')}.parquet"
+            if out.exists():
+                continue
             exp = Experiment(FeaturePool(sub), estimators(), outcomes=OUTCOMES)
             specs = [CellSpec(corpus, label, e, 900, b, spec,
                               tags={**tags, "design_label": name})
                      for b in BUDGETS for e in EPS for name, spec in DESIGNS.items()]
-            frames.append(exp.run(specs, n_rep, n_jobs))
-    return pd.concat(frames, ignore_index=True)
+            frames = [exp.run_cell(sp, n_rep, n_jobs)[KEEP] for sp in specs]
+            pd.concat(frames, ignore_index=True).to_parquet(out, index=False)
+            print("done", out.name, flush=True)
 
 
 def itt(raw: pd.DataFrame, name: str) -> pd.DataFrame:
@@ -82,22 +95,32 @@ def itt(raw: pd.DataFrame, name: str) -> pd.DataFrame:
     return out
 
 
-def summarize(raw: pd.DataFrame) -> pd.DataFrame:
+def cell_table(raw: pd.DataFrame) -> pd.DataFrame:
+    """Per cell and RC-PPI++ variant: ITT standardised RMSE, coverage, feasibility."""
     rows = []
     for name in ("rc_ppi_pp", "rc_ppi_pp_k5"):
         t = itt(raw, name)
         cell = t.groupby(CELL).agg(srmse=("e2", lambda v: float(np.sqrt(v.mean()))),
                                    cover=("cover", "mean"), feasible=("feasible", "mean"),
-                                   m_ai=("m_machine", "mean"))
-        g = cell.groupby(["design_label", "budget"])
-        s = g.agg(mean_srmse=("srmse", "mean"), max_srmse=("srmse", "max"),
-                  mean_cover=("cover", "mean"),
-                  cells_ge90=("cover", lambda v: float(np.mean(v >= 0.90))),
-                  min_cover=("cover", "min"), feasible=("feasible", "mean"),
-                  m_ai=("m_ai", "mean")).reset_index()
-        s["estimator"] = name
-        rows.append(s)
+                                   m_ai=("m_machine", "mean")).reset_index()
+        cell["estimator"] = name
+        rows.append(cell)
     return pd.concat(rows, ignore_index=True)
+
+
+def cells() -> pd.DataFrame:
+    """Cell table over all pools, built file by file to bound memory."""
+    return pd.concat([cell_table(pd.read_parquet(f)) for f in sorted(RAW.glob("*.parquet"))],
+                     ignore_index=True)
+
+
+def summarize(cell: pd.DataFrame) -> pd.DataFrame:
+    g = cell.groupby(["estimator", "design_label", "budget"])
+    return g.agg(mean_srmse=("srmse", "mean"), max_srmse=("srmse", "max"),
+                 mean_cover=("cover", "mean"),
+                 cells_ge90=("cover", lambda v: float(np.mean(v >= 0.90))),
+                 min_cover=("cover", "min"), feasible=("feasible", "mean"),
+                 m_ai=("m_ai", "mean")).reset_index()
 
 
 def main() -> None:
@@ -106,9 +129,10 @@ def main() -> None:
     ap.add_argument("--jobs", type=int, default=2)
     args = ap.parse_args()
     t0 = time.time()
-    raw = run(args.reps, args.jobs)
-    raw.to_parquet("results/raw/S4b_design_dev.parquet", index=False)
-    s = summarize(raw)
+    run(args.reps, args.jobs)
+    cell = cells()
+    cell.to_csv("results/S4b_design_dev_cells.csv", index=False)
+    s = summarize(cell)
     s.to_csv("results/S4b_design_dev_summary.csv", index=False)
     pd.set_option("display.width", 250)
     print(s.round(4).to_string(index=False))

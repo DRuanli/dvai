@@ -5,13 +5,16 @@
 # results/S4_tuning_dev_summary.csv, results/S4_explore_propensity_variance.csv,
 # results/S4_policy_dev_regret.csv, results/S4_policy_dev_certification.csv.
 audit:
-  default_design: {name: adaptive, k_target: 16, cuts: [0.5, 0.8, 0.9], pilot_frac: 0.3}
-  compared: [srs, top_decile, {name: neyman, n_strata: 5}, adaptive]
-  budgets: [0.01, 0.02, 0.05, 0.10]
+  default_design: {name: proportional, n_strata: 10}   # S4 round 2 (S4b), see protocol 7
+  compared: [srs, {name: proportional, n_strata: 10}, top_decile, {name: neyman, n_strata: 5},
+             {name: adaptive, k_target: 16, cuts: [0.5, 0.8, 0.9], pilot_frac: 0.3,
+              min_per_stratum: 2, min_second: 2}, pps]
+  primary_budgets: [0.02, 0.05, 0.10]
+  secondary_budgets: [0.01]
 propensity:
   features: [score, loglen]
-  n_folds: 2               # 5 folds: ~4% lower RMSE but feasible in 60% vs 91% of
-                           # replications at 5% contamination
+  n_folds: 5               # S4b: lower ITT error than 2 folds in 67% of cells, coverage
+                           # unchanged, more often feasible
   c: 1.0                   # stronger regularisation did not help
   min_class: 4             # chosen over 6: better intention-to-treat accuracy, coverage kept
   min_class_fold: 2
