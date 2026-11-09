@@ -11,7 +11,9 @@ Cells: Ghostbuster x Fast-DetectGPT, top-decile audit of 45, N = 900, contaminat
 * ``k2_raowu``- current estimator with a Rao-Wu bootstrap percentile interval (refits
   the propensity in every replicate).
 
-Writes ``results/S4_explore_propensity_variance.csv``.
+Intervals use the estimator's default rule (stage S4 choice). Writes
+``results/S4_explore_propensity_variance.csv``. Rerun on 9 Nov 2026 after the correction of
+finding F14.
 """
 
 from __future__ import annotations

@@ -10,7 +10,8 @@ audit:
   budgets: [0.01, 0.02, 0.05, 0.10]
 propensity:
   features: [score, loglen]
-  n_folds: 2               # 5 folds did not help (exploration)
+  n_folds: 2               # 5 folds: ~4% lower RMSE but feasible in 60% vs 91% of
+                           # replications at 5% contamination
   c: 1.0                   # stronger regularisation did not help
   min_class: 4             # chosen over 6: better intention-to-treat accuracy, coverage kept
   min_class_fold: 2
