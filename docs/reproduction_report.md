@@ -145,6 +145,14 @@ submission's statement that the detector "loses 24 to 38 points of sensitivity".
 | wp | gpt | 999 | 0.867 | 600 | 0.878 |
 | wp | human | 1000 | 0.049 | 600 | 0.055 |
 
+## 6. Study 2 (HC3) is reproduced exactly as well
+
+With the HC3 feature table from notebook F01 (RoBERTa detector, threshold 0.5), the
+detector operating points equal Table 1 and the v1 code path with the paper's 10 seeds
+reproduces all 32 cells of Table 3 (largest absolute difference 4.8e-05). No
+stratified RC-PPI replication fell back to flag-PPI on HC3, because the top score decile
+always contains enough machine-written answers.
+
 
 These are development results. Defaults are chosen on them in stage S4; held-out corpora
 are not touched until the protocol is frozen.

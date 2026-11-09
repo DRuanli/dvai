@@ -1,0 +1,18 @@
+{
+  "corpus": "HC3 all.jsonl",
+  "corpus_sha256": "ee231f82283d754050a4dc58ecf9331afaf5daea7283c6da0b096ed0fb2774cf",
+  "detector": "openai-community/roberta-base-openai-detector",
+  "threshold": 0.5,
+  "versions": {
+    "python": "3.13.16",
+    "d2vi": "2.0.0.dev1",
+    "transformers": "5.22.1",
+    "torch": "2.14.1+cu130",
+    "vaderSentiment": "3.3.2",
+    "textstat": "0.7.13",
+    "nrclex": "4.1.0",
+    "scikit-learn": "1.6.1"
+  },
+  "rows": 8651,
+  "sha256": "7230e9b44b90a97a40fa164da7a9333aba386d15845e4cb0ca9d59158f605335"
+}
