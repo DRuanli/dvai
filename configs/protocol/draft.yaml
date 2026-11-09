@@ -1,0 +1,24 @@
+# Candidate defaults, to be chosen on development corpora in stage S4 and then frozen
+# into configs/protocol/frozen.yaml (with a git tag). Not frozen yet.
+audit:
+  default_design: top_decile        # candidates: srs, proportional, top_decile, neyman, pps
+  budgets: [0.01, 0.02, 0.05, 0.10]
+propensity:
+  features: [score, loglen]
+  n_folds: 2
+  c: 1.0
+  min_class: 6                      # candidates: 4, 6, 8
+  min_class_fold: 3
+power_tuning:
+  clip: [0.0, 1.0]
+variance:
+  method: linearized                # candidates: linearized, rao_wu
+  level: 0.95
+certification:
+  test: tost
+  alpha: 0.05
+  tau_sd: 0.2                       # substantive choice (Cohen's small effect); not tuned
+policy:
+  bias_sq: plugin                   # candidates: plugin, debiased
+  require_certification: false      # candidates: false, true
+seed: 20261109

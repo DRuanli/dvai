@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+build/
+dist/
+
+# raw corpora and large caches are downloaded by scripts, never committed
+data/raw/
+data/cache/
+*.zip
+*.jsonl
+
+# LaTeX build products
+*.aux
+*.log
+*.blg
+*.bbl
+*.out
+*.synctex.gz
+
+# large result files live on Zenodo; small summaries are committed
+results/raw/**/*.parquet
+!results/raw/.gitkeep
