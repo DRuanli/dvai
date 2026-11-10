@@ -1,0 +1,374 @@
+% Theory section of the revised manuscript (stage S6). Compiles on its own for checking;
+% the body between the markers is \input into the manuscript. Every numbered statement is
+% checked numerically by tests/theory/ (see the table at the end).
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\muH}{\mu_H}
+\begin{document}
+%%% BEGIN BODY
+
+\section{Problem setup, identification and inference}\label{sec:theory}
+
+\subsection{Setup}
+A \emph{response set} is a finite collection $U=\{1,\dots,N\}$ of records. Record $i$
+carries an outcome $y_i$, covariates $x_i$ that include a detector score with flag
+$d_i\in\{0,1\}$, and an origin $a_i$, the share of the response that is machine-written
+($a_i\in\{0,1\}$ in the main text, $a_i\in[0,1]$ for hybrid authorship). Write $h_i=1-a_i$,
+$N_H=\sum_U h_i>0$ and $N_A=N-N_H$, $\varepsilon=N_A/N$. The estimand is the human mean of
+the response set,
+\begin{equation}\label{eq:estimand}
+\muH=\frac{\sum_{i\in U}h_i\,y_i}{\sum_{i\in U}h_i},
+\end{equation}
+and $\mu_A$ is the corresponding machine mean. Outcomes, covariates and flags are observed
+for every record; origins are not. An \emph{audit} verifies the origin of a subset
+$S\subset U$ of $m$ records.
+
+\begin{assumption}[D1, probability audit]\label{a:d1}
+$S$ is drawn by a randomised design chosen by the analyst, with inclusion probabilities
+$\rho_i=\Pr(i\in S)>0$ known for every audited record. For a design with several stages the
+probabilities are conditional on the earlier stages (Lemma~\ref{l:twostage}).
+\end{assumption}
+\begin{assumption}[D2, correct verification]\label{a:d2}
+For $i\in S$ the audit returns $a_i$. (Proposition~\ref{p:flip} relaxes this.)
+\end{assumption}
+\begin{assumption}[D3, complete first phase]\label{a:d3}
+$(y_i,x_i,d_i)$ is observed for every $i\in U$.
+\end{assumption}
+\begin{assumption}[M1, non-differential flag]\label{a:m1}
+Within each origin class the flag is uncorrelated with the outcome:
+$\Cov(D,Y\mid A=a)=0$ for $a\in\{0,1\}$.
+\end{assumption}
+D1--D3 are properties of the audit that the analyst controls. M1 is a property of the
+detector and the outcome that cannot be checked without verified origins; it was the
+identifying condition of the first version of this paper. It is needed below only for the
+moment inversion (Proposition~\ref{p:moment}); the estimators we recommend do not use it.
+Probabilities and moments written with capital letters ($Y,A,D$) refer to any joint
+distribution of outcome, origin and flag, in particular the empirical distribution of the
+response set, so that the identities of Section~\ref{sec:bias} hold exactly on every
+response set. Write $\bar f=\Pr(D{=}1\mid A{=}0)$ and $\bar s=\Pr(D{=}1\mid A{=}1)$ for the
+false-positive rate and the sensitivity, and $C_a=\Cov(D,Y\mid A=a)$.
+
+\subsection{Why deletion and moment inversion are biased}\label{sec:bias}
+The naive mean has bias $\varepsilon(\mu_A-\muH)$. Deleting flagged records gives
+$\E[Y\mid D{=}0]$.
+
+\begin{lemma}[Deletion bias]\label{l:del}
+Let $\bar f<1$ and $\varepsilon_{\mathrm{res}}=\Pr(A{=}1\mid D{=}0)
+=\varepsilon(1-\bar s)/\{(1-\varepsilon)(1-\bar f)+\varepsilon(1-\bar s)\}$. Then
+\begin{equation}\label{eq:del}
+\E[Y\mid D{=}0]-\muH
+=\varepsilon_{\mathrm{res}}\,\Delta_{\mathrm{surv}}-\frac{C_0}{1-\bar f},
+\qquad
+\Delta_{\mathrm{surv}}=\E[Y\mid A{=}1,D{=}0]-\E[Y\mid A{=}0,D{=}0].
+\end{equation}
+\end{lemma}
+\begin{proof}
+By total probability over the origin of the unflagged records,
+$\E[Y\mid D{=}0]=\E[Y\mid A{=}0,D{=}0]+\varepsilon_{\mathrm{res}}\Delta_{\mathrm{surv}}$.
+Among humans, $\E[Y(1-D)\mid A{=}0]=\muH(1-\bar f)-C_0$, so
+$\E[Y\mid A{=}0,D{=}0]=\muH-C_0/(1-\bar f)$.
+\end{proof}
+The first term is residual contamination: machine records that survive deletion, times
+their outcome gap to the surviving humans. The second is a selection effect on the humans
+themselves: if falsely flagged people answer differently from other people ($C_0\neq0$),
+deleting them moves the mean even when the detector catches every machine record. With a
+style stratum $G$ and $f(G)=\Pr(D{=}1\mid A{=}0,G)$, $C_0=\Cov(f(G),\E[Y\mid A{=}0,G])
++\E[\Cov(D,Y\mid A{=}0,G)]$; the first submission assumed the last term away.
+
+\begin{proposition}[Moment inversion]\label{p:moment}
+Let $0<\varepsilon<1$ and $\bar s\neq\bar f$, with $(\bar s,\bar f,\varepsilon)$ known. The
+solution in $(\mu_H,\mu_A)$ of
+\begin{align*}
+\E[YD]&=(1-\varepsilon)\bar f\,\mu_H+\varepsilon\bar s\,\mu_A,&
+\E[Y(1-D)]&=(1-\varepsilon)(1-\bar f)\,\mu_H+\varepsilon(1-\bar s)\,\mu_A
+\end{align*}
+has first component
+\begin{equation}\label{eq:moment}
+\tilde\mu_H=\muH-\frac{C_0+\frac{\varepsilon}{1-\varepsilon}\,C_1}{\bar s-\bar f}.
+\end{equation}
+Hence $\tilde\mu_H=\muH$ under M1, and without M1 the inversion is biased by the second
+term, which grows without bound as $\bar s-\bar f\to0$.
+\end{proposition}
+\begin{proof}
+The determinant of the system is $\varepsilon(1-\varepsilon)(\bar f-\bar s)\neq0$ and
+Cramer's rule gives $\tilde\mu_H=\{(1-\bar s)\E[YD]-\bar s\,\E[Y(1-D)]\}/
+\{(1-\varepsilon)(\bar f-\bar s)\}$. In truth
+$\E[YD]=(1-\varepsilon)(\bar f\muH+C_0)+\varepsilon(\bar s\mu_A+C_1)$ and
+$\E[Y(1-D)]=(1-\varepsilon)\{(1-\bar f)\muH-C_0\}+\varepsilon\{(1-\bar s)\mu_A-C_1\}$.
+Substituting, the terms in $\mu_A$ cancel and the numerator equals
+$(1-\varepsilon)\{(\bar f-\bar s)\muH+C_0\}+\varepsilon C_1$.
+\end{proof}
+Equation~\eqref{eq:moment} is the analogue of a weak-instrument bias: the violation of M1
+is divided by the detector's separation, so a weak detector amplifies it.
+
+\subsection{Design-based identification}\label{sec:ident}
+For a function $g$ on $U$ write $t_g=\sum_U g_i$ and $\hat t_g=\sum_S g_i/\rho_i$ for its
+Horvitz--Thompson estimator; under D1, $\E_p[\hat t_g]=t_g$, where $\E_p$ is expectation
+over the audit design with the response set held fixed.
+
+\begin{definition}[Difference-ratio family]\label{d:family}
+Let $\eta:U\to\mathbb{R}$ be a predictor of the origin, computed from $(x_i,d_i)$, and
+$\lambda\in\mathbb{R}$. Put
+\begin{equation}\label{eq:family}
+\hat N_\lambda=\lambda\sum_{i\in U}y_i(1-\eta_i)+\sum_{i\in S}\frac{y_i\{h_i-\lambda(1-\eta_i)\}}{\rho_i},
+\qquad
+\hat D_\lambda=\lambda\sum_{i\in U}(1-\eta_i)+\sum_{i\in S}\frac{h_i-\lambda(1-\eta_i)}{\rho_i},
+\end{equation}
+and $\hat\mu=\hat N_\lambda/\hat D_\lambda$.
+\end{definition}
+The family contains the two-phase H\'ajek estimator ($\lambda=0$), flag-PPI
+($\eta_i=d_i$, $\lambda=1$), RC-PPI ($\eta_i$ a fitted probability that record $i$ is
+machine-written, $\lambda=1$) and their power-tuned versions (flag-PPI++, RC-PPI++; a
+data-chosen $\lambda$).
+
+\begin{theorem}[Identification without M1]\label{t:ident}
+Assume D1--D3 and let $\eta$ and $\lambda$ not depend on $S$. Then
+\begin{enumerate}
+\item $\E_p[\hat N_\lambda]=N_H\,\muH$ and $\E_p[\hat D_\lambda]=N_H$;
+\item on the event $\hat D_\lambda\neq0$,
+\begin{equation}\label{eq:repr}
+\hat\mu-\muH=\frac{\hat t_e-t_e}{\hat D_\lambda},
+\qquad e_i=\{h_i-\lambda(1-\eta_i)\}(y_i-\muH).
+\end{equation}
+\end{enumerate}
+No assumption links the predictor, the flag or the outcome: M1 is not used and $\eta$ may
+be arbitrarily wrong.
+\end{theorem}
+\begin{proof}
+(1) The sums over $S$ are Horvitz--Thompson estimators of $\sum_U y_i\{h_i-\lambda(1-\eta_i)\}$
+and $\sum_U\{h_i-\lambda(1-\eta_i)\}$; adding the first-phase sums leaves $\sum_U y_ih_i=N_H\muH$
+and $\sum_U h_i=N_H$. (2) $\hat N_\lambda-\muH\hat D_\lambda=\lambda\sum_U(y_i-\muH)(1-\eta_i)+\hat t_e$,
+and $t_e=\sum_U h_i(y_i-\muH)-\lambda\sum_U(1-\eta_i)(y_i-\muH)=-\lambda\sum_U(1-\eta_i)(y_i-\muH)$
+because $\sum_U h_i(y_i-\muH)=0$ by \eqref{eq:estimand}.
+\end{proof}
+The human mean is thus identified by the audit design alone. The detector enters only
+through the residual $e_i$: it cannot bias the estimate, only change its variance. For
+$\lambda=1$ the residual is $(\eta_i-a_i)(y_i-\muH)$, the prediction error times the
+outcome deviation, which vanishes for a perfect predictor. All statements hold verbatim
+for graded origins $a_i\in[0,1]$, since \eqref{eq:family} is linear in $h_i$.
+
+\subsection{Variance, intervals and efficiency}\label{sec:variance}
+\begin{theorem}[Linearised variance and normal limit]\label{t:clt}
+Assume D1--D3, and consider a sequence of response sets and designs along which
+(i) $N_H/N$ is bounded away from zero and $y$ and $\eta$ are bounded;
+(ii) Horvitz--Thompson totals of bounded variables satisfy a central limit theorem under the
+design and their design variance has a consistent estimator $\hat V(\cdot)$ (for stratified
+simple random sampling without replacement, the conditions of
+Bickel and Freedman, 1984);
+(iii) the fitted predictor and the tuning constant are stable: there are fixed
+$\eta^\ast,\lambda^\ast$ with $N^{-1}\sum_U(\hat\eta_i-\eta^\ast_i)^2\to0$ and
+$\hat\lambda\to\lambda^\ast$ in probability, and the predictor applied to an audited record
+is fitted without that record (cross-fitting).
+Then $(\hat\mu-\muH)/\widehat{\mathrm{se}}\to\mathcal N(0,1)$ in distribution, with
+\begin{equation}\label{eq:se}
+\widehat{\mathrm{se}}^{\,2}=\frac{\hat V(\hat e)}{\hat D_\lambda^{2}},
+\qquad \hat e_i=\{h_i-\hat\lambda(1-\hat\eta_i)\}(y_i-\hat\mu),
+\end{equation}
+where for stratified simple random sampling
+$\hat V(\hat e)=\sum_h N_h^2(1-m_h/N_h)\,s^2_{\hat e,h}/m_h$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+For fixed $(\eta,\lambda)$, \eqref{eq:repr} is exact, $\hat D_\lambda/N_H\to1$ in probability
+by (i)--(ii), and the result follows from the central limit theorem for $\hat t_e$ and
+Slutsky's lemma; replacing $\muH$ by $\hat\mu$ in the residual changes $\hat V$ by a
+factor $1+o_p(1)$. For a fitted predictor, write
+$\hat N_\lambda-\muH\hat D_\lambda=\hat t_u-\lambda\{\hat t_{v(\tilde\eta)}-t_{v(\bar\eta)}\}$
+with $u_i=h_i(y_i-\muH)$, $v(\eta)_i=(1-\eta_i)(y_i-\muH)$, $\tilde\eta$ the out-of-fold
+predictions on the audit and $\bar\eta$ the predictions on $U$. The first term does not
+involve the predictor. By (iii) the second differs from $\hat t_{v(\eta^\ast)}-t_{v(\eta^\ast)}$
+by $o_p(N m^{-1/2})$, the argument of cross-prediction-powered inference
+(Zrnic and Cand\`es, 2024) and of model-assisted survey estimation with estimated working
+models (Breidt and Opsomer, 2017); the derivative of the error in $\lambda$ is itself
+$O_p(N m^{-1/2})$, so a consistent $\hat\lambda$ may be plugged in (Angelopoulos et al.,
+2023).
+\end{proof}
+Theorem~\ref{t:clt} is asymptotic. With 18 to 90 audited records the intervals we report
+add two finite-sample devices (Remark~\ref{r:interval}), and their coverage is an
+empirical question, answered by endpoint PE2.
+
+\begin{corollary}[Power tuning never loses to the audit-only estimator]\label{c:tune}
+With $u,v$ as above, the design variance of $\hat t_u-\lambda\hat t_v$ is
+$V_u-2\lambda C_{uv}+\lambda^2V_v$, minimised at $\lambda^\ast=C_{uv}/V_v$ with value
+$V_u(1-\varrho_{uv}^2)$. For $\lambda^\ast$ clipped to $[0,1]$ the value is still at most
+$V_u$, the variance at $\lambda=0$. Hence, for any predictor, a power-tuned member of the
+family has asymptotic variance no larger than the two-phase H\'ajek estimator.
+\end{corollary}
+\begin{proof}
+A convex quadratic in $\lambda$ restricted to $[0,1]$ attains its minimum at the clipped
+vertex, and $0\in[0,1]$.
+\end{proof}
+No such ordering holds between RC-PPI++ and flag-PPI, which use different predictors;
+their comparison is empirical (endpoint PE1).
+
+\begin{remark}[Finite-sample interval]\label{r:interval}
+The residuals of a good predictor are sparse: $\hat e_i$ is close to zero unless the
+predictor errs on record $i$. In a stratum whose few audited records are all predicted
+correctly, the sample variance $s^2_{\hat e,h}$ is near zero although the stratum may
+contain errors. We therefore (a) shrink each stratum variance towards the variance
+anticipated under a working model in which the origins of the stratum are independent
+Bernoulli($p_h$) variables: writing $\hat e_i=z^0_i-a_i\delta_i$ with $\delta_i=y_i-\hat\mu$,
+\begin{equation}\label{eq:anticipated}
+\E_\xi\big[s^2_{\hat e,h}\big]=p_h(1-p_h)\,\overline{\delta^2}_h+s^2_{z^0-p_h\delta,\,h},
+\end{equation}
+evaluated at the Jeffreys estimate $p_h=(k_h+\tfrac12)/(m_h+1)$ from the $k_h$ machine
+records among the $m_h$ audited, and combined as
+$\{(m_h-1)s^2_{\hat e,h}+\kappa\,\E_\xi[s^2_{\hat e,h}]\}/(m_h-1+\kappa)$ with $\kappa=1$; and
+(b) use a Student quantile with Satterthwaite degrees of freedom
+$(\sum_hv_h)^2\big/\sum_h\{v_h^2/(m_h-1)\}$, with $v_h$ the stratum contributions to $\hat V$.
+Identity~\eqref{eq:anticipated} is exact: for independent $a_i$ with mean $p$,
+$\E\sum_i(\hat e_i-\bar{\hat e})^2=(1-\tfrac1m)\sum_i\delta_i^2p(1-p)+\sum_i(c_i-\bar c)^2$
+with $c_i=z^0_i-p\delta_i$. The rule was selected on development data and is not claimed to
+be optimal.
+\end{remark}
+
+\subsection{Audit design}\label{sec:design-theory}
+RC-PPI needs audited records of both classes to fit its predictor. Let $k$ be the number
+of audited machine records.
+
+\begin{proposition}[Audit starvation]\label{p:starve}
+Under simple random sampling of $m$ records, $k$ is hypergeometric with parameters
+$(N,N_A,m)$ and mean $m\varepsilon$. Under a stratified design with $m_h$ records from a
+stratum with machine share $\varepsilon_h$, $\E[k]=\sum_hm_h\varepsilon_h$, which equals
+$m\varepsilon$ under proportional allocation.
+\end{proposition}
+For $N=900$, $m=45$ and $\varepsilon=0.05$, $\Pr(k\ge 4)=0.18$ and $\Pr(k\ge 6)=0.02$:
+at low contamination a small audit rarely contains enough machine records, whatever
+estimator is used afterwards. Only oversampling high-score strata raises $\E[k]$, and the
+next result shows what that costs.
+
+\begin{proposition}[Allocation]\label{p:neyman}
+Under stratified simple random sampling with $\sum_hm_h=m$, ignoring integer constraints
+and $m_h\le N_h$, the design variance of $\hat t_e$ is
+$\sum_hN_h^2S_h^2/m_h-\sum_hN_hS_h^2$, where $S_h^2$ is the variance of $e$ in stratum $h$.
+It is minimised by $m_h\propto N_hS_h$, with minimum $(\sum_hN_hS_h)^2/m-\sum_hN_hS_h^2$;
+proportional allocation exceeds the minimum by $(N/m)\sum_hN_h(S_h-\bar S)^2$ with
+$\bar S=\sum_hN_hS_h/N$.
+\end{proposition}
+\begin{proof}
+By the Cauchy--Schwarz inequality
+$(\sum_hN_hS_h)^2\le(\sum_hN_h^2S_h^2/m_h)(\sum_hm_h)$, with equality if and only if
+$m_h\propto N_hS_h$. Under proportional allocation the first term is $(N/m)\sum_hN_hS_h^2$,
+and $\sum_hN_hS_h^2-(\sum_hN_hS_h)^2/N=\sum_hN_h(S_h-\bar S)^2$ (Cochran, 1977, Section~5.5).
+\end{proof}
+The optimal allocation follows the residual, not the score. Under the working model of
+Remark~\ref{r:interval} with $\lambda=1$ and a calibrated predictor,
+$S_h^2\approx\overline{\{\eta(1-\eta)(y-\muH)^2\}}_h$: the audit should go where the origin is
+uncertain and the outcome deviates, and the top score decile, where $\eta\approx1$, is not
+such a place once the detector is informative. $S_h$ depends on unverified origins, so an
+allocation close to Neyman's must be learned from a pilot audit, and then the following
+applies.
+
+\begin{lemma}[Two-stage audits]\label{l:twostage}
+Let a pilot $S_1$ be drawn by stratified simple random sampling with sizes $n_{1h}$, let
+the second-stage sizes $m_{2h}$ be any function of $S_1$ and of the origins verified in
+it, and let $S_2$ be a simple random sample of $m_{2h}\ge1$ of the $N_h-n_{1h}$ records of
+stratum $h$ outside $S_1$. For any $g$,
+\begin{equation}\label{eq:twostage}
+\hat t^{(2)}_g=\sum_{i\in S_1}g_i+\sum_h\frac{N_h-n_{1h}}{m_{2h}}\sum_{i\in S_2\cap h}g_i
+\end{equation}
+satisfies $\E[\hat t^{(2)}_g\mid S_1]=t_g$. Consequently $\hat t^{(2)}_g$ is unbiased,
+$\Var(\hat t^{(2)}_g)=\E[\Var(\hat t^{(2)}_g\mid S_1)]$, and the usual stratified variance
+estimator applied to the second stage alone is unbiased for it when $m_{2h}\ge2$. The
+single-stage weights $N_h/(n_{1h}+m_{2h})$ applied to $S_1\cup S_2$ are in general biased
+when $m_{2h}$ depends on the pilot origins.
+\end{lemma}
+\begin{proof}
+Given $S_1$, the sizes $m_{2h}$ are fixed and the second sum is the stratified expansion
+estimator of $\sum_{i\notin S_1}g_i$ on the population $U\setminus S_1$. Since the
+conditional mean is the constant $t_g$, the variance of the conditional mean is zero. For
+the last claim take one stratum with $N=3$, $g=a=(1,0,0)$, $n_1=1$, and $m_2=1$ if the pilot
+record is machine-written and $m_2=2$ otherwise: the single-stage estimator has expectation
+$\tfrac13\cdot\tfrac32\cdot1+\tfrac23\cdot1\cdot1=\tfrac76\neq1$.
+\end{proof}
+Stage-wise weights have a price: the non-pilot part of each stratum is estimated from the
+second-stage records only, so a stratum left with two second-stage records has a very
+variable expansion. This is why, at the budgets studied here, a label-adaptive design does
+not outperform proportional allocation, whose weights are known in advance and whose loss
+relative to Neyman allocation is the between-stratum spread of $S_h$
+(Proposition~\ref{p:neyman}).
+
+\subsection{Certification, verification error, and regret}\label{sec:cert}
+Let $b=\bar y_{d=0}-\muH$ be the deletion bias on the response set and
+$\hat b=\bar y_{d=0}-\hat\mu$ its estimate from an audit-based $\hat\mu$ with standard error
+$\widehat{\mathrm{se}}$. Since $\bar y_{d=0}$ is computed from the whole response set,
+$\hat b-b=-(\hat\mu-\muH)$.
+
+\begin{proposition}[Certifying deletion]\label{p:tost}
+Fix a tolerance $\tau>0$ and certify deletion when
+$|\hat b|+q_{1-\alpha}\,\widehat{\mathrm{se}}<\tau$, with $q_{1-\alpha}$ at least the
+standard normal $(1-\alpha)$ quantile. Under the conclusion of Theorem~\ref{t:clt},
+$\limsup\Pr(\text{certify})\le\alpha$ whenever $|b|\ge\tau$.
+\end{proposition}
+\begin{proof}
+If $b\ge\tau$, certification implies $\hat b+q_{1-\alpha}\widehat{\mathrm{se}}<\tau\le b$, that
+is $(\hat\mu-\muH)/\widehat{\mathrm{se}}>q_{1-\alpha}$, an event of limiting probability at most
+$\alpha$. The case $b\le-\tau$ is symmetric.
+\end{proof}
+This is the two one-sided tests procedure for equivalence. The tolerance is a substantive
+choice; we use $\tau=0.2$ standard deviations of the outcome. The rule of the first
+submission compared a bootstrap interval of $\hat b$ with zero and had no such guarantee.
+
+\begin{proposition}[Verification error]\label{p:flip}
+Suppose the audit returns $\tilde a_i$ instead of $a_i\in\{0,1\}$, with independent errors
+$\Pr(\tilde a_i=1\mid a_i=0)=\varphi_0$ and $\Pr(\tilde a_i=0\mid a_i=1)=\varphi_1$ that do not
+depend on $y_i$ or on the design, and $(1-\varphi_0)N_H+\varphi_1N_A>0$. For fixed
+$(\eta,\lambda)$, $\E[\hat N_\lambda]/\E[\hat D_\lambda]=\tilde\mu$ with
+\begin{equation}\label{eq:flip}
+\tilde\mu-\muH=\frac{\varphi_1\,\varepsilon\,(\mu_A-\muH)}{(1-\varphi_0)(1-\varepsilon)+\varphi_1\varepsilon}.
+\end{equation}
+\end{proposition}
+\begin{proof}
+$\E[1-\tilde a_i]=(1-\varphi_0)h_i+\varphi_1a_i$. Repeating part (1) of
+Theorem~\ref{t:ident} with this in place of $h_i$ gives
+$\E[\hat N_\lambda]=(1-\varphi_0)N_H\muH+\varphi_1N_A\mu_A$ and
+$\E[\hat D_\lambda]=(1-\varphi_0)N_H+\varphi_1N_A$.
+\end{proof}
+Only machine records passed as human ($\varphi_1$) bias the estimate; humans wrongly
+rejected ($\varphi_0$) cost precision, not validity. The bias is at most
+$\varphi_1\frac{\varepsilon}{1-\varepsilon}|\mu_A-\muH|/(1-\varphi_0)$, a bound an analyst can
+evaluate from an upper bound on $\varphi_1$.
+
+\begin{definition}[Regret]\label{d:regret}
+A \emph{cell} is a corpus, detector, contamination rate, audit budget and outcome. For an
+estimation rule $r$ let $\mathrm{sRMSE}_r(c)$ be its root mean squared error in cell $c$
+over replications, divided by the standard deviation of the human outcome. The regret of
+$r$ in $c$ is $\mathrm{sRMSE}_r(c)-\min_{r'\in\mathcal R}\mathrm{sRMSE}_{r'}(c)$, where
+$\mathcal R$ is the set of single estimators (naive, deletion, two-phase H\'ajek, flag-PPI,
+RC-PPI++). The comparator is the best single estimator in hindsight, which no analyst can
+select without the truth; regret is non-negative for single estimators and may be negative
+for a rule that switches between them.
+\end{definition}
+
+\begin{remark}[Selection policy]\label{r:policy}
+The policy reports the candidate (naive, deletion, or the audit-based anchor) with the
+smallest estimated mean squared error. For naive and deletion the error is their bias
+$b_k$ on the response set, estimated by $\hat b_k=\hat\mu_k-\hat\mu$; since
+$\E[\hat b_k^2]\approx b_k^2+\Var(\hat\mu)$, the plug-in $\hat b_k^2$ overstates the
+squared bias and the policy uses $\max(\hat b_k^2-\widehat{\mathrm{se}}^{\,2},0)$. The
+interval reported with the policy is the anchor's.
+\end{remark}
+%%% END BODY
+
+\section*{Numerical checks}
+{\small\begin{tabular}{@{}lp{9.2cm}@{}}\toprule
+Statement & Test (repository \texttt{tests/theory/})\\\midrule
+Lemma~\ref{l:del}, Proposition~\ref{p:moment} & \texttt{test\_identities.py} (exact to $10^{-10}$)\\
+Theorem~\ref{t:ident} & \texttt{test\_exact\_statements.py} (representation exact; unbiasedness by enumeration)\\
+Theorem~\ref{t:clt} & \texttt{test\_design\_based.py} (coverage by simulation)\\
+Corollary~\ref{c:tune}, Proposition~\ref{p:neyman} & \texttt{test\_exact\_statements.py}\\
+Remark~\ref{r:interval}, Lemma~\ref{l:twostage} & \texttt{test\_exact\_statements.py} (enumeration)\\
+Propositions~\ref{p:starve}, \ref{p:tost}, \ref{p:flip} & \texttt{test\_design\_based.py}, \texttt{test\_exact\_statements.py}\\\bottomrule
+\end{tabular}}
+\end{document}
