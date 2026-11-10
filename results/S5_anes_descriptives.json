@@ -1,0 +1,176 @@
+{
+  "human_records": 3448,
+  "human_by_mode": {
+    "web": 2765,
+    "face-to-face": 636,
+    "phone": 47
+  },
+  "detectors": {
+    "tfidf": {
+      "scored_humans": 3448,
+      "false_positive_rate": 0.0,
+      "fpr_by_mode": {
+        "face-to-face": 0.0,
+        "phone": 0.0,
+        "web": 0.0
+      },
+      "selection_term_sd": {
+        "y_therm_harris": 0.0,
+        "y_therm_trump": 0.0,
+        "y_therm_dem_party": 0.0,
+        "y_therm_rep_party": 0.0
+      },
+      "fpr_by_outcome_tercile": {
+        "y_therm_harris": {
+          "low": 0.0,
+          "mid": 0.0,
+          "high": 0.0
+        },
+        "y_therm_trump": {
+          "low": 0.0,
+          "mid": 0.0,
+          "high": 0.0
+        },
+        "y_therm_dem_party": {
+          "low": 0.0,
+          "mid": 0.0,
+          "high": 0.0
+        },
+        "y_therm_rep_party": {
+          "low": 0.0,
+          "mid": 0.0,
+          "high": 0.0
+        }
+      },
+      "sensitivity_by_generator": {
+        "Qwen/Qwen2.5-7B-Instruct": 0.9741,
+        "allenai/OLMo-2-1124-7B-Instruct": 0.8766,
+        "microsoft/Phi-3.5-mini-instruct": 0.7006
+      },
+      "sensitivity_by_condition": {
+        "demographic-humanlike": 0.7867,
+        "demographic-plain": 0.9071,
+        "political-humanlike": 0.8138,
+        "political-plain": 0.8939
+      }
+    },
+    "roberta": {
+      "scored_humans": 3448,
+      "false_positive_rate": 0.3082946635730858,
+      "fpr_by_mode": {
+        "face-to-face": 0.1541,
+        "phone": 0.1702,
+        "web": 0.3461
+      },
+      "selection_term_sd": {
+        "y_therm_harris": 0.03342721757183955,
+        "y_therm_trump": -0.038121705029488216,
+        "y_therm_dem_party": 0.01032472181546846,
+        "y_therm_rep_party": -0.02880054947496387
+      },
+      "fpr_by_outcome_tercile": {
+        "y_therm_harris": {
+          "low": 0.3322,
+          "mid": 0.3325,
+          "high": 0.2602
+        },
+        "y_therm_trump": {
+          "low": 0.3043,
+          "mid": 0.295,
+          "high": 0.3255
+        },
+        "y_therm_dem_party": {
+          "low": 0.3043,
+          "mid": 0.3307,
+          "high": 0.2898
+        },
+        "y_therm_rep_party": {
+          "low": 0.2774,
+          "mid": 0.3307,
+          "high": 0.3168
+        }
+      },
+      "sensitivity_by_generator": {
+        "Qwen/Qwen2.5-7B-Instruct": 0.7391,
+        "allenai/OLMo-2-1124-7B-Instruct": 0.6055,
+        "microsoft/Phi-3.5-mini-instruct": 0.4772
+      },
+      "sensitivity_by_condition": {
+        "demographic-humanlike": 0.5471,
+        "demographic-plain": 0.7167,
+        "political-humanlike": 0.5322,
+        "political-plain": 0.6329
+      }
+    },
+    "fdgpt": {
+      "scored_humans": 3099,
+      "false_positive_rate": 0.05388835108099387,
+      "fpr_by_mode": {
+        "face-to-face": 0.065,
+        "phone": 0.0667,
+        "web": 0.0509
+      },
+      "selection_term_sd": {
+        "y_therm_harris": 0.0010352047309438348,
+        "y_therm_trump": -0.0003366947930734758,
+        "y_therm_dem_party": 0.001373701811299476,
+        "y_therm_rep_party": 0.001943265199413576
+      },
+      "fpr_by_outcome_tercile": {
+        "y_therm_harris": {
+          "low": 0.0513,
+          "mid": 0.0532,
+          "high": 0.0571
+        },
+        "y_therm_trump": {
+          "low": 0.0552,
+          "mid": 0.0581,
+          "high": 0.0484
+        },
+        "y_therm_dem_party": {
+          "low": 0.0561,
+          "mid": 0.0571,
+          "high": 0.0484
+        },
+        "y_therm_rep_party": {
+          "low": 0.061,
+          "mid": 0.0455,
+          "high": 0.0552
+        }
+      },
+      "sensitivity_by_generator": {
+        "Qwen/Qwen2.5-7B-Instruct": 0.5599,
+        "allenai/OLMo-2-1124-7B-Instruct": 0.8846,
+        "microsoft/Phi-3.5-mini-instruct": 0.5179
+      },
+      "sensitivity_by_condition": {
+        "demographic-humanlike": 0.4958,
+        "demographic-plain": 0.869,
+        "political-humanlike": 0.4629,
+        "political-plain": 0.7878
+      }
+    }
+  },
+  "machine_minus_human_mean_sd": {
+    "y_therm_harris": {
+      "Qwen/Qwen2.5-7B-Instruct": 0.3846872630171461,
+      "allenai/OLMo-2-1124-7B-Instruct": -0.0018558315197351797,
+      "microsoft/Phi-3.5-mini-instruct": 0.34363901018182275
+    },
+    "y_therm_trump": {
+      "Qwen/Qwen2.5-7B-Instruct": 0.2094249997925662,
+      "allenai/OLMo-2-1124-7B-Instruct": 0.1416276240331903,
+      "microsoft/Phi-3.5-mini-instruct": 0.34121923493228706
+    },
+    "y_therm_dem_party": {
+      "Qwen/Qwen2.5-7B-Instruct": 0.4422111262521922,
+      "allenai/OLMo-2-1124-7B-Instruct": 0.14287995979202064,
+      "microsoft/Phi-3.5-mini-instruct": 0.42047350845956344
+    },
+    "y_therm_rep_party": {
+      "Qwen/Qwen2.5-7B-Instruct": 0.09539439386010533,
+      "allenai/OLMo-2-1124-7B-Instruct": 0.300352306485255,
+      "microsoft/Phi-3.5-mini-instruct": 0.3455663714147892
+    }
+  }
+}
