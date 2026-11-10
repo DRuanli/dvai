@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "d2vi"
-version = "2.0.0.dev3"
+version = "2.0.0.dev4"
 description = "D2VI (Detect, then Validly Infer): audit-based estimation of human-population quantities from AI-contaminated response data"
 readme = "README.md"
 license = { text = "MIT" }
