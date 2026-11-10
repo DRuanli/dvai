@@ -1,0 +1,15 @@
+# Study 3 (held-out): ANES 2024 respondents + synthetic respondents. Pools as fixed in the
+# frozen protocol, section 2: one pool per generator (four conditions together) x detector.
+# Feature table: scripts/build_anes_features.py (evaluation records only; not committed).
+corpus: anes2024
+features: data/private/anes_features.parquet
+outcomes: [therm_harris, therm_trump, therm_dem_party, therm_rep_party]
+human: {source: human}
+machine_groups:
+  qwen: {source: Qwen/Qwen2.5-7B-Instruct}
+  olmo: {source: allenai/OLMo-2-1124-7B-Instruct}
+  phi: {source: microsoft/Phi-3.5-mini-instruct}
+detectors:
+  tfidf: {score: score_tfidf, flag: flag_tfidf}
+  roberta: {score: score_roberta, flag: flag_roberta}
+  fdgpt: {score: score_fdgpt, flag: flag_fdgpt}

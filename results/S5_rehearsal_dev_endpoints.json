@@ -1,0 +1,402 @@
+{
+  "units": [
+    "fast_detectgpt|essay|claude",
+    "fast_detectgpt|essay|gpt",
+    "fast_detectgpt|reuter|claude",
+    "fast_detectgpt|reuter|gpt",
+    "fast_detectgpt|wp|claude",
+    "fast_detectgpt|wp|gpt",
+    "roberta_hc3|finance|chatgpt",
+    "roberta_hc3|open_qa|chatgpt",
+    "roberta_hc3|reddit_eli5|chatgpt",
+    "tfidf_lr|essay|claude",
+    "tfidf_lr|essay|gpt",
+    "tfidf_lr|reuter|claude",
+    "tfidf_lr|reuter|gpt",
+    "tfidf_lr|wp|claude",
+    "tfidf_lr|wp|gpt"
+  ],
+  "cells": 1260,
+  "PE1": {
+    "itt": {
+      "units": 15,
+      "cells": 1260,
+      "pooled_ratio": 0.6207746698673997,
+      "pooled_ratio_bca90": [
+        0.5345186474553225,
+        0.6891878921844761
+      ],
+      "per_unit_ratio": {
+        "fast_detectgpt|essay|claude": 0.8471648173732736,
+        "fast_detectgpt|essay|gpt": 1.5192891022807644,
+        "fast_detectgpt|reuter|claude": 0.7176790940613444,
+        "fast_detectgpt|reuter|gpt": 1.0324044261148457,
+        "fast_detectgpt|wp|claude": 0.6990695549075187,
+        "fast_detectgpt|wp|gpt": 0.7718112380707679,
+        "roberta_hc3|finance|chatgpt": 0.803616778485607,
+        "roberta_hc3|open_qa|chatgpt": 0.6073334498373282,
+        "roberta_hc3|reddit_eli5|chatgpt": 0.9594341471077861,
+        "tfidf_lr|essay|claude": 0.7147213706951218,
+        "tfidf_lr|essay|gpt": 0.5927181872455319,
+        "tfidf_lr|reuter|claude": 0.3870287005163541,
+        "tfidf_lr|reuter|gpt": 0.3683327436868495,
+        "tfidf_lr|wp|claude": 0.6437279133339152,
+        "tfidf_lr|wp|gpt": 0.33191348799822334
+      },
+      "wilcoxon_p_one_sided": 0.00030517578125,
+      "passes": true
+    },
+    "per_protocol": {
+      "units": 15,
+      "cells": 720,
+      "pooled_ratio": 0.4851985384357315,
+      "pooled_ratio_bca90": [
+        0.3893711533727388,
+        0.5787759407355314
+      ],
+      "per_unit_ratio": {
+        "fast_detectgpt|essay|claude": 0.8266952061256987,
+        "fast_detectgpt|essay|gpt": 1.9542787131360255,
+        "fast_detectgpt|reuter|claude": 0.6488292956254297,
+        "fast_detectgpt|reuter|gpt": 1.0801425623829433,
+        "fast_detectgpt|wp|claude": 0.6627872024349565,
+        "fast_detectgpt|wp|gpt": 0.7482235060781626,
+        "roberta_hc3|finance|chatgpt": 0.7163955431287062,
+        "roberta_hc3|open_qa|chatgpt": 0.3441335610441744,
+        "roberta_hc3|reddit_eli5|chatgpt": 0.9505457775481292,
+        "tfidf_lr|essay|claude": 0.4902858016534516,
+        "tfidf_lr|essay|gpt": 0.2414222126362056,
+        "tfidf_lr|reuter|claude": 0.3330534844748613,
+        "tfidf_lr|reuter|gpt": 0.3150665990668587,
+        "tfidf_lr|wp|claude": 0.6255439526724021,
+        "tfidf_lr|wp|gpt": 0.2483007736979503
+      },
+      "wilcoxon_p_one_sided": 0.001007080078125,
+      "passes": true
+    },
+    "feasible_share_of_replications": 0.5305555555555556,
+    "cells_never_feasible": 0.2126984126984127,
+    "passes": true
+  },
+  "PE2": {
+    "cells": 1260,
+    "mean_coverage": 0.9789642857142856,
+    "share_cells_ge_090": 0.9888888888888889,
+    "min_coverage": 0.78,
+    "median_mc_se_per_cell": 0.008595056718835545,
+    "median_width_ratio": 1.28374647004669,
+    "by_budget": {
+      "0.02": {
+        "mean_coverage": 0.9930357142857142,
+        "share_cells_ge_090": 1.0,
+        "median_width_ratio": 2.1184510824146265
+      },
+      "0.05": {
+        "mean_coverage": 0.9811071428571428,
+        "share_cells_ge_090": 0.9976190476190476,
+        "median_width_ratio": 1.2803966276553407
+      },
+      "0.1": {
+        "mean_coverage": 0.96275,
+        "share_cells_ge_090": 0.969047619047619,
+        "median_width_ratio": 1.0970922627021764
+      }
+    },
+    "passes": true
+  },
+  "PE3": {
+    "bad": {
+      "replications": 22668,
+      "rate": 0.0037938944767954828,
+      "upper95_cluster_bootstrap": 0.004473990501460456,
+      "upper95_clopper_pearson": 0.00453727536248217
+    },
+    "near": {
+      "replications": 3624,
+      "rate": 0.01379690949227373,
+      "upper95_cluster_bootstrap": 0.017079889807162536,
+      "upper95_clopper_pearson": 0.017431240537912184
+    },
+    "worst_cell_rate": 0.05084745762711865,
+    "power_small_bias": 0.7154017637931374,
+    "evaluable": true,
+    "passes": true
+  },
+  "PE4": {
+    "pooled": {
+      "rules": {
+        "policy_debiased": {
+          "max_excess_srmse": 0.165752512518595,
+          "boot90": [
+            0.14643409726273657,
+            0.165752512518595
+          ],
+          "mean_excess_srmse": 0.026434603838639655,
+          "pooled_srmse": 0.07178869039727195
+        },
+        "naive": {
+          "max_excess_srmse": 0.7553306211660382,
+          "boot90": [
+            0.7276640441963186,
+            0.7553306211660382
+          ],
+          "mean_excess_srmse": 0.05742566210907818,
+          "pooled_srmse": 0.1610586352727865
+        },
+        "deletion": {
+          "max_excess_srmse": 0.8462399170496612,
+          "boot90": [
+            0.6434785569869281,
+            0.8462399170496612
+          ],
+          "mean_excess_srmse": 0.0531128627136207,
+          "pooled_srmse": 0.1845407398454405
+        },
+        "hajek": {
+          "max_excess_srmse": 0.3256747983642933,
+          "boot90": [
+            0.30555996271624075,
+            0.3256747983642933
+          ],
+          "mean_excess_srmse": 0.14742191755790268,
+          "pooled_srmse": 0.18756992580507192
+        },
+        "flag_ppi": {
+          "max_excess_srmse": 0.28352095817153705,
+          "boot90": [
+            0.2666657535479427,
+            0.28352095817153705
+          ],
+          "mean_excess_srmse": 0.05021674068050343,
+          "pooled_srmse": 0.100031682636727
+        },
+        "rc_ppi_pp": {
+          "max_excess_srmse": 0.20924721440841815,
+          "boot90": [
+            0.2021712944671506,
+            0.20924721440841815
+          ],
+          "mean_excess_srmse": 0.03510200185674242,
+          "pooled_srmse": 0.07881421748309134
+        }
+      },
+      "lowest_worst_case": "policy_debiased",
+      "policy_is_lowest": true
+    },
+    "by_budget": {
+      "0.02": {
+        "rules": {
+          "policy_debiased": {
+            "max_excess_srmse": 0.165752512518595,
+            "boot90": [
+              0.14643409726273657,
+              0.165752512518595
+            ],
+            "mean_excess_srmse": 0.04478985979066261,
+            "pooled_srmse": 0.10031603600318603
+          },
+          "naive": {
+            "max_excess_srmse": 0.7276640441963186,
+            "boot90": [
+              0.6289357146823731,
+              0.7276640441963186
+            ],
+            "mean_excess_srmse": 0.050303317454366836,
+            "pooled_srmse": 0.16105863527278647
+          },
+          "deletion": {
+            "max_excess_srmse": 0.8462399170496612,
+            "boot90": [
+              0.531651125947609,
+              0.8462399170496612
+            ],
+            "mean_excess_srmse": 0.045990518058909365,
+            "pooled_srmse": 0.1845407398454405
+          },
+          "hajek": {
+            "max_excess_srmse": 0.3256747983642933,
+            "boot90": [
+              0.30555996271624075,
+              0.3256747983642933
+            ],
+            "mean_excess_srmse": 0.21962849374061807,
+            "pooled_srmse": 0.25751574981229863
+          },
+          "flag_ppi": {
+            "max_excess_srmse": 0.28352095817153705,
+            "boot90": [
+              0.2666657535479427,
+              0.28352095817153705
+            ],
+            "mean_excess_srmse": 0.07826292393290785,
+            "pooled_srmse": 0.1371449409880157
+          },
+          "rc_ppi_pp": {
+            "max_excess_srmse": 0.20924721440841815,
+            "boot90": [
+              0.2021712944671506,
+              0.20924721440841815
+            ],
+            "mean_excess_srmse": 0.06397163128693964,
+            "pooled_srmse": 0.11326178353201286
+          }
+        },
+        "lowest_worst_case": "policy_debiased",
+        "policy_is_lowest": true
+      },
+      "0.05": {
+        "rules": {
+          "policy_debiased": {
+            "max_excess_srmse": 0.12870060179066506,
+            "boot90": [
+              0.0587019921998599,
+              0.12870060179066506
+            ],
+            "mean_excess_srmse": 0.023253746363720185,
+            "pooled_srmse": 0.06198018554399915
+          },
+          "naive": {
+            "max_excess_srmse": 0.7276640441963186,
+            "boot90": [
+              0.6977888252076344,
+              0.7276640441963186
+            ],
+            "mean_excess_srmse": 0.05773632676256091,
+            "pooled_srmse": 0.16105863527278647
+          },
+          "deletion": {
+            "max_excess_srmse": 0.8462399170496612,
+            "boot90": [
+              0.6006234074770362,
+              0.8462399170496612
+            ],
+            "mean_excess_srmse": 0.05342352736710344,
+            "pooled_srmse": 0.1845407398454405
+          },
+          "hajek": {
+            "max_excess_srmse": 0.19778021521455397,
+            "boot90": [
+              0.18845256714773828,
+              0.19778021521455397
+            ],
+            "mean_excess_srmse": 0.13505042121468905,
+            "pooled_srmse": 0.164531777744075
+          },
+          "flag_ppi": {
+            "max_excess_srmse": 0.1776529014478608,
+            "boot90": [
+              0.16457220091995875,
+              0.1776529014478608
+            ],
+            "mean_excess_srmse": 0.04624079277962298,
+            "pooled_srmse": 0.0891004278415595
+          },
+          "rc_ppi_pp": {
+            "max_excess_srmse": 0.14710100170226592,
+            "boot90": [
+              0.08272211982954453,
+              0.14710100170226592
+            ],
+            "mean_excess_srmse": 0.02929993402248622,
+            "pooled_srmse": 0.0655059639020609
+          }
+        },
+        "lowest_worst_case": "policy_debiased",
+        "policy_is_lowest": true
+      },
+      "0.1": {
+        "rules": {
+          "policy_debiased": {
+            "max_excess_srmse": 0.08972040424003785,
+            "boot90": [
+              0.036248404140985714,
+              0.08972040424003785
+            ],
+            "mean_excess_srmse": 0.01126020536153616,
+            "pooled_srmse": 0.03944613704033674
+          },
+          "naive": {
+            "max_excess_srmse": 0.7553306211660382,
+            "boot90": [
+              0.7276640441963186,
+              0.7553306211660382
+            ],
+            "mean_excess_srmse": 0.0642373421103068,
+            "pooled_srmse": 0.16105863527278647
+          },
+          "deletion": {
+            "max_excess_srmse": 0.8462399170496612,
+            "boot90": [
+              0.6434785569869281,
+              0.8462399170496612
+            ],
+            "mean_excess_srmse": 0.05992454271484933,
+            "pooled_srmse": 0.1845407398454405
+          },
+          "hajek": {
+            "max_excess_srmse": 0.14041802664215336,
+            "boot90": [
+              0.1194083942777291,
+              0.14041802664215336
+            ],
+            "mean_excess_srmse": 0.08758683771840095,
+            "pooled_srmse": 0.11028310800183531
+          },
+          "flag_ppi": {
+            "max_excess_srmse": 0.10509402313112458,
+            "boot90": [
+              0.093983418810901,
+              0.10509402313112458
+            ],
+            "mean_excess_srmse": 0.026146505328979466,
+            "pooled_srmse": 0.05719607952691645
+          },
+          "rc_ppi_pp": {
+            "max_excess_srmse": 0.08675376364692608,
+            "boot90": [
+              0.04821790004688199,
+              0.08675376364692608
+            ],
+            "mean_excess_srmse": 0.012034440260801386,
+            "pooled_srmse": 0.038933015768437655
+          }
+        },
+        "lowest_worst_case": "rc_ppi_pp",
+        "policy_is_lowest": false
+      }
+    }
+  },
+  "source": {
+    "raw_dir": "results/raw/S4c",
+    "files": [
+      "fast_detectgpt__ghostbuster-essay__fast_detectgpt-claude.parquet",
+      "fast_detectgpt__ghostbuster-essay__fast_detectgpt-gpt.parquet",
+      "fast_detectgpt__ghostbuster-reuter__fast_detectgpt-claude.parquet",
+      "fast_detectgpt__ghostbuster-reuter__fast_detectgpt-gpt.parquet",
+      "fast_detectgpt__ghostbuster-wp__fast_detectgpt-claude.parquet",
+      "fast_detectgpt__ghostbuster-wp__fast_detectgpt-gpt.parquet",
+      "roberta_hc3__hc3-finance__roberta_hc3.parquet",
+      "roberta_hc3__hc3-open_qa__roberta_hc3.parquet",
+      "roberta_hc3__hc3-reddit_eli5__roberta_hc3.parquet",
+      "tfidf_lr__ghostbuster-essay__tfidf_lr-claude.parquet",
+      "tfidf_lr__ghostbuster-essay__tfidf_lr-gpt.parquet",
+      "tfidf_lr__ghostbuster-reuter__tfidf_lr-claude.parquet",
+      "tfidf_lr__ghostbuster-reuter__tfidf_lr-gpt.parquet",
+      "tfidf_lr__ghostbuster-wp__tfidf_lr-claude.parquet",
+      "tfidf_lr__ghostbuster-wp__tfidf_lr-gpt.parquet"
+    ],
+    "cell": [
+      "det",
+      "domain",
+      "generator",
+      "budget",
+      "eps",
+      "outcome"
+    ],
+    "unit": [
+      "det",
+      "domain",
+      "generator"
+    ]
+  }
+}
