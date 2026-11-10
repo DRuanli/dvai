@@ -23,11 +23,13 @@ from .prompt import RespondentPrompt, parse_answer, respondent_document
 
 __all__ = ["HFChatGenerator", "SyntheticSurvey", "GENERATORS"]
 
-# model id -> load in 4 bit?
+# model id -> load in 4 bit? All three in 4 bit since 10 November 2026: the first Kaggle run
+# completed Qwen and OLMo in 4 bit and stopped at Phi-3.5, the only model loaded in half
+# precision, before it produced any reply (dataset card, "Generation log").
 GENERATORS = {
     "Qwen/Qwen2.5-7B-Instruct": True,
     "allenai/OLMo-2-1124-7B-Instruct": True,
-    "microsoft/Phi-3.5-mini-instruct": False,
+    "microsoft/Phi-3.5-mini-instruct": True,
 }
 
 
@@ -58,7 +60,8 @@ class HFChatGenerator:
                        "temperature": float(temperature), "top_p": float(top_p),
                        "pad_token_id": self.tok.pad_token_id}
         self.settings = {"model": model_id, "load_4bit": bool(load_4bit), **{
-            k: v for k, v in self.gen_kw.items() if k != "pad_token_id"}}
+            k: v for k, v in self.gen_kw.items() if k != "pad_token_id"},
+            "nan_repaired_batches": 0}
 
     def generate(self, conversations: list[list[dict]], seed: int) -> list[str]:
         import torch
@@ -71,10 +74,30 @@ class HFChatGenerator:
             enc = self.tok(texts, return_tensors="pt", padding=True).to(self.model.device)
             torch.manual_seed(seed + b)
             with torch.no_grad():
-                gen = self.model.generate(**enc, **self.gen_kw)
+                try:
+                    gen = self.model.generate(**enc, **self.gen_kw)
+                except RuntimeError as err:
+                    # half-precision overflow can put inf/nan into the sampling distribution;
+                    # the batch is then repeated with invalid values removed, and counted
+                    if "probability tensor" not in str(err):
+                        raise
+                    self.settings["nan_repaired_batches"] += 1
+                    torch.manual_seed(seed + b)
+                    gen = self.model.generate(**enc, **self.gen_kw, remove_invalid_values=True)
             new = gen[:, enc["input_ids"].shape[1]:]
             out.extend(self.tok.batch_decode(new, skip_special_tokens=True))
         return out
+
+    def close(self) -> None:
+        """Release the model so that the next one fits on the same GPU."""
+        import gc
+
+        import torch
+
+        self.model = None
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
 
 @dataclass

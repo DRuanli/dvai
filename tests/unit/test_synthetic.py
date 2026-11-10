@@ -101,3 +101,48 @@ def test_survey_retries_unparsed_replies_and_resumes(tmp_path):
     calls = gen.calls
     t2 = survey.run(gen, personas, prefix="fake", chunk=2)   # everything cached
     assert gen.calls == calls and t2.equals(t)
+
+
+def test_generator_repeats_a_batch_whose_sampling_distribution_is_invalid():
+    torch = pytest.importorskip("torch")
+    from d2vi.synthetic.generator import GENERATORS, HFChatGenerator
+
+    assert all(GENERATORS.values())                       # all three models load in 4 bit
+
+    class Enc(dict):
+        def to(self, device):
+            return self
+
+    class Tok:
+        def apply_chat_template(self, conv, tokenize=False, add_generation_prompt=True):
+            return conv[-1]["content"]
+
+        def __call__(self, texts, return_tensors="pt", padding=True):
+            return Enc(input_ids=torch.zeros((len(texts), 3), dtype=torch.long))
+
+        def batch_decode(self, ids, skip_special_tokens=True):
+            return [f"reply {int(row[0])}" for row in ids]
+
+    class Model:
+        device, calls = "cpu", []
+
+        def generate(self, input_ids, **kw):
+            self.calls.append(kw)
+            if len(self.calls) == 2 and "remove_invalid_values" not in kw:
+                raise RuntimeError("probability tensor contains either `inf`, `nan` or element < 0")
+            new = torch.full((input_ids.shape[0], 2), len(self.calls))
+            return torch.cat([input_ids, new], dim=1)
+
+    gen = object.__new__(HFChatGenerator)
+    gen.tok, gen.model, gen.batch_size = Tok(), Model(), 2
+    gen.gen_kw = {"max_new_tokens": 4}
+    gen.settings = {"nan_repaired_batches": 0}
+    out = gen.generate([[{"role": "user", "content": f"q{i}"}] for i in range(4)], seed=1)
+    assert out == ["reply 1", "reply 1", "reply 3", "reply 3"]
+    assert gen.settings["nan_repaired_batches"] == 1
+    assert gen.model.calls[2].get("remove_invalid_values") is True
+    gen.model.generate = lambda **kw: (_ for _ in ()).throw(RuntimeError("CUDA out of memory"))
+    with pytest.raises(RuntimeError, match="out of memory"):
+        gen.generate([[{"role": "user", "content": "q"}]], seed=1)
+    gen.close()
+    assert gen.model is None

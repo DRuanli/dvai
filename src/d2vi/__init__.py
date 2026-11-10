@@ -4,4 +4,4 @@ Audit-based estimation of human-population quantities from response data contami
 by machine-generated text. See the repository README for the stage plan.
 """
 
-__version__ = "2.0.0.dev6"
+__version__ = "2.0.0.dev7"
