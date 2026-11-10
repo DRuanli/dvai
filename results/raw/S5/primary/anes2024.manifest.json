@@ -21,6 +21,17 @@
       "cells_skipped": [],
       "replications": 1000,
       "seconds": 490
+    },
+    "anes2024__qwen__fdgpt": {
+      "human": 3099,
+      "machine": 1118,
+      "unscorable_dropped": 350,
+      "flag_rate_human": 0.05388835108099387,
+      "flag_rate_machine": 0.5599284436493739,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 485
     }
   },
   "corpus": "anes2024",
