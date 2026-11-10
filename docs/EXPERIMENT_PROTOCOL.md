@@ -178,6 +178,37 @@ before they ran.
 |---|---|---|---|
 | 10 Nov 2026, before any held-out run | Cross-fitting: an audited record uses its out-of-fold prediction in the first-phase sum as well (before: the average of the K fold models, K − 1 of which were trained on that record). Code: `CrossFitPropensity.fit`; no configuration value changed | Independent review of the theory section (finding F18): Theorem 2 requires that no prediction used for an audited record comes from a model fitted with it | None on held-out data (none existed). Development round 3 was rerun with the corrected code (`results/S4d_*.csv`, same seeds): every frozen choice is unchanged and no summary moves by more than 0.0005 except the RC-PPI++ width ratio (+0.003 to +0.005): policy worst excess sRMSE 0.1656 (was 0.1658), pooled 0.0717 (0.0718); RC-PPI++ ITT pooled sRMSE 0.0787 (0.0788); ITT coverage 0.9791 (0.9790), 98.9% of cells ≥ 0.90 (same); TOST false certification 0.38%, near boundary 1.4%, worst cell 5.1% (same); feasibility and the fallback comparison identical to three decimals |
 
+### Addendum A1: specifications the frozen protocol left open (10 November 2026)
+
+Written before any document of the corpora concerned was scored. Nothing in sections 3-6
+changes.
+
+* **Outcomes of non-English corpora** (M4, HC3-Chinese). The four text outcomes are
+  English-specific. Non-English corpora use two outcomes: `sentx`, the difference P(positive)
+  − P(negative) of the multilingual sentiment classifier
+  `cardiffnlp/twitter-xlm-roberta-base-sentiment` on the first 256 subword tokens; and `ttr`,
+  the type-token ratio of the first 50 XLM-R subword tokens. Documents with fewer than 50
+  subword tokens are excluded and counted (the analogue of the 60-character filter).
+* **Cross-lingual detector** (section 2 says "an XLM-R detector trained on English
+  calibration data"). `xlm-roberta-base`, fine-tuned for 2 epochs (learning rate 2e-5, 256
+  tokens, batch 32, seed 20261109) on 7,500 English M4 documents (Wikipedia and Reddit, human
+  and ChatGPT) that are in no evaluation pool; score P(machine), flag above 0.5.
+* **Second detector for non-English corpora** (not in section 2; added so that these corpora
+  also have a supervised in-distribution detector and a generator shift): character 2-4-gram
+  TF-IDF with logistic regression, trained per language or source on the human and ChatGPT
+  documents of the 30% calibration split; flag above 0.5.
+* **M4**: all six non-English, non-Chinese subsets (the protocol said "at least two further
+  languages"). **HC3-Chinese**: three largest sources, at most 2,000 answers per class and
+  source. **PERSUADE + DAIGT**: the DAIGT v2 training file; subset rule in
+  `docs/dataset_cards/daigt.md`.
+* **Units of PE1.** RAID, Beemo, ANES, M4, HC3-Chinese and DAIGT are six corpora. Languages
+  of M4, domains of RAID and sources of HC3-Chinese are domains within a corpus, not units.
+  A sensitivity analysis with corpus × domain as the unit is secondary.
+* **Not run** (stated now, to be repeated in the paper): APT-Eval has 300 human documents
+  after filtering, too few for N = 900, and is not used; CoAuthor, the SARC-based set and
+  the image demonstration are not prepared and will be run only if time allows, as
+  exploratory analyses outside the endpoints.
+
 ### Clarifications written before the held-out runs (10 November 2026)
 
 * **Unit of PE1.** The unit of the Wilcoxon test is the corpus, as registered. A one-sided

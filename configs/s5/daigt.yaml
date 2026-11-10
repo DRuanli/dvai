@@ -1,0 +1,12 @@
+# Held-out: DAIGT v2 essays with PERSUADE as the human class (protocol addendum A1). One
+# pool per machine source x detector; the sources are those the loader selects by size.
+# Single-domain rule: thresholds and the TF-IDF detector come from the 30% calibration
+# split (stratified by source). Written on 10 November 2026, before the feature table existed.
+corpus: daigt
+features: data/features/daigt_features.parquet
+outcomes: [sent, read, trust, subj]
+human: {source: human}
+machine_groups: {by: source}
+detectors:
+  fdgpt: {score: score_fdgpt, flag: flag_fdgpt}
+  tfidf: {score: score_tfidf, flag: flag_tfidf}

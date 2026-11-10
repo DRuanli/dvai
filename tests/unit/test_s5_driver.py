@@ -55,3 +55,18 @@ def test_heldout_configs_give_one_pool_per_domain_group_and_detector():
     assert [n for n, *_ in run_s5.pool_plan(beemo)][:2] == ["beemo__machine__fdgpt",
                                                            "beemo__machine__tfidf"]
     assert len(run_s5.pool_plan(beemo)) == 8
+
+
+def test_data_dependent_shortcuts_of_a_configuration_are_resolved_from_the_table():
+    feat = pd.DataFrame({"domain": ["law", "baike", "law"], "a": [0, 1, 1],
+                         "source": ["human", "g2", "g1"]})
+    cfg = run_s5.resolve({"corpus": "c", "domains": "all", "machine_groups": {"by": "source"},
+                          "detectors": {"d": {}}}, feat)
+    assert cfg["domains"] == ["baike", "law"]
+    assert cfg["machine_groups"] == {"g1": {"source": "g1"}, "g2": {"source": "g2"}}
+    assert len(run_s5.pool_plan(cfg)) == 4
+    for name, pools in (("m4", 24), ("hc3zh", None), ("daigt", None)):
+        c = yaml.safe_load((ROOT / "configs" / "s5" / f"{name}.yaml").read_text())
+        assert c["corpus"] == name
+        if pools:
+            assert len(run_s5.pool_plan(c)) == pools

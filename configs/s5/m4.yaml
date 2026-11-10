@@ -1,0 +1,15 @@
+# Held-out: M4, non-English subsets (protocol addendum A1; src/d2vi/data/multilingual.py).
+# One pool per language x generator x detector; languages are the domains of one corpus.
+# Arabic, German, Indonesian and Urdu have ChatGPT only, so their davinci pools are empty
+# and are recorded as skipped. Written on 10 November 2026, before the feature table existed.
+corpus: m4
+features: data/features/m4_features.parquet
+outcomes: [sentx, ttr]
+domains: [arabic, bulgarian, german, indonesian, russian, urdu]
+human: {source: human}
+machine_groups:
+  chatgpt: {source: chatgpt}
+  davinci: {source: davinci}
+detectors:
+  xlmr: {score: score_xlmr, flag: flag_xlmr}
+  tfidfc: {score: score_tfidfc, flag: flag_tfidfc}

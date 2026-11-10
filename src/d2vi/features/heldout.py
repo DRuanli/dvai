@@ -97,12 +97,14 @@ def _flags(part: pd.DataFrame, thr_fd: float, tfidf: TfidfLRDetector) -> pd.Data
 
 
 def finalize_features(table: pd.DataFrame, calibration: str, train_mask: pd.Series,
-                      share: float = 0.30) -> tuple[pd.DataFrame, dict]:
+                      share: float = 0.30, strata: tuple[str, ...] = ("domain",)
+                      ) -> tuple[pd.DataFrame, dict]:
     """Thresholds, TF-IDF detector and flags; returns the evaluation table and a summary.
 
     ``table``: documents with ``doc_id``, ``domain``, ``a``, ``text``, outcomes and raw
     scores (and ``group`` for ``calibration="split"``). ``train_mask`` marks the machine
-    documents of the generator the TF-IDF detector may be trained on.
+    documents of the generator the TF-IDF detector may be trained on. ``strata``: columns
+    (constant within a group) by which the calibration split is stratified.
     """
     human = table["a"].eq(0)
     info: dict = {"calibration": calibration, "rows": int(len(table))}
@@ -121,9 +123,9 @@ def finalize_features(table: pd.DataFrame, calibration: str, train_mask: pd.Seri
             info["tfidf_training"][dom] = {"human": int((train.a == 0).sum()),
                                            "machine": int((train.a > 0).sum())}
     elif calibration == "split":
-        groups = table.drop_duplicates("group")[["group", "domain"]].rename(
+        groups = table.drop_duplicates("group")[["group", *strata]].rename(
             columns={"group": "doc_id"})
-        cal_groups = set(groups.loc[calibration_split(groups, ["domain"], share), "doc_id"])
+        cal_groups = set(groups.loc[calibration_split(groups, list(strata), share), "doc_id"])
         cal = table["group"].isin(cal_groups)
         thr = percentile_threshold(table.loc[cal & human, "score_fdgpt"].to_numpy())
         train = table[cal & (human | train_mask)]

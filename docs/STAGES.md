@@ -22,7 +22,7 @@ not move on until the gate passes or the deviation is written down.
 | Stage | Status (10 November 2026) |
 |---|---|
 | S0, S1 | Done |
-| S2 | Development corpora done; ANES human pool built; synthetic respondents and detector scores running on Kaggle (K03); RAID and Beemo subsets defined, features to be computed on Kaggle (K05); multilingual and other registered corpora not prepared |
+| S2 | Development corpora done; ANES human pool built; synthetic respondents and detector scores running on Kaggle (K03); RAID and Beemo subsets defined, features to be computed on Kaggle (K05); M4 (six languages), HC3-Chinese and DAIGT essays defined (protocol addendum A1), features to be computed on Kaggle (K06); APT-Eval dropped (too few human documents); CoAuthor, SARC and images not prepared |
 | S3 | Done: Tables 2, D.2 and 3 of the first submission reproduced exactly |
 | S4 | Done: protocol frozen (commit `d091b5b`) after two G4 review rounds (findings F14-F17); one deviation since (F18) |
 | S5 | Infrastructure written and rehearsed on development data before any held-out run (`scripts/run_s5.py`, `scripts/report_endpoints.py`, `configs/s5/`); no held-out run yet |

@@ -1,0 +1,13 @@
+# Held-out: HC3-Chinese, three largest sources (protocol addendum A1). One pool per source x
+# detector. Written on 10 November 2026, before the feature table existed; the sources are
+# those the loader selects by size, hence "all".
+corpus: hc3zh
+features: data/features/hc3zh_features.parquet
+outcomes: [sentx, ttr]
+domains: all
+human: {source: human}
+machine_groups:
+  chatgpt: {source: chatgpt}
+detectors:
+  xlmr: {score: score_xlmr, flag: flag_xlmr}
+  tfidfc: {score: score_tfidfc, flag: flag_tfidfc}

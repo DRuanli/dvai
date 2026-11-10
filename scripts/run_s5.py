@@ -16,6 +16,10 @@ table is and how pools are formed::
     detectors:
       tfidf: {score: score_tfidf, flag: flag_tfidf}
     domains: [news, reddit]                      # optional: pools are formed within a domain
+                                                 # ("all": every domain of the feature table)
+
+``machine_groups: {by: source}`` makes one group per value of that column among the machine
+records (for corpora whose generators are chosen by a size rule when the subset is built).
 
 
 Grids: ``primary`` (all primary endpoints) and the secondary grids ``small_budget``,
@@ -97,6 +101,19 @@ def pool_plan(cfg: dict) -> list[tuple[str, str | None, str, str]]:
     return plan
 
 
+def resolve(cfg: dict, feat: pd.DataFrame) -> dict:
+    """Expand the two data-dependent shortcuts of a corpus configuration."""
+    cfg = dict(cfg)
+    if cfg.get("domains") == "all":
+        cfg["domains"] = sorted(map(str, feat["domain"].unique()))
+    groups = cfg["machine_groups"]
+    if set(groups) == {"by"}:
+        col = groups["by"]
+        values = sorted(map(str, feat.loc[feat["a"] > 0, col].unique()))
+        cfg["machine_groups"] = {v: {col: v} for v in values}
+    return cfg
+
+
 def cell_specs(grid: str, frozen: dict, corpus: str, det: str, pool_name: str) -> tuple[list, int]:
     g = frozen["grid"]
     prim = g["primary"]
@@ -148,6 +165,7 @@ def main() -> None:
     frozen = yaml.safe_load(FROZEN.read_text())
     cfg = yaml.safe_load(Path(args.config).read_text())
     feat = pd.read_parquet(cfg["features"])
+    cfg = resolve(cfg, feat)
     out_dir = root / args.grid
     out_dir.mkdir(parents=True, exist_ok=True)
     man_path = out_dir / f"{cfg['corpus']}.manifest.json"
