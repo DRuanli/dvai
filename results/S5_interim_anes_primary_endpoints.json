@@ -1,0 +1,352 @@
+{
+  "status": "INTERIM: Study 3 (ANES) only. The endpoints are defined over all held-out corpora (protocol section 6, addendum A1). PE1 is not decidable with one unit: 'passes: false' here means 'not evaluated', not a failure. Final endpoints: results/S5_endpoints.json.",
+  "units": [
+    "anes2024"
+  ],
+  "cells": 756,
+  "PE1": {
+    "itt": {
+      "units": 1,
+      "cells": 756,
+      "pooled_ratio": 0.7646963727732968,
+      "pooled_ratio_bca90": [
+        NaN,
+        NaN
+      ],
+      "per_unit_ratio": {
+        "anes2024": 0.7646963727732968
+      },
+      "wilcoxon_p_one_sided": NaN,
+      "passes": false
+    },
+    "per_protocol": {
+      "units": 1,
+      "cells": 524,
+      "pooled_ratio": 0.5664650755662366,
+      "pooled_ratio_bca90": [
+        NaN,
+        NaN
+      ],
+      "per_unit_ratio": {
+        "anes2024": 0.5664650755662366
+      },
+      "wilcoxon_p_one_sided": NaN,
+      "passes": false
+    },
+    "feasible_share_of_replications": 0.5312063492063492,
+    "cells_never_feasible": 0.1746031746031746,
+    "passes": false
+  },
+  "PE2": {
+    "cells": 756,
+    "mean_coverage": 0.9814999999999998,
+    "share_cells_ge_090": 1.0,
+    "min_coverage": 0.938,
+    "median_mc_se_per_cell": 0.0038438262187565153,
+    "median_width_ratio": 1.4841334512228201,
+    "by_budget": {
+      "0.02": {
+        "mean_coverage": 0.9874761904761903,
+        "share_cells_ge_090": 1.0,
+        "median_width_ratio": 2.014411004637258
+      },
+      "0.05": {
+        "mean_coverage": 0.9818888888888889,
+        "share_cells_ge_090": 1.0,
+        "median_width_ratio": 1.3424038838709933
+      },
+      "0.1": {
+        "mean_coverage": 0.9751349206349206,
+        "share_cells_ge_090": 1.0,
+        "median_width_ratio": 1.135681209752098
+      }
+    },
+    "passes": true
+  },
+  "PE3": {
+    "bad": {
+      "replications": 3045,
+      "rate": 0.015106732348111659,
+      "upper95_cluster_bootstrap": 0.019659283515368185,
+      "upper95_clopper_pearson": 0.01927480506777315
+    },
+    "near": {
+      "replications": 1599,
+      "rate": 0.021888680425265792,
+      "upper95_cluster_bootstrap": 0.028985507246376812,
+      "upper95_clopper_pearson": 0.028916942895534387
+    },
+    "worst_cell_rate": 0.06451612903225806,
+    "power_small_bias": 0.7016326937691304,
+    "evaluable": true,
+    "passes": true
+  },
+  "PE4": {
+    "pooled": {
+      "rules": {
+        "policy_debiased": {
+          "max_excess_srmse": 0.12302370393924407,
+          "boot90": [
+            0.12302370393924407,
+            0.12302370393924407
+          ],
+          "mean_excess_srmse": 0.025487081467087044,
+          "pooled_srmse": 0.05752787963562338
+        },
+        "naive": {
+          "max_excess_srmse": 0.19523045026585634,
+          "boot90": [
+            0.19523045026585634,
+            0.19523045026585634
+          ],
+          "mean_excess_srmse": 0.02570177034219758,
+          "pooled_srmse": 0.06672108606100809
+        },
+        "deletion": {
+          "max_excess_srmse": 0.10116159728466748,
+          "boot90": [
+            0.10116159728466748,
+            0.10116159728466748
+          ],
+          "mean_excess_srmse": 0.008617720005822711,
+          "pooled_srmse": 0.03968262996222188
+        },
+        "hajek": {
+          "max_excess_srmse": 0.3113092290994323,
+          "boot90": [
+            0.3113092290994323,
+            0.3113092290994323
+          ],
+          "mean_excess_srmse": 0.1593422432661173,
+          "pooled_srmse": 0.18912944437171153
+        },
+        "flag_ppi": {
+          "max_excess_srmse": 0.1867773924747029,
+          "boot90": [
+            0.1867773924747029,
+            0.1867773924747029
+          ],
+          "mean_excess_srmse": 0.03738127309599517,
+          "pooled_srmse": 0.07268081383025163
+        },
+        "rc_ppi_pp": {
+          "max_excess_srmse": 0.1580837733814907,
+          "boot90": [
+            0.1580837733814907,
+            0.1580837733814907
+          ],
+          "mean_excess_srmse": 0.029918563790890924,
+          "pooled_srmse": 0.06355713275249981
+        }
+      },
+      "lowest_worst_case": "deletion",
+      "policy_is_lowest": false
+    },
+    "by_budget": {
+      "0.02": {
+        "rules": {
+          "policy_debiased": {
+            "max_excess_srmse": 0.12302370393924407,
+            "boot90": [
+              0.12302370393924407,
+              0.12302370393924407
+            ],
+            "mean_excess_srmse": 0.044029868565141586,
+            "pooled_srmse": 0.08002194531451225
+          },
+          "naive": {
+            "max_excess_srmse": 0.19523045026585634,
+            "boot90": [
+              0.19523045026585634,
+              0.19523045026585634
+            ],
+            "mean_excess_srmse": 0.02223080684199586,
+            "pooled_srmse": 0.06672108606100809
+          },
+          "deletion": {
+            "max_excess_srmse": 0.0399708252277274,
+            "boot90": [
+              0.0399708252277274,
+              0.0399708252277274
+            ],
+            "mean_excess_srmse": 0.0051467565056209945,
+            "pooled_srmse": 0.03968262996222188
+          },
+          "hajek": {
+            "max_excess_srmse": 0.3113092290994323,
+            "boot90": [
+              0.3113092290994323,
+              0.3113092290994323
+            ],
+            "mean_excess_srmse": 0.23703769791048315,
+            "pooled_srmse": 0.2605703885987845
+          },
+          "flag_ppi": {
+            "max_excess_srmse": 0.1867773924747029,
+            "boot90": [
+              0.1867773924747029,
+              0.1867773924747029
+            ],
+            "mean_excess_srmse": 0.05841286769478587,
+            "pooled_srmse": 0.09913477393675306
+          },
+          "rc_ppi_pp": {
+            "max_excess_srmse": 0.1580837733814907,
+            "boot90": [
+              0.1580837733814907,
+              0.1580837733814907
+            ],
+            "mean_excess_srmse": 0.05518033601847607,
+            "pooled_srmse": 0.09197816022220572
+          }
+        },
+        "lowest_worst_case": "deletion",
+        "policy_is_lowest": false
+      },
+      "0.05": {
+        "rules": {
+          "policy_debiased": {
+            "max_excess_srmse": 0.06218219655171497,
+            "boot90": [
+              0.06218219655171497,
+              0.06218219655171497
+            ],
+            "mean_excess_srmse": 0.022194546933899963,
+            "pooled_srmse": 0.05037150103212406
+          },
+          "naive": {
+            "max_excess_srmse": 0.19523045026585634,
+            "boot90": [
+              0.19523045026585634,
+              0.19523045026585634
+            ],
+            "mean_excess_srmse": 0.025295125653519837,
+            "pooled_srmse": 0.06672108606100809
+          },
+          "deletion": {
+            "max_excess_srmse": 0.07071390155259995,
+            "boot90": [
+              0.07071390155259995,
+              0.07071390155259995
+            ],
+            "mean_excess_srmse": 0.00821107531714497,
+            "pooled_srmse": 0.03968262996222188
+          },
+          "hajek": {
+            "max_excess_srmse": 0.1895459735290253,
+            "boot90": [
+              0.1895459735290253,
+              0.1895459735290253
+            ],
+            "mean_excess_srmse": 0.1445520807269296,
+            "pooled_srmse": 0.1641857465315281
+          },
+          "flag_ppi": {
+            "max_excess_srmse": 0.10596047800180276,
+            "boot90": [
+              0.10596047800180276,
+              0.10596047800180276
+            ],
+            "mean_excess_srmse": 0.03412515990070524,
+            "pooled_srmse": 0.06523580821159339
+          },
+          "rc_ppi_pp": {
+            "max_excess_srmse": 0.08500354938669213,
+            "boot90": [
+              0.08500354938669213,
+              0.08500354938669213
+            ],
+            "mean_excess_srmse": 0.024485908496784642,
+            "pooled_srmse": 0.0522200669746633
+          }
+        },
+        "lowest_worst_case": "policy_debiased",
+        "policy_is_lowest": true
+      },
+      "0.1": {
+        "rules": {
+          "policy_debiased": {
+            "max_excess_srmse": 0.03942416618933498,
+            "boot90": [
+              0.03942416618933498,
+              0.03942416618933498
+            ],
+            "mean_excess_srmse": 0.010236828902219563,
+            "pooled_srmse": 0.03142564172716679
+          },
+          "naive": {
+            "max_excess_srmse": 0.19523045026585634,
+            "boot90": [
+              0.19523045026585634,
+              0.19523045026585634
+            ],
+            "mean_excess_srmse": 0.029579378531077026,
+            "pooled_srmse": 0.06672108606100809
+          },
+          "deletion": {
+            "max_excess_srmse": 0.10116159728466748,
+            "boot90": [
+              0.10116159728466748,
+              0.10116159728466748
+            ],
+            "mean_excess_srmse": 0.012495328194702162,
+            "pooled_srmse": 0.03968262996222188
+          },
+          "hajek": {
+            "max_excess_srmse": 0.1318873409399716,
+            "boot90": [
+              0.1318873409399716,
+              0.1318873409399716
+            ],
+            "mean_excess_srmse": 0.09643695116093917,
+            "pooled_srmse": 0.11160624268570381
+          },
+          "flag_ppi": {
+            "max_excess_srmse": 0.05938130808038175,
+            "boot90": [
+              0.05938130808038175,
+              0.05938130808038175
+            ],
+            "mean_excess_srmse": 0.019605791692494382,
+            "pooled_srmse": 0.042001047850882996
+          },
+          "rc_ppi_pp": {
+            "max_excess_srmse": 0.05459965136981273,
+            "boot90": [
+              0.05459965136981273,
+              0.05459965136981273
+            ],
+            "mean_excess_srmse": 0.01008944685741207,
+            "pooled_srmse": 0.030522287241564788
+          }
+        },
+        "lowest_worst_case": "policy_debiased",
+        "policy_is_lowest": true
+      }
+    }
+  },
+  "source": {
+    "raw_dir": "results/raw/S5/primary",
+    "files": [
+      "anes2024__olmo__fdgpt.parquet",
+      "anes2024__olmo__roberta.parquet",
+      "anes2024__olmo__tfidf.parquet",
+      "anes2024__phi__fdgpt.parquet",
+      "anes2024__phi__roberta.parquet",
+      "anes2024__phi__tfidf.parquet",
+      "anes2024__qwen__fdgpt.parquet",
+      "anes2024__qwen__roberta.parquet",
+      "anes2024__qwen__tfidf.parquet"
+    ],
+    "cell": [
+      "corpus",
+      "pool",
+      "budget",
+      "eps",
+      "outcome"
+    ],
+    "unit": [
+      "corpus"
+    ]
+  }
+}
