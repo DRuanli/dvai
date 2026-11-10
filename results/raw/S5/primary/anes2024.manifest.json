@@ -32,6 +32,17 @@
       "cells_skipped": [],
       "replications": 1000,
       "seconds": 485
+    },
+    "anes2024__olmo__tfidf": {
+      "human": 3448,
+      "machine": 1118,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.8765652951699463,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 490
     }
   },
   "corpus": "anes2024",
