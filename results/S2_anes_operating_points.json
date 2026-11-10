@@ -1,0 +1,56 @@
+{
+  "calibration_records": 2916,
+  "evaluation_records": 6804,
+  "evaluation_by_source": {
+    "human": 3448,
+    "microsoft/Phi-3.5-mini-instruct": 1119,
+    "Qwen/Qwen2.5-7B-Instruct": 1119,
+    "allenai/OLMo-2-1124-7B-Instruct": 1118
+  },
+  "threshold_fdgpt": 0.9239297747611988,
+  "tfidf_training_generator": "Qwen/Qwen2.5-7B-Instruct",
+  "operating_points": {
+    "tfidf": {
+      "flag_rate_by_source": {
+        "Qwen/Qwen2.5-7B-Instruct": 0.9741,
+        "allenai/OLMo-2-1124-7B-Instruct": 0.8766,
+        "human": 0.0,
+        "microsoft/Phi-3.5-mini-instruct": 0.7006
+      },
+      "flag_rate_human_by_mode": {
+        "face-to-face": 0.0,
+        "phone": 0.0,
+        "web": 0.0
+      },
+      "unscorable_share": 0.0
+    },
+    "roberta": {
+      "flag_rate_by_source": {
+        "Qwen/Qwen2.5-7B-Instruct": 0.7391,
+        "allenai/OLMo-2-1124-7B-Instruct": 0.6055,
+        "human": 0.3083,
+        "microsoft/Phi-3.5-mini-instruct": 0.4772
+      },
+      "flag_rate_human_by_mode": {
+        "face-to-face": 0.1541,
+        "phone": 0.1702,
+        "web": 0.3461
+      },
+      "unscorable_share": 0.0
+    },
+    "fdgpt": {
+      "flag_rate_by_source": {
+        "Qwen/Qwen2.5-7B-Instruct": 0.5599,
+        "allenai/OLMo-2-1124-7B-Instruct": 0.8846,
+        "human": 0.0539,
+        "microsoft/Phi-3.5-mini-instruct": 0.5179
+      },
+      "flag_rate_human_by_mode": {
+        "face-to-face": 0.065,
+        "phone": 0.0667,
+        "web": 0.0509
+      },
+      "unscorable_share": 0.051587301587301584
+    }
+  }
+}
