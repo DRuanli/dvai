@@ -173,7 +173,10 @@ def main() -> None:
     ap.add_argument("--design", required=True, help="design name or JSON spec")
     ap.add_argument("--reps", type=int, default=200)
     ap.add_argument("--jobs", type=int, default=2)
+    ap.add_argument("--tag", default="S4c", help="prefix of the raw directory and outputs")
     args = ap.parse_args()
+    global RAW
+    RAW = Path("results/raw") / args.tag
     design = json.loads(args.design) if args.design.startswith("{") else args.design
     t0 = time.time()
     run(design, args.reps, args.jobs)
@@ -183,19 +186,19 @@ def main() -> None:
         [d[d.estimator.str.startswith("cert_")] for d in map(pd.read_parquet, files)],
         ignore_index=True))
     reg = regret(cell).sort_values(["max_excess_srmse", "pooled_srmse"])
-    reg.to_csv("results/S4c_regret.csv", index=False)
-    regret(cell, ["budget"]).to_csv("results/S4c_regret_by_budget.csv", index=False)
-    cert.to_csv("results/S4c_certification.csv", index=False)
+    reg.to_csv(f"results/{args.tag}_regret.csv", index=False)
+    regret(cell, ["budget"]).to_csv(f"results/{args.tag}_regret_by_budget.csv", index=False)
+    cert.to_csv(f"results/{args.tag}_certification.csv", index=False)
     feas = pd.DataFrame({
         name: {"mean_cell_srmse": cell[name].mean(), "max_cell_srmse": cell[name].max(),
                "cells_better_than_other": float((cell[name] < cell[other]).mean())}
         for name, other in (("rc_ppi_pp", "rc_ppi_pp_mc6"), ("rc_ppi_pp_mc6", "rc_ppi_pp"))}).T
-    feas.to_csv("results/S4c_feasibility.csv")
+    feas.to_csv(f"results/{args.tag}_feasibility.csv")
     fbc = pd.concat([fallback_compare(pd.read_parquet(f)) for f in files], ignore_index=True)
-    fbc.to_csv("results/S4c_fallback_cells.csv", index=False)
+    fbc.to_csv(f"results/{args.tag}_fallback_cells.csv", index=False)
     print(fbc.groupby("eps")[["srmse_flag_ppi_fallback", "srmse_hajek_fallback"]].mean()
           .round(4))
-    Path("results/S4c_manifest.json").write_text(json.dumps(
+    Path(f"results/{args.tag}_manifest.json").write_text(json.dumps(
         {"design": design, "reps": args.reps, "budgets": BUDGETS, "eps": EPS,
          "pools": [f.name for f in files]}, indent=2))
     ir = pd.concat([interval_rules(pd.read_parquet(f)) for f in files], ignore_index=True)
@@ -203,7 +206,7 @@ def main() -> None:
         **{f"mean_{r}": (f"cov_{r}", "mean") for r in RULES},
         **{f"ge90_{r}": (f"cov_{r}", lambda v: float(np.mean(v >= 0.90))) for r in RULES},
         **{f"wr_{r}": (f"wr_{r}", "median") for r in RULES}).reset_index()
-    irs.to_csv("results/S4c_interval_rules.csv", index=False)
+    irs.to_csv(f"results/{args.tag}_interval_rules.csv", index=False)
     print(irs.round(3).to_string(index=False))
     pd.set_option("display.width", 250)
     print(reg.round(4).to_string(index=False))

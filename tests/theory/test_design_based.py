@@ -45,7 +45,7 @@ def test_moment_inversion_is_biased_when_m1_fails(runs):
     assert abs(np.median(e)) > 2 * np.sqrt(np.mean(runs["rc"] ** 2))
 
 
-def test_theorem2_linearized_interval_coverage(runs):
+def test_theorem2_reported_interval_coverage(runs):
     for key in ("rc_cover", "hajek_cover"):
         cov = runs[key].mean()
         assert 0.90 <= cov <= 0.99, (key, cov)

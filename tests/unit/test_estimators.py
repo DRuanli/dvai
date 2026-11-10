@@ -105,3 +105,17 @@ def test_graded_labels_are_accepted(pool):
     fit = CrossFitPropensity().fit(rs.observed, audit, rng)
     assert fit.feasible
     assert np.all((fit.eta_all >= 0) & (fit.eta_all <= 1))
+
+
+def test_audited_records_use_out_of_fold_predictions_everywhere(pool):
+    """First-phase sum and audit term use the same out-of-fold prediction (S6 review, C1)."""
+    from d2vi.estimators.propensity import CrossFitPropensity
+    from d2vi.sampling.audit import PerfectVerifier, make_design
+    from d2vi.sampling.mixture import IIDMixture
+
+    rng = np.random.default_rng(0)
+    rs = IIDMixture().sample(pool, 600, 0.3, rng)
+    audit = make_design("proportional").draw(rs.observed, 80, rng, PerfectVerifier(rs.a))
+    fit = CrossFitPropensity().fit(rs.observed, audit, rng)
+    assert fit.feasible
+    np.testing.assert_array_equal(fit.eta_all[audit.idx], fit.eta_oof)

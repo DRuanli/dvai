@@ -1,6 +1,7 @@
 """Audit-based ratio estimators of the human mean: one family, several predictors.
 
-All estimators here have the form (Section 3.5, Corollary 1)
+All estimators here have the form (Definition 1 of paper/theory.tex; ``N_hat``, ``D_hat``
+are its numerator and denominator)
 
     N_hat = lam * sum_U y_j (1 - eta_j)    + sum_{audit} w_i y_i [(1 - a_i) - lam (1 - eta_i)]
     D_hat = lam * sum_U     (1 - eta_j)    + sum_{audit} w_i     [(1 - a_i) - lam (1 - eta_i)]

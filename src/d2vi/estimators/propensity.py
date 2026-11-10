@@ -3,8 +3,8 @@
 The model is fitted on the audit only, with design weights, and cross-fitted so that the
 prediction used in an audited record's residual never comes from a model that saw that
 record (Zrnic and Candes, 2024). Records outside the audit receive the average of the
-fold models, which makes the estimator the average of ``K`` fold-wise difference
-estimators (see Section 3.5 of the revised paper and ``tests/theory``).
+fold models; audited records keep their out-of-fold prediction in the first-phase sum as
+well (condition (iv) of Theorem 2 in ``paper/theory.tex``).
 
 Graded labels ``a in [0, 1]`` are handled by the standard trick of duplicating each record
 as a machine row with weight ``w a`` and a human row with weight ``w (1 - a)``.
@@ -27,7 +27,7 @@ __all__ = ["PropensityFit", "CrossFitPropensity"]
 class PropensityFit:
     feasible: bool
     reason: str = ""
-    eta_all: np.ndarray | None = None  # fold-averaged prediction for every record
+    eta_all: np.ndarray | None = None  # fold average; out-of-fold for audited records
     eta_oof: np.ndarray | None = None  # out-of-fold prediction for each audited record
     folds: np.ndarray | None = None
 
@@ -112,4 +112,10 @@ class CrossFitPropensity:
             pred_all = self._fit_predict(xa[train], a_tr, w[train], x)
             eta_sum += pred_all
             eta_oof[folds == k] = pred_all[audit.idx[folds == k]]
-        return PropensityFit(True, "", eta_sum / self.n_folds, eta_oof, folds)
+        # Unaudited records: average of the fold models. Audited records: their own
+        # out-of-fold prediction, also in the first-phase sum, so that no prediction used
+        # for a record comes from a model trained on that record (Theorem 2; before the S6
+        # review the first-phase sum used the fold average for audited records too).
+        eta_all = eta_sum / self.n_folds
+        eta_all[audit.idx] = eta_oof
+        return PropensityFit(True, "", eta_all, eta_oof, folds)
