@@ -113,8 +113,8 @@ class XLMRDetector:
                 opt.zero_grad()
                 step += 1
                 if step % 50 == 0 or step == steps:
-                    self.log.append({"step": step, "epoch": epoch, "loss": float(loss)})
-                    print(f"  step {step}/{steps} loss {float(loss):.4f}", flush=True)
+                    self.log.append({"step": step, "epoch": epoch, "loss": loss.item()})
+                    print(f"  step {step}/{steps} loss {loss.item():.4f}", flush=True)
         self.model.eval()
         return self
 
