@@ -19,10 +19,14 @@ not move on until the gate passes or the deviation is written down.
 
 ## Status
 
-| Stage | Status (9 November 2026) |
+| Stage | Status (10 November 2026) |
 |---|---|
 | S0, S1 | Done |
-| S2 | Development corpora done (Ghostbuster TF-IDF and Fast-DetectGPT, HC3 RoBERTa); ANES human pool built; synthetic respondents and held-out corpora pending |
+| S2 | Development corpora done; ANES human pool built; synthetic respondents and detector scores running on Kaggle (K03); RAID and Beemo subsets defined, features to be computed on Kaggle (K05); multilingual and other registered corpora not prepared |
 | S3 | Done: Tables 2, D.2 and 3 of the first submission reproduced exactly |
-| S4 | Done: protocol frozen (`configs/protocol/frozen.yaml`, tag `protocol-freeze`) after two G4 review rounds (findings F14-F16) |
-| S5-S9 | Pending |
+| S4 | Done: protocol frozen (commit `d091b5b`) after two G4 review rounds (findings F14-F17); one deviation since (F18) |
+| S5 | Infrastructure written and rehearsed on development data before any held-out run (`scripts/run_s5.py`, `scripts/report_endpoints.py`, `configs/s5/`); no held-out run yet |
+| S6 | Done: `paper/theory.tex`, two rounds of independent review (finding F18), 34 checks in `tests/theory` |
+| S7 | Pending |
+| S8 | Started: response letter skeleton and result-independent manuscript sections (kept outside this repository) |
+| S9 | Pending |

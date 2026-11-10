@@ -15,6 +15,8 @@ table is and how pools are formed::
       qwen: {source: Qwen/Qwen2.5-7B-Instruct}
     detectors:
       tfidf: {score: score_tfidf, flag: flag_tfidf}
+    domains: [news, reddit]                      # optional: pools are formed within a domain
+
 
 Grids: ``primary`` (all primary endpoints) and the secondary grids ``small_budget``,
 ``large_n``, ``designs``, ``mixtures``, ``verification_error``.
@@ -84,6 +86,17 @@ def build_pool(feat: pd.DataFrame, cfg: dict, group: str, det: str) -> tuple[pd.
     return pool, info
 
 
+def pool_plan(cfg: dict) -> list[tuple[str, str | None, str, str]]:
+    """``(pool name, domain or None, machine group, detector)`` for every pool of a corpus:
+    one pool per (domain x) group x detector (frozen protocol, section 2)."""
+    plan = []
+    for dom in cfg.get("domains") or [None]:
+        for group, det in itertools.product(cfg["machine_groups"], cfg["detectors"]):
+            label = group if dom is None else f"{dom}-{group}"
+            plan.append((f"{cfg['corpus']}__{label}__{det}", dom, group, det))
+    return plan
+
+
 def cell_specs(grid: str, frozen: dict, corpus: str, det: str, pool_name: str) -> tuple[list, int]:
     g = frozen["grid"]
     prim = g["primary"]
@@ -144,13 +157,13 @@ def main() -> None:
                  "features_sha256": sha(cfg["features"]), "frozen_sha256": sha(FROZEN),
                  "d2vi": d2vi.__version__, "git_commit": commit.strip(),
                  "rehearsal": args.reps is not None, "estimators": ESTIMATORS}
-    for group, det in itertools.product(cfg["machine_groups"], cfg["detectors"]):
-        name = f"{cfg['corpus']}__{group}__{det}"
+    for name, dom, group, det in pool_plan(cfg):
         out = out_dir / f"{name}.parquet"
         if out.exists():
             print("exists, skipped:", out.name, flush=True)
             continue
-        pool, info = build_pool(feat, cfg, group, det)
+        rows = feat if dom is None else feat[feat["domain"].eq(dom)]
+        pool, info = build_pool(rows, cfg, group, det)
         specs, reps = cell_specs(args.grid, frozen, cfg["corpus"], det, name)
         reps = args.reps or reps
         exp = experiment(pool, cfg["outcomes"], frozen["seed"])

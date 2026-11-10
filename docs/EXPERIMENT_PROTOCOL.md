@@ -176,3 +176,18 @@ before they ran.
 
 | Date | Change | Reason | Results affected (labelled exploratory) |
 |---|---|---|---|
+| 10 Nov 2026, before any held-out run | Cross-fitting: an audited record uses its out-of-fold prediction in the first-phase sum as well (before: the average of the K fold models, K − 1 of which were trained on that record). Code: `CrossFitPropensity.fit`; no configuration value changed | Independent review of the theory section (finding F18): Theorem 2 requires that no prediction used for an audited record comes from a model fitted with it | None on held-out data (none existed). Development round 3 was rerun with the corrected code (`results/S4d_*.csv`, same seeds): every frozen choice is unchanged and no summary moves by more than 0.0005 except the RC-PPI++ width ratio (+0.003 to +0.005): policy worst excess sRMSE 0.1656 (was 0.1658), pooled 0.0717 (0.0718); RC-PPI++ ITT pooled sRMSE 0.0787 (0.0788); ITT coverage 0.9791 (0.9790), 98.9% of cells ≥ 0.90 (same); TOST false certification 0.38%, near boundary 1.4%, worst cell 5.1% (same); feasibility and the fallback comparison identical to three decimals |
+
+### Clarifications written before the held-out runs (10 November 2026)
+
+* **Unit of PE1.** The unit of the Wilcoxon test is the corpus, as registered. A one-sided
+  signed-rank test cannot reach p < 0.05 with fewer than five units (its smallest p-value
+  is 1/2^n), so PE1 is decidable only if at least five held-out corpora are run. Three are
+  prepared so far (RAID, Beemo, ANES); the registered list has more (multilingual corpora,
+  student essays, graded authorship). If fewer than five are run, PE1 is reported as "not
+  decidable as registered" together with the pooled ratio and its interval; the unit is
+  not redefined after the fact.
+* **Pool definitions** for RAID and Beemo (`configs/s5/raid.yaml`, `configs/s5/beemo.yaml`)
+  were written before their feature tables existed: 5 domains x 10 generator/attack groups
+  x 2 detectors, and 4 versions x 2 detectors. The four text outcomes of the development
+  corpora are used.

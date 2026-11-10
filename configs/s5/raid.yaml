@@ -1,0 +1,23 @@
+# Held-out: RAID subset (src/d2vi/data/heldout.py). Pools as fixed in the frozen protocol,
+# section 2: one pool per domain x generator (x attack) x detector; thresholds and the
+# TF-IDF detector of a domain come from the other four domains (cross-domain rule).
+# Written on 10 November 2026, before the feature table existed.
+corpus: raid
+features: data/features/raid_features.parquet
+outcomes: [sent, read, trust, subj]
+domains: [news, reddit, reviews, poetry, books]
+human: {source: human}
+machine_groups:
+  chatgpt: {source: chatgpt, version: none}
+  gpt4: {source: gpt4, version: none}
+  llama-chat: {source: llama-chat, version: none}
+  mistral-chat: {source: mistral-chat, version: none}
+  chatgpt-paraphrase: {source: chatgpt, version: paraphrase}
+  chatgpt-synonym: {source: chatgpt, version: synonym}
+  chatgpt-homoglyph: {source: chatgpt, version: homoglyph}
+  llama-chat-paraphrase: {source: llama-chat, version: paraphrase}
+  llama-chat-synonym: {source: llama-chat, version: synonym}
+  llama-chat-homoglyph: {source: llama-chat, version: homoglyph}
+detectors:
+  fdgpt: {score: score_fdgpt, flag: flag_fdgpt}
+  tfidf: {score: score_tfidf, flag: flag_tfidf}

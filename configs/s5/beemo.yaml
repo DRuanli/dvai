@@ -1,0 +1,17 @@
+# Held-out: Beemo (expert- and LLM-edited machine text). Pools as fixed in the frozen
+# protocol, section 2: one pool per version of the machine text x detector; single-domain
+# corpus, so thresholds and the TF-IDF detector come from the 30% calibration split and the
+# feature table holds evaluation records only (notebook K05; src/d2vi/features/heldout.py).
+# Written on 10 November 2026, before the feature table existed.
+corpus: beemo
+features: data/features/beemo_features.parquet
+outcomes: [sent, read, trust, subj]
+human: {version: human}
+machine_groups:
+  machine: {version: machine}
+  expert_edited: {version: expert_edited}
+  llama31_edited: {version: llama31_edited}
+  gpt4o_edited: {version: gpt4o_edited}
+detectors:
+  fdgpt: {score: score_fdgpt, flag: flag_fdgpt}
+  tfidf: {score: score_tfidf, flag: flag_tfidf}

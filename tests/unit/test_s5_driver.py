@@ -43,3 +43,15 @@ def test_anes_config_matches_the_protocol_pools():
     cfg = yaml.safe_load((ROOT / "configs" / "s5" / "anes.yaml").read_text())
     assert len(cfg["machine_groups"]) * len(cfg["detectors"]) == 9
     assert len(cfg["outcomes"]) == 4
+
+
+def test_heldout_configs_give_one_pool_per_domain_group_and_detector():
+    raid = yaml.safe_load((ROOT / "configs" / "s5" / "raid.yaml").read_text())
+    plan = run_s5.pool_plan(raid)
+    assert len(plan) == 5 * (4 + 2 * 3) * 2 and len({name for name, *_ in plan}) == len(plan)
+    assert ("raid__poetry-llama-chat-homoglyph__fdgpt", "poetry", "llama-chat-homoglyph",
+            "fdgpt") in plan
+    beemo = yaml.safe_load((ROOT / "configs" / "s5" / "beemo.yaml").read_text())
+    assert [n for n, *_ in run_s5.pool_plan(beemo)][:2] == ["beemo__machine__fdgpt",
+                                                           "beemo__machine__tfidf"]
+    assert len(run_s5.pool_plan(beemo)) == 8
