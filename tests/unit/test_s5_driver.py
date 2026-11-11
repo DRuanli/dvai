@@ -1,8 +1,10 @@
 """The S5 driver takes its grids from the frozen protocol file."""
 
 import importlib.util
+import json
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 import yaml
@@ -70,3 +72,33 @@ def test_data_dependent_shortcuts_of_a_configuration_are_resolved_from_the_table
         assert c["corpus"] == name
         if pools:
             assert len(run_s5.pool_plan(c)) == pools
+
+
+def test_driver_records_empty_pools_and_stops_at_the_time_budget(tmp_path, monkeypatch):
+    rng = np.random.default_rng(0)
+    n_h, n_m = 1000, 500
+    feat = pd.DataFrame({
+        "doc_id": [f"d{i}" for i in range(n_h + n_m)], "a": [0.0] * n_h + [1.0] * n_m,
+        "source": ["human"] * n_h + ["g1"] * n_m, "domain": "x",
+        "length": rng.integers(50, 400, n_h + n_m), "y_o": rng.normal(size=n_h + n_m),
+        "score_d": np.r_[rng.normal(0, 1, n_h), rng.normal(2, 1, n_m)]})
+    feat["flag_d"] = (feat["score_d"] > 1).astype(int)
+    feat.to_parquet(tmp_path / "f.parquet")
+    cfg = {"corpus": "toy", "features": str(tmp_path / "f.parquet"), "outcomes": ["o"],
+           "human": {"source": "human"},
+           "machine_groups": {"g1": {"source": "g1"}, "g2": {"source": "g2"}},
+           "detectors": {"d": {"score": "score_d", "flag": "flag_d"}}}
+    (tmp_path / "c.yaml").write_text(yaml.safe_dump(cfg))
+    monkeypatch.chdir(ROOT)
+    argv = ["run_s5.py", str(tmp_path / "c.yaml"), "--grid", "large_n", "--reps", "2",
+            "--jobs", "1", "--out-root", str(tmp_path / "out")]
+    monkeypatch.setattr("sys.argv", [*argv, "--max-minutes", "-1"])
+    run_s5.main()                                     # budget already spent: nothing runs
+    man = json.loads((tmp_path / "out" / "large_n" / "toy.manifest.json").read_text())
+    assert man["pools"] == {}
+    monkeypatch.setattr("sys.argv", argv)
+    run_s5.main()
+    man = json.loads((tmp_path / "out" / "large_n" / "toy.manifest.json").read_text())
+    assert man["pools"]["toy__g2__d"]["empty"] and man["pools"]["toy__g2__d"]["cells_run"] == 0
+    assert man["pools"]["toy__g1__d"]["cells_skipped"]          # N = 2,000 > pool: skipped
+    assert not (tmp_path / "out" / "large_n" / "toy__g2__d.parquet").exists()

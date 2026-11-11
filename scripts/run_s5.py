@@ -26,7 +26,10 @@ Grids: ``primary`` (all primary endpoints) and the secondary grids ``small_budge
 ``large_n``, ``designs``, ``mixtures``, ``verification_error``.
 
 Held-out data are run once: a pool whose output file exists is skipped and there is no
-overwrite option. ``--reps`` is for rehearsals only and requires ``--out-root`` outside
+overwrite option. A pool without records of one class is recorded as empty.
+``--max-minutes`` stops before starting a new pool, so that a run can be split over sessions
+(seeds depend on the cell, not on the order of the pools, so the split does not change any
+result). ``--reps`` is for rehearsals only and requires ``--out-root`` outside
 ``results/raw/S5``. Output: ``<out-root>/<grid>/<corpus>__<group>__<detector>.parquet`` and
 ``<out-root>/<grid>/<corpus>.manifest.json``.
 """
@@ -37,6 +40,7 @@ import argparse
 import hashlib
 import itertools
 import json
+import platform
 import subprocess
 import time
 from pathlib import Path
@@ -158,7 +162,10 @@ def main() -> None:
     ap.add_argument("--jobs", type=int, default=2)
     ap.add_argument("--reps", type=int, help="rehearsal only; needs --out-root")
     ap.add_argument("--out-root", default=str(DEFAULT_ROOT))
+    ap.add_argument("--max-minutes", type=float,
+                    help="start no new pool after this many minutes (the run can be resumed)")
     args = ap.parse_args()
+    started = time.time()
     root = Path(args.out_root)
     if args.reps is not None and root.resolve() == DEFAULT_ROOT.resolve():
         raise SystemExit("--reps is for rehearsals: give --out-root outside results/raw/S5")
@@ -175,13 +182,24 @@ def main() -> None:
                  "features_sha256": sha(cfg["features"]), "frozen_sha256": sha(FROZEN),
                  "d2vi": d2vi.__version__, "git_commit": commit.strip(),
                  "rehearsal": args.reps is not None, "estimators": ESTIMATORS}
+    man_path.write_text(json.dumps(manifest, indent=2))
     for name, dom, group, det in pool_plan(cfg):
         out = out_dir / f"{name}.parquet"
         if out.exists():
             print("exists, skipped:", out.name, flush=True)
             continue
+        if name in manifest["pools"] and manifest["pools"][name].get("empty"):
+            continue
+        if args.max_minutes is not None and (time.time() - started) / 60 > args.max_minutes:
+            print(f"time budget of {args.max_minutes} minutes reached; resume later", flush=True)
+            break
         rows = feat if dom is None else feat[feat["domain"].eq(dom)]
         pool, info = build_pool(rows, cfg, group, det)
+        if info["human"] == 0 or info["machine"] == 0:     # e.g. a generator absent in a language
+            manifest["pools"][name] = {**info, "empty": True, "cells_run": 0}
+            man_path.write_text(json.dumps(manifest, indent=2))
+            print(f"empty pool, recorded: {name}", flush=True)
+            continue
         specs, reps = cell_specs(args.grid, frozen, cfg["corpus"], det, name)
         reps = args.reps or reps
         exp = experiment(pool, cfg["outcomes"], frozen["seed"])
@@ -199,7 +217,8 @@ def main() -> None:
         if frames:
             pd.concat(frames, ignore_index=True).to_parquet(out, index=False)
         manifest["pools"][name] = {**info, "cells_run": len(frames), "cells_skipped": skipped,
-                                   "replications": reps, "seconds": round(time.time() - t0)}
+                                   "replications": reps, "seconds": round(time.time() - t0),
+                                   "git_commit": commit.strip(), "platform": platform.node()}
         man_path.write_text(json.dumps(manifest, indent=2))
         print(f"done {name}: {len(frames)} cells, {len(skipped)} skipped, "
               f"{time.time() - t0:.0f}s", flush=True)
