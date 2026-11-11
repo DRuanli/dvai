@@ -27,29 +27,35 @@ COLS = ["corpus", "pool", "budget", "eps", "n", "design", "mixture", "phi0", "ph
         "sd_h"]
 
 
-def summarise(raw: pd.DataFrame, factor: str) -> pd.DataFrame:
+KEYS = ["corpus", "pool", "budget", "eps", "n", "design", "mixture", "phi", "outcome"]
+
+
+def cell_table(raw: pd.DataFrame) -> pd.DataFrame:
+    """One row per cell: ITT error, coverage, width and feasibility; MSE of the other rules."""
     raw = raw.copy()
     raw["phi"] = "phi0=" + raw["phi0"].astype(str) + ",phi1=" + raw["phi1"].astype(str)
     raw["design"] = raw["design"].astype(str)
     raw["mixture"] = raw["mixture"].astype(str)
-    keys = ["corpus", "pool", "budget", "eps", "n", "design", "mixture", "phi", "outcome"]
     raw["e2"] = ((raw["point"] - raw["truth"]) / raw["sd_h"]) ** 2
     raw["cov"] = (raw["ci_low"] <= raw["truth"]) & (raw["truth"] <= raw["ci_high"])
     raw["width"] = (raw["ci_high"] - raw["ci_low"]) / raw["sd_h"]
     sub = raw[raw["estimator"].isin(RULES)]
-    rc = sub[sub["estimator"].eq("rc_ppi_pp")].set_index([*keys, "rep"])
-    fb = sub[sub["estimator"].eq("flag_ppi")].set_index([*keys, "rep"])
+    rc = sub[sub["estimator"].eq("rc_ppi_pp")].set_index([*KEYS, "rep"])
+    fb = sub[sub["estimator"].eq("flag_ppi")].set_index([*KEYS, "rep"]).reindex(rc.index)
     use = rc["feasible"].astype(bool)
     itt = pd.DataFrame({"e2": np.where(use, rc["e2"], fb["e2"]),
                         "cov": np.where(use, rc["cov"], fb["cov"]),
                         "width": np.where(use, rc["width"], fb["width"]),
                         "feas": use}, index=rc.index).reset_index()
-    cell = itt.groupby(keys).agg(itt_mse=("e2", "mean"), cover=("cov", "mean"),
+    cell = itt.groupby(KEYS).agg(itt_mse=("e2", "mean"), cover=("cov", "mean"),
                                  width=("width", "mean"), feasible=("feas", "mean"))
     # every rule except RC-PPI++ is reported for every replication
-    other = (sub[~sub["estimator"].eq("rc_ppi_pp")].groupby([*keys, "estimator"])["e2"]
+    other = (sub[~sub["estimator"].eq("rc_ppi_pp")].groupby([*KEYS, "estimator"])["e2"]
              .mean().unstack("estimator"))
-    cell = cell.join(other).reset_index()
+    return cell.join(other).reset_index()
+
+
+def summarise(cell: pd.DataFrame, factor: str) -> pd.DataFrame:
     out = []
     for (level, budget), g in cell.groupby([factor, "budget"]):
         row = {"grid_factor": factor, "level": level, "budget": budget, "cells": len(g),
@@ -76,8 +82,9 @@ def main() -> None:
             files = [f for f in files if f.name.startswith(f"{args.corpus}__")]
         if not files:
             continue
-        raw = pd.concat([pd.read_parquet(f, columns=COLS) for f in files], ignore_index=True)
-        s = summarise(raw, factor)
+        cells = pd.concat([cell_table(pd.read_parquet(f, columns=COLS)) for f in files],
+                          ignore_index=True)
+        s = summarise(cells, factor)
         s.insert(0, "grid", grid)
         s.insert(1, "pools", len(files))
         frames.append(s)

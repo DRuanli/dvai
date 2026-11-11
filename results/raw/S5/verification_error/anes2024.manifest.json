@@ -54,6 +54,50 @@
       "cells_skipped": [],
       "replications": 500,
       "seconds": 615
+    },
+    "anes2024__olmo__fdgpt": {
+      "human": 3099,
+      "machine": 1118,
+      "unscorable_dropped": 349,
+      "flag_rate_human": 0.05388835108099387,
+      "flag_rate_machine": 0.8846153846153846,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 639
+    },
+    "anes2024__phi__tfidf": {
+      "human": 3448,
+      "machine": 1119,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.7006255585344057,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 620
+    },
+    "anes2024__phi__roberta": {
+      "human": 3448,
+      "machine": 1119,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.3082946635730858,
+      "flag_rate_machine": 0.4772117962466488,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 616
+    },
+    "anes2024__phi__fdgpt": {
+      "human": 3099,
+      "machine": 1118,
+      "unscorable_dropped": 350,
+      "flag_rate_human": 0.05388835108099387,
+      "flag_rate_machine": 0.5178890876565295,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 612
     }
   },
   "corpus": "anes2024",
