@@ -3,6 +3,8 @@ other rules (frozen protocol, section 4, secondary grids).
 
     python scripts/summarise_secondary.py results/raw/S5 --corpus anes2024 --tag interim_anes
 
+Several roots may be given (e.g. raw files here and compact files from Kaggle).
+
 For every grid directory present, the varying factor of the grid (budget, N, mixture,
 design or verification error) is crossed with the budget. Reported per factor level, as
 means over cells (corpus x pool x eps x outcome): standardised RMSE of each rule; coverage
@@ -71,19 +73,26 @@ def summarise(cell: pd.DataFrame, factor: str) -> pd.DataFrame:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("root")
+    ap.add_argument("root", nargs="+", help="roots holding one directory per grid")
     ap.add_argument("--corpus")
     ap.add_argument("--tag", required=True)
     args = ap.parse_args()
     frames = []
     for grid, factor in GRIDS.items():
-        files = sorted(Path(args.root, grid).glob("*.parquet"))
+        tables = {}
+        for root in args.root:
+            d = Path(root, grid)
+            for f in sorted(d.glob("*.sec.parquet")):           # compact (compact_s5.py)
+                tables[f.name[: -len(".sec.parquet")]] = pd.read_parquet(f)
+            for f in sorted(d.glob("*.parquet")):
+                if f.name.count(".") == 1 and f.stem not in tables:
+                    tables[f.stem] = cell_table(pd.read_parquet(f, columns=COLS))
         if args.corpus:
-            files = [f for f in files if f.name.startswith(f"{args.corpus}__")]
-        if not files:
+            tables = {k: v for k, v in tables.items() if k.startswith(f"{args.corpus}__")}
+        if not tables:
             continue
-        cells = pd.concat([cell_table(pd.read_parquet(f, columns=COLS)) for f in files],
-                          ignore_index=True)
+        files = list(tables)
+        cells = pd.concat(tables.values(), ignore_index=True)
         s = summarise(cells, factor)
         s.insert(0, "grid", grid)
         s.insert(1, "pools", len(files))
