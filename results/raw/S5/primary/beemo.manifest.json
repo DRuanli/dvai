@@ -12,6 +12,19 @@
       "seconds": 593,
       "git_commit": "dabc3677db496b96d9773b6ca11210a8fcbb9b5d",
       "platform": "vm"
+    },
+    "beemo__machine__tfidf": {
+      "human": 1498,
+      "machine": 1525,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.3257676902536716,
+      "flag_rate_machine": 0.7619672131147541,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 507,
+      "git_commit": "dabc3677db496b96d9773b6ca11210a8fcbb9b5d",
+      "platform": "vm"
     }
   },
   "corpus": "beemo",
