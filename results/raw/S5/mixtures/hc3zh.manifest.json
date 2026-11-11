@@ -1,0 +1,199 @@
+{
+  "pools": {
+    "hc3zh__baike-chatgpt__xlmr": {
+      "human": 1276,
+      "machine": 1303,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.21865203761755486,
+      "flag_rate_machine": 0.9524174980813507,
+      "cells_run": 6,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 36,
+      "git_commit": "3703e4002eb2ee13e6c501f485216b141965a052",
+      "platform": "vm"
+    },
+    "hc3zh__baike-chatgpt__tfidfc": {
+      "human": 1276,
+      "machine": 1303,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.06818181818181818,
+      "flag_rate_machine": 0.896392939370683,
+      "cells_run": 6,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 35,
+      "git_commit": "3703e4002eb2ee13e6c501f485216b141965a052",
+      "platform": "vm"
+    },
+    "hc3zh__nlpcc_dbqa-chatgpt__xlmr": {
+      "human": 245,
+      "machine": 970,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.18775510204081633,
+      "flag_rate_machine": 0.8876288659793814,
+      "cells_run": 0,
+      "cells_skipped": [
+        {
+          "eps": 0.05,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "adversarial",
+          "reason": "pool has 245 human documents, 855 requested"
+        },
+        {
+          "eps": 0.2,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "adversarial",
+          "reason": "pool has 245 human documents, 720 requested"
+        },
+        {
+          "eps": 0.05,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "clustered",
+          "reason": "pool has 245 human documents, 855 requested"
+        },
+        {
+          "eps": 0.2,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "clustered",
+          "reason": "pool has 245 human documents, 720 requested"
+        },
+        {
+          "eps": 0.05,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "multigen",
+          "reason": "pool has 245 human documents, 855 requested"
+        },
+        {
+          "eps": 0.2,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "multigen",
+          "reason": "pool has 245 human documents, 720 requested"
+        }
+      ],
+      "replications": 500,
+      "seconds": 4,
+      "git_commit": "3703e4002eb2ee13e6c501f485216b141965a052",
+      "platform": "vm"
+    },
+    "hc3zh__nlpcc_dbqa-chatgpt__tfidfc": {
+      "human": 245,
+      "machine": 970,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.9714285714285714,
+      "flag_rate_machine": 1.0,
+      "cells_run": 0,
+      "cells_skipped": [
+        {
+          "eps": 0.05,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "adversarial",
+          "reason": "pool has 245 human documents, 855 requested"
+        },
+        {
+          "eps": 0.2,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "adversarial",
+          "reason": "pool has 245 human documents, 720 requested"
+        },
+        {
+          "eps": 0.05,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "clustered",
+          "reason": "pool has 245 human documents, 855 requested"
+        },
+        {
+          "eps": 0.2,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "clustered",
+          "reason": "pool has 245 human documents, 720 requested"
+        },
+        {
+          "eps": 0.05,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "multigen",
+          "reason": "pool has 245 human documents, 855 requested"
+        },
+        {
+          "eps": 0.2,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "multigen",
+          "reason": "pool has 245 human documents, 720 requested"
+        }
+      ],
+      "replications": 500,
+      "seconds": 5,
+      "git_commit": "3703e4002eb2ee13e6c501f485216b141965a052",
+      "platform": "vm"
+    },
+    "hc3zh__open_qa-chatgpt__xlmr": {
+      "human": 1116,
+      "machine": 1312,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.01881720430107527,
+      "flag_rate_machine": 0.9603658536585366,
+      "cells_run": 6,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 36,
+      "git_commit": "3703e4002eb2ee13e6c501f485216b141965a052",
+      "platform": "vm"
+    },
+    "hc3zh__open_qa-chatgpt__tfidfc": {
+      "human": 1116,
+      "machine": 1312,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.043010752688172046,
+      "flag_rate_machine": 0.9923780487804879,
+      "cells_run": 6,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 35,
+      "git_commit": "3703e4002eb2ee13e6c501f485216b141965a052",
+      "platform": "vm"
+    }
+  },
+  "corpus": "hc3zh",
+  "grid": "mixtures",
+  "config_sha256": "703c8dd06959ae638f9d83acd56245ed07721191127b767625f9b5baf478f6e4",
+  "features_sha256": "ca4851a104a982adff83cc3c467a0109b6db1c63d69b80b47ceeee70a9931603",
+  "frozen_sha256": "4e0f3efc9da9aaa74b38ae75d0e279be1b3fc344df0a292119b136f7ff42b360",
+  "d2vi": "2.0.0.dev7",
+  "git_commit": "3703e4002eb2ee13e6c501f485216b141965a052",
+  "rehearsal": false,
+  "estimators": [
+    "naive",
+    "deletion",
+    "hajek",
+    "flag_ppi",
+    "rc_ppi_pp",
+    "moment",
+    "flag_ppi_pp",
+    "rc_ppi",
+    "greg"
+  ]
+}

@@ -153,6 +153,28 @@
       "seconds": 49,
       "git_commit": "573fd888be09efd53d0e508de48624de5e1dabbc",
       "platform": "vm"
+    },
+    "beemo__gpt4o_edited__tfidf": {
+      "human": 1498,
+      "machine": 1519,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.3257676902536716,
+      "flag_rate_machine": 0.5819618169848585,
+      "cells_run": 5,
+      "cells_skipped": [
+        {
+          "eps": 0.2,
+          "budget": 0.05,
+          "n": 900,
+          "design": "{'name': 'proportional', 'n_strata': 10}",
+          "mixture": "clustered",
+          "reason": "no generator value has 180 machine documents"
+        }
+      ],
+      "replications": 500,
+      "seconds": 49,
+      "git_commit": "573fd888be09efd53d0e508de48624de5e1dabbc",
+      "platform": "vm"
     }
   },
   "corpus": "beemo",
