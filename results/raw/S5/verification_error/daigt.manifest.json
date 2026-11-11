@@ -155,6 +155,58 @@
       "seconds": 526,
       "git_commit": "af316ae06ab9ca57cdaf8bc1c381f3368346d1ce",
       "platform": "vm"
+    },
+    "daigt__mistral7binstruct_v1__fdgpt": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.055,
+      "flag_rate_machine": 1.0,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 544,
+      "git_commit": "4e7fb4142c42902688178e2f3fba2b910f1e4b34",
+      "platform": "vm"
+    },
+    "daigt__mistral7binstruct_v1__tfidf": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.84,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 539,
+      "git_commit": "4e7fb4142c42902688178e2f3fba2b910f1e4b34",
+      "platform": "vm"
+    },
+    "daigt__mistral7binstruct_v2__fdgpt": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.055,
+      "flag_rate_machine": 0.9614285714285714,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 537,
+      "git_commit": "4e7fb4142c42902688178e2f3fba2b910f1e4b34",
+      "platform": "vm"
+    },
+    "daigt__mistral7binstruct_v2__tfidf": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.6057142857142858,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 539,
+      "git_commit": "4e7fb4142c42902688178e2f3fba2b910f1e4b34",
+      "platform": "vm"
     }
   },
   "corpus": "daigt",
@@ -163,7 +215,7 @@
   "features_sha256": "770931597013f75483b48110b7a530499ce9f242a234c53776832d832eb29e75",
   "frozen_sha256": "4e0f3efc9da9aaa74b38ae75d0e279be1b3fc344df0a292119b136f7ff42b360",
   "d2vi": "2.0.0.dev7",
-  "git_commit": "af316ae06ab9ca57cdaf8bc1c381f3368346d1ce",
+  "git_commit": "4e7fb4142c42902688178e2f3fba2b910f1e4b34",
   "rehearsal": false,
   "estimators": [
     "naive",
