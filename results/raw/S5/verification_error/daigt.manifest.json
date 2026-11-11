@@ -116,6 +116,32 @@
       "seconds": 541,
       "git_commit": "af316ae06ab9ca57cdaf8bc1c381f3368346d1ce",
       "platform": "vm"
+    },
+    "daigt__llama2_chat__tfidf": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.1757142857142857,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 625,
+      "git_commit": "af316ae06ab9ca57cdaf8bc1c381f3368346d1ce",
+      "platform": "vm"
+    },
+    "daigt__llama_70b_v1__fdgpt": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.055,
+      "flag_rate_machine": 0.9985714285714286,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 545,
+      "git_commit": "af316ae06ab9ca57cdaf8bc1c381f3368346d1ce",
+      "platform": "vm"
     }
   },
   "corpus": "daigt",
