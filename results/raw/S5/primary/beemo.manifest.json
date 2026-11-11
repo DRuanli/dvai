@@ -1,0 +1,36 @@
+{
+  "pools": {
+    "beemo__machine__fdgpt": {
+      "human": 1462,
+      "machine": 1510,
+      "unscorable_dropped": 51,
+      "flag_rate_human": 0.04377564979480164,
+      "flag_rate_machine": 0.495364238410596,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 593,
+      "git_commit": "dabc3677db496b96d9773b6ca11210a8fcbb9b5d",
+      "platform": "vm"
+    }
+  },
+  "corpus": "beemo",
+  "grid": "primary",
+  "config_sha256": "dd032bd9842737c20db8937878e727404e01259921afeb847df4684d9f5d6e59",
+  "features_sha256": "9431a251085b7ce23a53d8b4136ef53b7ce0a58f5cd0e4235bea0fe82dc55045",
+  "frozen_sha256": "4e0f3efc9da9aaa74b38ae75d0e279be1b3fc344df0a292119b136f7ff42b360",
+  "d2vi": "2.0.0.dev7",
+  "git_commit": "dabc3677db496b96d9773b6ca11210a8fcbb9b5d",
+  "rehearsal": false,
+  "estimators": [
+    "naive",
+    "deletion",
+    "hajek",
+    "flag_ppi",
+    "rc_ppi_pp",
+    "moment",
+    "flag_ppi_pp",
+    "rc_ppi",
+    "greg"
+  ]
+}
