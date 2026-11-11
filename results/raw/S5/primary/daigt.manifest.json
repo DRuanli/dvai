@@ -155,6 +155,58 @@
       "seconds": 378,
       "git_commit": "9233f4517bc310041f1a672bac85bba0451c453a",
       "platform": "vm"
+    },
+    "daigt__mistral7binstruct_v1__fdgpt": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.055,
+      "flag_rate_machine": 1.0,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 405,
+      "git_commit": "0396aebddd1a8d93b3246a7d2145e26827db46f7",
+      "platform": "vm"
+    },
+    "daigt__mistral7binstruct_v1__tfidf": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.84,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 389,
+      "git_commit": "0396aebddd1a8d93b3246a7d2145e26827db46f7",
+      "platform": "vm"
+    },
+    "daigt__mistral7binstruct_v2__fdgpt": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.055,
+      "flag_rate_machine": 0.9614285714285714,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 396,
+      "git_commit": "0396aebddd1a8d93b3246a7d2145e26827db46f7",
+      "platform": "vm"
+    },
+    "daigt__mistral7binstruct_v2__tfidf": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.6057142857142858,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 394,
+      "git_commit": "0396aebddd1a8d93b3246a7d2145e26827db46f7",
+      "platform": "vm"
     }
   },
   "corpus": "daigt",
