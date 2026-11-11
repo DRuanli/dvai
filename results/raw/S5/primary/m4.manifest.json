@@ -230,7 +230,7 @@
   "features_sha256": "fad5726cef876ff5360519af16909cff2cce4ad6c335905a4a00d2c51c493ce5",
   "frozen_sha256": "4e0f3efc9da9aaa74b38ae75d0e279be1b3fc344df0a292119b136f7ff42b360",
   "d2vi": "2.0.0.dev7",
-  "git_commit": "16079ba2bea20adff759e1af3c7acdd02742e517",
+  "git_commit": "0a29d76c9fdbace990dd03b556a7ac6ae5b01e82",
   "rehearsal": false,
   "estimators": [
     "naive",
