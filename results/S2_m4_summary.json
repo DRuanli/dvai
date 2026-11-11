@@ -1,0 +1,245 @@
+{
+ "corpus": "m4",
+ "documents": 41916,
+ "rows": 41916,
+ "too_short": 71,
+ "too_short_by_class": {
+  "0.0": 62,
+  "1.0": 9
+ },
+ "calibration": {
+  "arabic": {
+   "groups": 900,
+   "rows": 1800,
+   "tfidf_human": 900,
+   "tfidf_machine": 900
+  },
+  "bulgarian": {
+   "groups": 913,
+   "rows": 2707,
+   "tfidf_human": 913,
+   "tfidf_machine": 894
+  },
+  "german": {
+   "groups": 894,
+   "rows": 1791,
+   "tfidf_human": 894,
+   "tfidf_machine": 897
+  },
+  "indonesian": {
+   "groups": 898,
+   "rows": 1780,
+   "tfidf_human": 882,
+   "tfidf_machine": 898
+  },
+  "russian": {
+   "groups": 900,
+   "rows": 2699,
+   "tfidf_human": 900,
+   "tfidf_machine": 900
+  },
+  "urdu": {
+   "groups": 900,
+   "rows": 1774,
+   "tfidf_human": 899,
+   "tfidf_machine": 875
+  }
+ },
+ "evaluation_rows": 29294,
+ "detector_training": {
+  "steps": [
+   {
+    "step": 50,
+    "epoch": 0,
+    "loss": 0.39509648084640503
+   },
+   {
+    "step": 100,
+    "epoch": 0,
+    "loss": 0.19234010577201843
+   },
+   {
+    "step": 150,
+    "epoch": 0,
+    "loss": 0.1995064914226532
+   },
+   {
+    "step": 200,
+    "epoch": 0,
+    "loss": 0.007618446834385395
+   },
+   {
+    "step": 250,
+    "epoch": 1,
+    "loss": 0.20587539672851562
+   },
+   {
+    "step": 300,
+    "epoch": 1,
+    "loss": 0.00469321571290493
+   },
+   {
+    "step": 350,
+    "epoch": 1,
+    "loss": 0.19238728284835815
+   },
+   {
+    "step": 400,
+    "epoch": 1,
+    "loss": 0.2545957565307617
+   },
+   {
+    "step": 450,
+    "epoch": 1,
+    "loss": 0.0005629995139315724
+   },
+   {
+    "step": 470,
+    "epoch": 1,
+    "loss": 0.004006567876785994
+   }
+  ],
+  "seconds": 764,
+  "training_documents": 7500
+ },
+ "english_check": {
+  "n": 500,
+  "accuracy": 0.916
+ },
+ "operating_points": [
+  {
+   "domain": "arabic",
+   "source": "chatgpt",
+   "version": "none",
+   "n": 2100,
+   "flag_tfidfc": 0.959047619047619,
+   "flag_xlmr": 0.9285714285714286
+  },
+  {
+   "domain": "arabic",
+   "source": "human",
+   "version": "none",
+   "n": 2100,
+   "flag_tfidfc": 0.02857142857142857,
+   "flag_xlmr": 0.018095238095238095
+  },
+  {
+   "domain": "bulgarian",
+   "source": "chatgpt",
+   "version": "none",
+   "n": 2106,
+   "flag_tfidfc": 0.9548907882241215,
+   "flag_xlmr": 0.9791073124406457
+  },
+  {
+   "domain": "bulgarian",
+   "source": "davinci",
+   "version": "none",
+   "n": 2100,
+   "flag_tfidfc": 0.8352380952380952,
+   "flag_xlmr": 0.5119047619047619
+  },
+  {
+   "domain": "bulgarian",
+   "source": "human",
+   "version": "none",
+   "n": 2131,
+   "flag_tfidfc": 0.042702956358517126,
+   "flag_xlmr": 0.5312060065696856
+  },
+  {
+   "domain": "german",
+   "source": "chatgpt",
+   "version": "none",
+   "n": 2102,
+   "flag_tfidfc": 0.9105613701236918,
+   "flag_xlmr": 0.9543292102759277
+  },
+  {
+   "domain": "german",
+   "source": "human",
+   "version": "none",
+   "n": 2085,
+   "flag_tfidfc": 0.0853717026378897,
+   "flag_xlmr": 0.2594724220623501
+  },
+  {
+   "domain": "indonesian",
+   "source": "chatgpt",
+   "version": "none",
+   "n": 2102,
+   "flag_tfidfc": 0.9790675547098002,
+   "flag_xlmr": 1.0
+  },
+  {
+   "domain": "indonesian",
+   "source": "human",
+   "version": "none",
+   "n": 2054,
+   "flag_tfidfc": 0.01801363193768257,
+   "flag_xlmr": 0.7444011684518014
+  },
+  {
+   "domain": "russian",
+   "source": "chatgpt",
+   "version": "none",
+   "n": 2100,
+   "flag_tfidfc": 0.9266666666666666,
+   "flag_xlmr": 0.9357142857142857
+  },
+  {
+   "domain": "russian",
+   "source": "davinci",
+   "version": "none",
+   "n": 2096,
+   "flag_tfidfc": 0.5438931297709924,
+   "flag_xlmr": 0.6374045801526718
+  },
+  {
+   "domain": "russian",
+   "source": "human",
+   "version": "none",
+   "n": 2100,
+   "flag_tfidfc": 0.09095238095238095,
+   "flag_xlmr": 0.5357142857142857
+  },
+  {
+   "domain": "urdu",
+   "source": "chatgpt",
+   "version": "none",
+   "n": 2020,
+   "flag_tfidfc": 0.9975247524752475,
+   "flag_xlmr": 0.48168316831683167
+  },
+  {
+   "domain": "urdu",
+   "source": "human",
+   "version": "none",
+   "n": 2098,
+   "flag_tfidfc": 0.0,
+   "flag_xlmr": 0.026215443279313633
+  }
+ ],
+ "input_sha256": {
+  "arabic_chatGPT.jsonl": "2a875a68d7a028bd4e703301ce91920790a6dd0bccdf93a7c4be928577a0f4cc",
+  "bulgarian_true_and_fake_news_chatGPT.jsonl": "d72643814bd0b1a8e8be43c7a21f6a9ef54379eb34b71071a3d2dbf56bad042e",
+  "bulgarian_true_and_fake_news_davinci.jsonl": "c37c3dc307ea27af9b0f1898545fcfcfff50d9e297aa45f58332d988b3c9ac45",
+  "germanwikipedia_chatgpt.jsonl": "4df98d248e22026b163bab460e3c38102ea6e61e48121c5862c35b95478f96c2",
+  "id-newspaper_chatGPT.jsonl": "93fbdad37d1aede4cbad08493e50f58629e43c22d4f841cead5b0d39dd95806a",
+  "russian_chatGPT.jsonl": "0e6d80a2ad72a6d39f4499d6d3c6a70e7ea961fc46b7b7b292229eb63733631b",
+  "russian_davinci.jsonl": "c66a2c2d24ea1a7b41027c33471f021ffa42e5abff5c5fded2f1f71ffe8cd698",
+  "urdu_chatGPT.jsonl": "af13c3dbafa87d7c7e0ee3ab11dc8c355685f8c9bf62c70795fa9f7bbfd5170c",
+  "wikipedia_chatgpt.jsonl": "cdc15172dd9afcae925c40a7a124ae76d2f96021191460adbb36c9c87415a8c0",
+  "reddit_chatGPT.jsonl": "2b7f0e8036ad6c177688cf1f176237dd91a8bc963c032216cc588adf04d3c5e5",
+  "hc3_chinese_all.jsonl": "425e7071bbd5dd88efd85d51e28a5adec9c72e04d96c52d194bdfb95fef00b0d",
+  "train_v2_drcat_02.csv": "737a355ef9c43ef2e4c2f5556c03ad52a84d7da0e7e7ac311ec59375bc667bc7"
+ },
+ "versions": {
+  "python": "3.13.16",
+  "d2vi": "2.0.0.dev7",
+  "transformers": "5.22.2",
+  "torch": "2.11.0+cu130",
+  "scikit-learn": "1.6.1"
+ },
+ "features_sha256": "fad5726cef876ff5360519af16909cff2cce4ad6c335905a4a00d2c51c493ce5"
+}

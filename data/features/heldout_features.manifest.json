@@ -1,0 +1,37 @@
+{
+  "raid": {
+    "sha256": "654cae6d6042612eb82a79a9dec3937f5d4acb220352a22cbe0eea39a86d08a0",
+    "bytes": 3894666,
+    "built_by": "colab/K05_heldout_raid_beemo.ipynb",
+    "received": "2026-11-11",
+    "summary": "results/S2_raid_summary.json"
+  },
+  "beemo": {
+    "sha256": "9431a251085b7ce23a53d8b4136ef53b7ce0a58f5cd0e4235bea0fe82dc55045",
+    "bytes": 572945,
+    "built_by": "colab/K05_heldout_raid_beemo.ipynb",
+    "received": "2026-11-11",
+    "summary": "results/S2_beemo_summary.json"
+  },
+  "m4": {
+    "sha256": "fad5726cef876ff5360519af16909cff2cce4ad6c335905a4a00d2c51c493ce5",
+    "bytes": 1442973,
+    "built_by": "colab/K06_heldout_multilingual_essays.ipynb",
+    "received": "2026-11-11",
+    "summary": "results/S2_m4_summary.json"
+  },
+  "hc3zh": {
+    "sha256": "ca4851a104a982adff83cc3c467a0109b6db1c63d69b80b47ceeee70a9931603",
+    "bytes": 229927,
+    "built_by": "colab/K06_heldout_multilingual_essays.ipynb",
+    "received": "2026-11-11",
+    "summary": "results/S2_hc3zh_summary.json"
+  },
+  "daigt": {
+    "sha256": "770931597013f75483b48110b7a530499ce9f242a234c53776832d832eb29e75",
+    "bytes": 855211,
+    "built_by": "colab/K06_heldout_multilingual_essays.ipynb",
+    "received": "2026-11-11",
+    "summary": "results/S2_daigt_summary.json"
+  }
+}

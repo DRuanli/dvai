@@ -1,0 +1,136 @@
+{
+  "calibration": "cross_domain",
+  "rows": 38054,
+  "thresholds_fdgpt": {
+    "books": 1.5362609088420847,
+    "news": 1.6049729585647583,
+    "poetry": 1.6893723309040065,
+    "reddit": 1.5942968130111692,
+    "reviews": 1.580322802066803
+  },
+  "tfidf_training": {
+    "books": {
+      "human": 6273,
+      "machine": 2400
+    },
+    "news": {
+      "human": 6274,
+      "machine": 2400
+    },
+    "poetry": {
+      "human": 6283,
+      "machine": 2400
+    },
+    "reddit": {
+      "human": 6275,
+      "machine": 2400
+    },
+    "reviews": {
+      "human": 7111,
+      "machine": 2400
+    }
+  },
+  "evaluation_rows": 38054,
+  "unscorable_fdgpt": 0.00010511378567299102,
+  "corpus": "raid",
+  "versions": {
+    "python": "3.13.16",
+    "d2vi": "2.0.0.dev7",
+    "transformers": "5.22.2",
+    "torch": "2.11.0+cu130",
+    "vaderSentiment": "3.3.2",
+    "textstat": "0.7.13",
+    "nrclex": "4.1.0",
+    "scikit-learn": "1.6.1"
+  },
+  "operating_points": [
+    {
+      "source": "chatgpt",
+      "version": "homoglyph",
+      "n": 3000,
+      "flag_fdgpt": 0.0517,
+      "flag_tfidf": 0.0567,
+      "flag_roberta": 0.0073
+    },
+    {
+      "source": "chatgpt",
+      "version": "none",
+      "n": 3000,
+      "flag_fdgpt": 0.931,
+      "flag_tfidf": 0.483,
+      "flag_roberta": 0.6673
+    },
+    {
+      "source": "chatgpt",
+      "version": "paraphrase",
+      "n": 3000,
+      "flag_fdgpt": 0.912,
+      "flag_tfidf": 0.123,
+      "flag_roberta": 0.7437
+    },
+    {
+      "source": "chatgpt",
+      "version": "synonym",
+      "n": 3000,
+      "flag_fdgpt": 0.3423,
+      "flag_tfidf": 0.376,
+      "flag_roberta": 0.7277
+    },
+    {
+      "source": "gpt4",
+      "version": "none",
+      "n": 3000,
+      "flag_fdgpt": 0.723,
+      "flag_tfidf": 0.3437,
+      "flag_roberta": 0.4253
+    },
+    {
+      "source": "human",
+      "version": "none",
+      "n": 8054,
+      "flag_fdgpt": 0.0524,
+      "flag_tfidf": 0.0004,
+      "flag_roberta": 0.0687
+    },
+    {
+      "source": "llama-chat",
+      "version": "homoglyph",
+      "n": 3000,
+      "flag_fdgpt": 0.066,
+      "flag_tfidf": 0.0303,
+      "flag_roberta": 0.012
+    },
+    {
+      "source": "llama-chat",
+      "version": "none",
+      "n": 3000,
+      "flag_fdgpt": 0.9143,
+      "flag_tfidf": 0.2473,
+      "flag_roberta": 0.6927
+    },
+    {
+      "source": "llama-chat",
+      "version": "paraphrase",
+      "n": 3000,
+      "flag_fdgpt": 0.898,
+      "flag_tfidf": 0.0327,
+      "flag_roberta": 0.7667
+    },
+    {
+      "source": "llama-chat",
+      "version": "synonym",
+      "n": 3000,
+      "flag_fdgpt": 0.493,
+      "flag_tfidf": 0.143,
+      "flag_roberta": 0.7463
+    },
+    {
+      "source": "mistral-chat",
+      "version": "none",
+      "n": 3000,
+      "flag_fdgpt": 0.8333,
+      "flag_tfidf": 0.343,
+      "flag_roberta": 0.711
+    }
+  ]
+}

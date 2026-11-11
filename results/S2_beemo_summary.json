@@ -1,0 +1,354 @@
+{
+  "calibration": "split",
+  "rows": 10832,
+  "threshold_fdgpt": 2.328777778148651,
+  "calibration_groups": 657,
+  "calibration_rows": 3258,
+  "tfidf_training": {
+    "human": 647,
+    "machine": 653
+  },
+  "evaluation_rows": 7574,
+  "unscorable_fdgpt": 0.015315553208344336,
+  "corpus": "beemo",
+  "versions": {
+    "python": "3.13.16",
+    "d2vi": "2.0.0.dev7",
+    "transformers": "5.22.2",
+    "torch": "2.11.0+cu130",
+    "vaderSentiment": "3.3.2",
+    "textstat": "0.7.13",
+    "nrclex": "4.1.0",
+    "scikit-learn": "1.6.1"
+  },
+  "operating_points": [
+    {
+      "source": "HuggingFaceH4/zephyr-7b-beta",
+      "version": "expert_edited",
+      "n": 157,
+      "flag_fdgpt": 0.0962,
+      "flag_tfidf": 0.5541,
+      "flag_roberta": 0.2166
+    },
+    {
+      "source": "HuggingFaceH4/zephyr-7b-beta",
+      "version": "gpt4o_edited",
+      "n": 157,
+      "flag_fdgpt": 0.1592,
+      "flag_tfidf": 0.6115,
+      "flag_roberta": 0.293
+    },
+    {
+      "source": "HuggingFaceH4/zephyr-7b-beta",
+      "version": "llama31_edited",
+      "n": 157,
+      "flag_fdgpt": 0.1338,
+      "flag_tfidf": 0.6306,
+      "flag_roberta": 0.2548
+    },
+    {
+      "source": "HuggingFaceH4/zephyr-7b-beta",
+      "version": "machine",
+      "n": 157,
+      "flag_fdgpt": 0.3694,
+      "flag_tfidf": 0.7834,
+      "flag_roberta": 0.3312
+    },
+    {
+      "source": "allenai/tulu-2-13b",
+      "version": "expert_edited",
+      "n": 145,
+      "flag_fdgpt": 0.2394,
+      "flag_tfidf": 0.4759,
+      "flag_roberta": 0.3724
+    },
+    {
+      "source": "allenai/tulu-2-13b",
+      "version": "gpt4o_edited",
+      "n": 147,
+      "flag_fdgpt": 0.2877,
+      "flag_tfidf": 0.5034,
+      "flag_roberta": 0.4218
+    },
+    {
+      "source": "allenai/tulu-2-13b",
+      "version": "llama31_edited",
+      "n": 147,
+      "flag_fdgpt": 0.269,
+      "flag_tfidf": 0.6667,
+      "flag_roberta": 0.2993
+    },
+    {
+      "source": "allenai/tulu-2-13b",
+      "version": "machine",
+      "n": 147,
+      "flag_fdgpt": 0.4759,
+      "flag_tfidf": 0.6599,
+      "flag_roberta": 0.6735
+    },
+    {
+      "source": "allenai/tulu-2-7b",
+      "version": "expert_edited",
+      "n": 152,
+      "flag_fdgpt": 0.1622,
+      "flag_tfidf": 0.4671,
+      "flag_roberta": 0.3026
+    },
+    {
+      "source": "allenai/tulu-2-7b",
+      "version": "gpt4o_edited",
+      "n": 152,
+      "flag_fdgpt": 0.2781,
+      "flag_tfidf": 0.5592,
+      "flag_roberta": 0.4342
+    },
+    {
+      "source": "allenai/tulu-2-7b",
+      "version": "llama31_edited",
+      "n": 155,
+      "flag_fdgpt": 0.2614,
+      "flag_tfidf": 0.6581,
+      "flag_roberta": 0.329
+    },
+    {
+      "source": "allenai/tulu-2-7b",
+      "version": "machine",
+      "n": 154,
+      "flag_fdgpt": 0.4702,
+      "flag_tfidf": 0.6753,
+      "flag_roberta": 0.6169
+    },
+    {
+      "source": "google/gemma-2b-it",
+      "version": "expert_edited",
+      "n": 138,
+      "flag_fdgpt": 0.1462,
+      "flag_tfidf": 0.5362,
+      "flag_roberta": 0.3261
+    },
+    {
+      "source": "google/gemma-2b-it",
+      "version": "gpt4o_edited",
+      "n": 141,
+      "flag_fdgpt": 0.1333,
+      "flag_tfidf": 0.5674,
+      "flag_roberta": 0.2553
+    },
+    {
+      "source": "google/gemma-2b-it",
+      "version": "llama31_edited",
+      "n": 141,
+      "flag_fdgpt": 0.2391,
+      "flag_tfidf": 0.6809,
+      "flag_roberta": 0.2695
+    },
+    {
+      "source": "google/gemma-2b-it",
+      "version": "machine",
+      "n": 141,
+      "flag_fdgpt": 0.3885,
+      "flag_tfidf": 0.7447,
+      "flag_roberta": 0.5106
+    },
+    {
+      "source": "google/gemma-7b-it",
+      "version": "expert_edited",
+      "n": 134,
+      "flag_fdgpt": 0.1769,
+      "flag_tfidf": 0.5746,
+      "flag_roberta": 0.3806
+    },
+    {
+      "source": "google/gemma-7b-it",
+      "version": "gpt4o_edited",
+      "n": 135,
+      "flag_fdgpt": 0.203,
+      "flag_tfidf": 0.5407,
+      "flag_roberta": 0.3852
+    },
+    {
+      "source": "google/gemma-7b-it",
+      "version": "llama31_edited",
+      "n": 136,
+      "flag_fdgpt": 0.2444,
+      "flag_tfidf": 0.7059,
+      "flag_roberta": 0.2941
+    },
+    {
+      "source": "google/gemma-7b-it",
+      "version": "machine",
+      "n": 136,
+      "flag_fdgpt": 0.4361,
+      "flag_tfidf": 0.8456,
+      "flag_roberta": 0.5515
+    },
+    {
+      "source": "human",
+      "version": "human",
+      "n": 1498,
+      "flag_fdgpt": 0.0438,
+      "flag_tfidf": 0.3258,
+      "flag_roberta": 0.2864
+    },
+    {
+      "source": "meta-llama/Llama-2-13b-chat-hf",
+      "version": "expert_edited",
+      "n": 155,
+      "flag_fdgpt": 0.125,
+      "flag_tfidf": 0.5419,
+      "flag_roberta": 0.329
+    },
+    {
+      "source": "meta-llama/Llama-2-13b-chat-hf",
+      "version": "gpt4o_edited",
+      "n": 159,
+      "flag_fdgpt": 0.3269,
+      "flag_tfidf": 0.6604,
+      "flag_roberta": 0.4025
+    },
+    {
+      "source": "meta-llama/Llama-2-13b-chat-hf",
+      "version": "llama31_edited",
+      "n": 159,
+      "flag_fdgpt": 0.2484,
+      "flag_tfidf": 0.717,
+      "flag_roberta": 0.3522
+    },
+    {
+      "source": "meta-llama/Llama-2-13b-chat-hf",
+      "version": "machine",
+      "n": 159,
+      "flag_fdgpt": 0.6076,
+      "flag_tfidf": 0.8868,
+      "flag_roberta": 0.5535
+    },
+    {
+      "source": "meta-llama/Llama-2-70b-chat-hf",
+      "version": "expert_edited",
+      "n": 150,
+      "flag_fdgpt": 0.2671,
+      "flag_tfidf": 0.52,
+      "flag_roberta": 0.3733
+    },
+    {
+      "source": "meta-llama/Llama-2-70b-chat-hf",
+      "version": "gpt4o_edited",
+      "n": 151,
+      "flag_fdgpt": 0.42,
+      "flag_tfidf": 0.5828,
+      "flag_roberta": 0.4768
+    },
+    {
+      "source": "meta-llama/Llama-2-70b-chat-hf",
+      "version": "llama31_edited",
+      "n": 152,
+      "flag_fdgpt": 0.3245,
+      "flag_tfidf": 0.6711,
+      "flag_roberta": 0.375
+    },
+    {
+      "source": "meta-llama/Llama-2-70b-chat-hf",
+      "version": "machine",
+      "n": 153,
+      "flag_fdgpt": 0.625,
+      "flag_tfidf": 0.7386,
+      "flag_roberta": 0.6013
+    },
+    {
+      "source": "meta-llama/Llama-2-7b-chat-hf",
+      "version": "expert_edited",
+      "n": 170,
+      "flag_fdgpt": 0.1953,
+      "flag_tfidf": 0.5529,
+      "flag_roberta": 0.3
+    },
+    {
+      "source": "meta-llama/Llama-2-7b-chat-hf",
+      "version": "gpt4o_edited",
+      "n": 172,
+      "flag_fdgpt": 0.2471,
+      "flag_tfidf": 0.6977,
+      "flag_roberta": 0.3314
+    },
+    {
+      "source": "meta-llama/Llama-2-7b-chat-hf",
+      "version": "llama31_edited",
+      "n": 172,
+      "flag_fdgpt": 0.2924,
+      "flag_tfidf": 0.7907,
+      "flag_roberta": 0.2965
+    },
+    {
+      "source": "meta-llama/Llama-2-7b-chat-hf",
+      "version": "machine",
+      "n": 171,
+      "flag_fdgpt": 0.6176,
+      "flag_tfidf": 0.8655,
+      "flag_roberta": 0.538
+    },
+    {
+      "source": "mistralai/Mistral-7B-Instruct-v0.1",
+      "version": "expert_edited",
+      "n": 146,
+      "flag_fdgpt": 0.1448,
+      "flag_tfidf": 0.4041,
+      "flag_roberta": 0.3014
+    },
+    {
+      "source": "mistralai/Mistral-7B-Instruct-v0.1",
+      "version": "gpt4o_edited",
+      "n": 147,
+      "flag_fdgpt": 0.2361,
+      "flag_tfidf": 0.5102,
+      "flag_roberta": 0.3673
+    },
+    {
+      "source": "mistralai/Mistral-7B-Instruct-v0.1",
+      "version": "llama31_edited",
+      "n": 149,
+      "flag_fdgpt": 0.1769,
+      "flag_tfidf": 0.6711,
+      "flag_roberta": 0.3087
+    },
+    {
+      "source": "mistralai/Mistral-7B-Instruct-v0.1",
+      "version": "machine",
+      "n": 149,
+      "flag_fdgpt": 0.4014,
+      "flag_tfidf": 0.6443,
+      "flag_roberta": 0.6309
+    },
+    {
+      "source": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      "version": "expert_edited",
+      "n": 159,
+      "flag_fdgpt": 0.1987,
+      "flag_tfidf": 0.5786,
+      "flag_roberta": 0.2264
+    },
+    {
+      "source": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      "version": "gpt4o_edited",
+      "n": 158,
+      "flag_fdgpt": 0.2722,
+      "flag_tfidf": 0.557,
+      "flag_roberta": 0.3544
+    },
+    {
+      "source": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      "version": "llama31_edited",
+      "n": 158,
+      "flag_fdgpt": 0.2405,
+      "flag_tfidf": 0.6835,
+      "flag_roberta": 0.2785
+    },
+    {
+      "source": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      "version": "machine",
+      "n": 158,
+      "flag_fdgpt": 0.5253,
+      "flag_tfidf": 0.7595,
+      "flag_roberta": 0.5759
+    }
+  ]
+}

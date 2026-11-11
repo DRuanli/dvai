@@ -1,0 +1,163 @@
+{
+ "corpus": "hc3zh",
+ "documents": 11709,
+ "rows": 11709,
+ "too_short": 2866,
+ "too_short_by_class": {
+  "0.0": 1951,
+  "1.0": 915
+ },
+ "calibration": {
+  "baike": {
+   "groups": 888,
+   "rows": 1097,
+   "tfidf_human": 547,
+   "tfidf_machine": 550
+  },
+  "nlpcc_dbqa": {
+   "groups": 331,
+   "rows": 498,
+   "tfidf_human": 88,
+   "tfidf_machine": 410
+  },
+  "open_qa": {
+   "groups": 702,
+   "rows": 1026,
+   "tfidf_human": 486,
+   "tfidf_machine": 540
+  }
+ },
+ "evaluation_rows": 6222,
+ "detector_training": {
+  "steps": [
+   {
+    "step": 50,
+    "epoch": 0,
+    "loss": 0.39509648084640503
+   },
+   {
+    "step": 100,
+    "epoch": 0,
+    "loss": 0.19234010577201843
+   },
+   {
+    "step": 150,
+    "epoch": 0,
+    "loss": 0.1995064914226532
+   },
+   {
+    "step": 200,
+    "epoch": 0,
+    "loss": 0.007618446834385395
+   },
+   {
+    "step": 250,
+    "epoch": 1,
+    "loss": 0.20587539672851562
+   },
+   {
+    "step": 300,
+    "epoch": 1,
+    "loss": 0.00469321571290493
+   },
+   {
+    "step": 350,
+    "epoch": 1,
+    "loss": 0.19238728284835815
+   },
+   {
+    "step": 400,
+    "epoch": 1,
+    "loss": 0.2545957565307617
+   },
+   {
+    "step": 450,
+    "epoch": 1,
+    "loss": 0.0005629995139315724
+   },
+   {
+    "step": 470,
+    "epoch": 1,
+    "loss": 0.004006567876785994
+   }
+  ],
+  "seconds": 764,
+  "training_documents": 7500
+ },
+ "english_check": {
+  "n": 500,
+  "accuracy": 0.916
+ },
+ "operating_points": [
+  {
+   "domain": "baike",
+   "source": "chatgpt",
+   "version": "none",
+   "n": 1303,
+   "flag_tfidfc": 0.896392939370683,
+   "flag_xlmr": 0.9524174980813507
+  },
+  {
+   "domain": "baike",
+   "source": "human",
+   "version": "none",
+   "n": 1276,
+   "flag_tfidfc": 0.06818181818181818,
+   "flag_xlmr": 0.21865203761755486
+  },
+  {
+   "domain": "nlpcc_dbqa",
+   "source": "chatgpt",
+   "version": "none",
+   "n": 970,
+   "flag_tfidfc": 1.0,
+   "flag_xlmr": 0.8876288659793814
+  },
+  {
+   "domain": "nlpcc_dbqa",
+   "source": "human",
+   "version": "none",
+   "n": 245,
+   "flag_tfidfc": 0.9714285714285714,
+   "flag_xlmr": 0.18775510204081633
+  },
+  {
+   "domain": "open_qa",
+   "source": "chatgpt",
+   "version": "none",
+   "n": 1312,
+   "flag_tfidfc": 0.9923780487804879,
+   "flag_xlmr": 0.9603658536585366
+  },
+  {
+   "domain": "open_qa",
+   "source": "human",
+   "version": "none",
+   "n": 1116,
+   "flag_tfidfc": 0.043010752688172046,
+   "flag_xlmr": 0.01881720430107527
+  }
+ ],
+ "input_sha256": {
+  "arabic_chatGPT.jsonl": "2a875a68d7a028bd4e703301ce91920790a6dd0bccdf93a7c4be928577a0f4cc",
+  "bulgarian_true_and_fake_news_chatGPT.jsonl": "d72643814bd0b1a8e8be43c7a21f6a9ef54379eb34b71071a3d2dbf56bad042e",
+  "bulgarian_true_and_fake_news_davinci.jsonl": "c37c3dc307ea27af9b0f1898545fcfcfff50d9e297aa45f58332d988b3c9ac45",
+  "germanwikipedia_chatgpt.jsonl": "4df98d248e22026b163bab460e3c38102ea6e61e48121c5862c35b95478f96c2",
+  "id-newspaper_chatGPT.jsonl": "93fbdad37d1aede4cbad08493e50f58629e43c22d4f841cead5b0d39dd95806a",
+  "russian_chatGPT.jsonl": "0e6d80a2ad72a6d39f4499d6d3c6a70e7ea961fc46b7b7b292229eb63733631b",
+  "russian_davinci.jsonl": "c66a2c2d24ea1a7b41027c33471f021ffa42e5abff5c5fded2f1f71ffe8cd698",
+  "urdu_chatGPT.jsonl": "af13c3dbafa87d7c7e0ee3ab11dc8c355685f8c9bf62c70795fa9f7bbfd5170c",
+  "wikipedia_chatgpt.jsonl": "cdc15172dd9afcae925c40a7a124ae76d2f96021191460adbb36c9c87415a8c0",
+  "reddit_chatGPT.jsonl": "2b7f0e8036ad6c177688cf1f176237dd91a8bc963c032216cc588adf04d3c5e5",
+  "hc3_chinese_all.jsonl": "425e7071bbd5dd88efd85d51e28a5adec9c72e04d96c52d194bdfb95fef00b0d",
+  "train_v2_drcat_02.csv": "737a355ef9c43ef2e4c2f5556c03ad52a84d7da0e7e7ac311ec59375bc667bc7"
+ },
+ "versions": {
+  "python": "3.13.16",
+  "d2vi": "2.0.0.dev7",
+  "transformers": "5.22.2",
+  "torch": "2.11.0+cu130",
+  "scikit-learn": "1.6.1"
+ },
+ "features_sha256": "ca4851a104a982adff83cc3c467a0109b6db1c63d69b80b47ceeee70a9931603"
+}
