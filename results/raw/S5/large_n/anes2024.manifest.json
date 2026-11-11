@@ -1,0 +1,122 @@
+{
+  "pools": {
+    "anes2024__qwen__tfidf": {
+      "human": 3448,
+      "machine": 1119,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.9740840035746202,
+      "cells_run": 2,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 28
+    },
+    "anes2024__qwen__roberta": {
+      "human": 3448,
+      "machine": 1119,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.3082946635730858,
+      "flag_rate_machine": 0.7390527256478999,
+      "cells_run": 2,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 27
+    },
+    "anes2024__qwen__fdgpt": {
+      "human": 3099,
+      "machine": 1118,
+      "unscorable_dropped": 350,
+      "flag_rate_human": 0.05388835108099387,
+      "flag_rate_machine": 0.5599284436493739,
+      "cells_run": 2,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 29
+    },
+    "anes2024__olmo__tfidf": {
+      "human": 3448,
+      "machine": 1118,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.8765652951699463,
+      "cells_run": 2,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 30
+    },
+    "anes2024__olmo__roberta": {
+      "human": 3448,
+      "machine": 1118,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.3082946635730858,
+      "flag_rate_machine": 0.6055456171735242,
+      "cells_run": 2,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 28
+    },
+    "anes2024__olmo__fdgpt": {
+      "human": 3099,
+      "machine": 1118,
+      "unscorable_dropped": 349,
+      "flag_rate_human": 0.05388835108099387,
+      "flag_rate_machine": 0.8846153846153846,
+      "cells_run": 2,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 29
+    },
+    "anes2024__phi__tfidf": {
+      "human": 3448,
+      "machine": 1119,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.7006255585344057,
+      "cells_run": 2,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 30
+    },
+    "anes2024__phi__roberta": {
+      "human": 3448,
+      "machine": 1119,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.3082946635730858,
+      "flag_rate_machine": 0.4772117962466488,
+      "cells_run": 2,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 26
+    },
+    "anes2024__phi__fdgpt": {
+      "human": 3099,
+      "machine": 1118,
+      "unscorable_dropped": 350,
+      "flag_rate_human": 0.05388835108099387,
+      "flag_rate_machine": 0.5178890876565295,
+      "cells_run": 2,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 28
+    }
+  },
+  "corpus": "anes2024",
+  "grid": "large_n",
+  "config_sha256": "f054e3a55365f3f514fba990af2f18b3f19a1bf95649e402adc94cff3ed31ad0",
+  "features_sha256": "a9e3d5108a6b5dc33b94424fe8363e2e734a9a5754d1c481f58747ad034131d7",
+  "frozen_sha256": "4e0f3efc9da9aaa74b38ae75d0e279be1b3fc344df0a292119b136f7ff42b360",
+  "d2vi": "2.0.0.dev7",
+  "git_commit": "c21bade8565bdf33ad3fc7bdb2ff6db67643b207",
+  "rehearsal": false,
+  "estimators": [
+    "naive",
+    "deletion",
+    "hajek",
+    "flag_ppi",
+    "rc_ppi_pp",
+    "moment",
+    "flag_ppi_pp",
+    "rc_ppi",
+    "greg"
+  ]
+}
