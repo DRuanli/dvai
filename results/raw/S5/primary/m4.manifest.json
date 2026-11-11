@@ -222,6 +222,63 @@
       "seconds": 226,
       "git_commit": "16079ba2bea20adff759e1af3c7acdd02742e517",
       "platform": "vm"
+    },
+    "m4__russian-davinci__tfidfc": {
+      "human": 2100,
+      "machine": 2096,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.09095238095238095,
+      "flag_rate_machine": 0.5438931297709924,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 223,
+      "git_commit": "0a29d76c9fdbace990dd03b556a7ac6ae5b01e82",
+      "platform": "vm"
+    },
+    "m4__urdu-chatgpt__xlmr": {
+      "human": 2098,
+      "machine": 2020,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.026215443279313633,
+      "flag_rate_machine": 0.48168316831683167,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 220,
+      "git_commit": "0a29d76c9fdbace990dd03b556a7ac6ae5b01e82",
+      "platform": "vm"
+    },
+    "m4__urdu-chatgpt__tfidfc": {
+      "human": 2098,
+      "machine": 2020,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.9975247524752475,
+      "cells_run": 21,
+      "cells_skipped": [],
+      "replications": 1000,
+      "seconds": 228,
+      "git_commit": "0a29d76c9fdbace990dd03b556a7ac6ae5b01e82",
+      "platform": "vm"
+    },
+    "m4__urdu-davinci__xlmr": {
+      "human": 2098,
+      "machine": 0,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.026215443279313633,
+      "flag_rate_machine": NaN,
+      "empty": true,
+      "cells_run": 0
+    },
+    "m4__urdu-davinci__tfidfc": {
+      "human": 2098,
+      "machine": 0,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": NaN,
+      "empty": true,
+      "cells_run": 0
     }
   },
   "corpus": "m4",
