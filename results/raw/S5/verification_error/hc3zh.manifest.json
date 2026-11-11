@@ -436,8 +436,8 @@
         }
       ],
       "replications": 500,
-      "seconds": 41,
-      "git_commit": "0143bb1c83d5ab745d841eb13cce0325e936b94e",
+      "seconds": 42,
+      "git_commit": "561e40ef6ee948e5037d326a62f8be99bff3caa1",
       "platform": "vm"
     },
     "hc3zh__nlpcc_dbqa-chatgpt__tfidfc": {
@@ -851,7 +851,7 @@
       ],
       "replications": 500,
       "seconds": 43,
-      "git_commit": "0143bb1c83d5ab745d841eb13cce0325e936b94e",
+      "git_commit": "561e40ef6ee948e5037d326a62f8be99bff3caa1",
       "platform": "vm"
     },
     "hc3zh__open_qa-chatgpt__xlmr": {
