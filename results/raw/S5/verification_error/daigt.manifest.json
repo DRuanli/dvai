@@ -142,6 +142,19 @@
       "seconds": 545,
       "git_commit": "af316ae06ab9ca57cdaf8bc1c381f3368346d1ce",
       "platform": "vm"
+    },
+    "daigt__llama_70b_v1__tfidf": {
+      "human": 2800,
+      "machine": 700,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.14857142857142858,
+      "cells_run": 50,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 526,
+      "git_commit": "af316ae06ab9ca57cdaf8bc1c381f3368346d1ce",
+      "platform": "vm"
     }
   },
   "corpus": "daigt",
