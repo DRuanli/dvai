@@ -1,0 +1,513 @@
+{
+  "units": [
+    "anes2024",
+    "beemo",
+    "daigt",
+    "hc3zh",
+    "m4",
+    "raid"
+  ],
+  "cells": 12012,
+  "PE1": {
+    "itt": {
+      "units": 6,
+      "cells": 12012,
+      "pooled_ratio": 0.6085436974930042,
+      "pooled_ratio_bca90": [
+        0.575827796232772,
+        0.7173270492285932
+      ],
+      "per_unit_ratio": {
+        "anes2024": 0.7646963727732968,
+        "beemo": 0.7459049335923198,
+        "daigt": 0.576086735680102,
+        "hc3zh": 0.9425538153538698,
+        "m4": 0.7524065802593685,
+        "raid": 0.5712204175573866
+      },
+      "wilcoxon_p_one_sided": 0.015625,
+      "passes": true
+    },
+    "per_protocol": {
+      "units": 6,
+      "cells": 8214,
+      "pooled_ratio": 0.5139031509533772,
+      "pooled_ratio_bca90": [
+        0.4911070344163463,
+        0.6075298651206197
+      ],
+      "per_unit_ratio": {
+        "anes2024": 0.5664650755662366,
+        "beemo": 0.6706674382270206,
+        "daigt": 0.49952841551415644,
+        "hc3zh": 0.8789779675229417,
+        "m4": 0.5874172879801436,
+        "raid": 0.4889759204556788
+      },
+      "wilcoxon_p_one_sided": 0.015625,
+      "passes": true
+    },
+    "feasible_share_of_replications": 0.5312206127206127,
+    "cells_never_feasible": 0.1655011655011655,
+    "passes": true
+  },
+  "PE2": {
+    "cells": 12012,
+    "mean_coverage": 0.9773574758574759,
+    "share_cells_ge_090": 0.9754412254412255,
+    "min_coverage": 0.614,
+    "median_mc_se_per_cell": 0.003443254274665176,
+    "median_width_ratio": 1.3589683958928842,
+    "by_budget": {
+      "0.02": {
+        "mean_coverage": 0.9914448051948052,
+        "share_cells_ge_090": 0.9967532467532467,
+        "median_width_ratio": 2.2708541781868252
+      },
+      "0.05": {
+        "mean_coverage": 0.9791468531468531,
+        "share_cells_ge_090": 0.9832667332667333,
+        "median_width_ratio": 1.3170431922457142
+      },
+      "0.1": {
+        "mean_coverage": 0.9614807692307693,
+        "share_cells_ge_090": 0.9463036963036963,
+        "median_width_ratio": 1.09244740769747
+      }
+    },
+    "passes": true
+  },
+  "PE3": {
+    "bad": {
+      "replications": 900390,
+      "rate": 0.01047879252323993,
+      "upper95_cluster_bootstrap": 0.010685227469171539,
+      "upper95_clopper_pearson": 0.010657030882769076
+    },
+    "near": {
+      "replications": 113358,
+      "rate": 0.03687432735228215,
+      "upper95_cluster_bootstrap": 0.03782797742797879,
+      "upper95_clopper_pearson": 0.037808211365434205
+    },
+    "worst_cell_rate": 0.2571428571428571,
+    "power_small_bias": 0.7437735710820293,
+    "evaluable": true,
+    "passes": true
+  },
+  "PE4": {
+    "pooled": {
+      "rules": {
+        "policy_debiased": {
+          "max_excess_srmse": 0.19674908756205317,
+          "boot90": [
+            0.15770462694137952,
+            0.19674908756205317
+          ],
+          "mean_excess_srmse": 0.02019039654327271,
+          "pooled_srmse": 0.0687506445273952
+        },
+        "naive": {
+          "max_excess_srmse": 1.569114710168799,
+          "boot90": [
+            0.6555270997042518,
+            1.569114710168799
+          ],
+          "mean_excess_srmse": 0.05700793424698809,
+          "pooled_srmse": 0.17864429710752455
+        },
+        "deletion": {
+          "max_excess_srmse": 1.5204559682432746,
+          "boot90": [
+            0.3556594726578215,
+            1.5204559682432746
+          ],
+          "mean_excess_srmse": 0.036733320577991856,
+          "pooled_srmse": 0.16101640637895284
+        },
+        "hajek": {
+          "max_excess_srmse": 0.3286143967982241,
+          "boot90": [
+            0.3118850817550104,
+            0.3286143967982241
+          ],
+          "mean_excess_srmse": 0.1474753707333209,
+          "pooled_srmse": 0.18797443849632525
+        },
+        "flag_ppi": {
+          "max_excess_srmse": 0.681497858264212,
+          "boot90": [
+            0.28102556147247026,
+            0.681497858264212
+          ],
+          "mean_excess_srmse": 0.037196345768600016,
+          "pooled_srmse": 0.09215925433637445
+        },
+        "rc_ppi_pp": {
+          "max_excess_srmse": 0.22267976466850609,
+          "boot90": [
+            0.202889885522501,
+            0.22267976466850609
+          ],
+          "mean_excess_srmse": 0.026459156069700066,
+          "pooled_srmse": 0.07189270701822535
+        }
+      },
+      "lowest_worst_case": "policy_debiased",
+      "policy_is_lowest": true
+    },
+    "by_budget": {
+      "0.02": {
+        "rules": {
+          "policy_debiased": {
+            "max_excess_srmse": 0.19674908756205317,
+            "boot90": [
+              0.15770462694137952,
+              0.19674908756205317
+            ],
+            "mean_excess_srmse": 0.03529555413527541,
+            "pooled_srmse": 0.09759345137104093
+          },
+          "naive": {
+            "max_excess_srmse": 1.4601671012657422,
+            "boot90": [
+              0.6555270997042518,
+              1.4601671012657422
+            ],
+            "mean_excess_srmse": 0.04827602729324427,
+            "pooled_srmse": 0.17864429710752455
+          },
+          "deletion": {
+            "max_excess_srmse": 1.4115083593402178,
+            "boot90": [
+              0.26152010622714056,
+              1.4115083593402178
+            ],
+            "mean_excess_srmse": 0.028001413624248035,
+            "pooled_srmse": 0.16101640637895284
+          },
+          "hajek": {
+            "max_excess_srmse": 0.3286143967982241,
+            "boot90": [
+              0.3118850817550104,
+              0.3286143967982241
+            ],
+            "mean_excess_srmse": 0.21848865831595712,
+            "pooled_srmse": 0.2581532862606832
+          },
+          "flag_ppi": {
+            "max_excess_srmse": 0.681497858264212,
+            "boot90": [
+              0.28102556147247026,
+              0.681497858264212
+            ],
+            "mean_excess_srmse": 0.05924844967573002,
+            "pooled_srmse": 0.1284174624659526
+          },
+          "rc_ppi_pp": {
+            "max_excess_srmse": 0.22267976466850609,
+            "boot90": [
+              0.202889885522501,
+              0.22267976466850609
+            ],
+            "mean_excess_srmse": 0.04902393577465577,
+            "pooled_srmse": 0.1035173143849927
+          }
+        },
+        "lowest_worst_case": "policy_debiased",
+        "policy_is_lowest": true
+      },
+      "0.05": {
+        "rules": {
+          "policy_debiased": {
+            "max_excess_srmse": 0.1084874784359904,
+            "boot90": [
+              0.08621111161199974,
+              0.1084874784359904
+            ],
+            "mean_excess_srmse": 0.017120732285477502,
+            "pooled_srmse": 0.05751148487468919
+          },
+          "naive": {
+            "max_excess_srmse": 1.5308593091610159,
+            "boot90": [
+              0.6555270997042518,
+              1.5308593091610159
+            ],
+            "mean_excess_srmse": 0.057774174136942996,
+            "pooled_srmse": 0.17864429710752455
+          },
+          "deletion": {
+            "max_excess_srmse": 1.4822005672354914,
+            "boot90": [
+              0.2961681735384084,
+              1.4822005672354914
+            ],
+            "mean_excess_srmse": 0.037499560467946766,
+            "pooled_srmse": 0.16101640637895284
+          },
+          "hajek": {
+            "max_excess_srmse": 0.1967679612192791,
+            "boot90": [
+              0.19277812886570606,
+              0.1967679612192791
+            ],
+            "mean_excess_srmse": 0.13538597633216448,
+            "pooled_srmse": 0.16477022396840546
+          },
+          "flag_ppi": {
+            "max_excess_srmse": 0.3506187103084586,
+            "boot90": [
+              0.1590826012327194,
+              0.3506187103084586
+            ],
+            "mean_excess_srmse": 0.03355077536128423,
+            "pooled_srmse": 0.07971617748897684
+          },
+          "rc_ppi_pp": {
+            "max_excess_srmse": 0.13022740671387353,
+            "boot90": [
+              0.10027613165627827,
+              0.13022740671387353
+            ],
+            "mean_excess_srmse": 0.0213902078177601,
+            "pooled_srmse": 0.0588723298052442
+          }
+        },
+        "lowest_worst_case": "policy_debiased",
+        "policy_is_lowest": true
+      },
+      "0.1": {
+        "rules": {
+          "policy_debiased": {
+            "max_excess_srmse": 0.07799243066953766,
+            "boot90": [
+              0.05227034663560905,
+              0.07799243066953766
+            ],
+            "mean_excess_srmse": 0.008154903209065216,
+            "pooled_srmse": 0.036713767523824485
+          },
+          "naive": {
+            "max_excess_srmse": 1.569114710168799,
+            "boot90": [
+              0.6555270997042518,
+              1.569114710168799
+            ],
+            "mean_excess_srmse": 0.064973601310777,
+            "pooled_srmse": 0.17864429710752455
+          },
+          "deletion": {
+            "max_excess_srmse": 1.5204559682432746,
+            "boot90": [
+              0.3556594726578215,
+              1.5204559682432746
+            ],
+            "mean_excess_srmse": 0.04469898764178077,
+            "pooled_srmse": 0.16101640637895284
+          },
+          "hajek": {
+            "max_excess_srmse": 0.13670885728945326,
+            "boot90": [
+              0.1318873409399716,
+              0.13670885728945326
+            ],
+            "mean_excess_srmse": 0.08855147755184108,
+            "pooled_srmse": 0.11050259123766079
+          },
+          "flag_ppi": {
+            "max_excess_srmse": 0.222974635768016,
+            "boot90": [
+              0.08831971854821166,
+              0.222974635768016
+            ],
+            "mean_excess_srmse": 0.018789812268785795,
+            "pooled_srmse": 0.05132514841538463
+          },
+          "rc_ppi_pp": {
+            "max_excess_srmse": 0.08309990995283975,
+            "boot90": [
+              0.0589365934108102,
+              0.08309990995283975
+            ],
+            "mean_excess_srmse": 0.008963324616684346,
+            "pooled_srmse": 0.0363854142898814
+          }
+        },
+        "lowest_worst_case": "policy_debiased",
+        "policy_is_lowest": true
+      }
+    }
+  },
+  "source": {
+    "raw_dir": [
+      "results/raw/S5/primary",
+      "/tmp/claude-0/-home-claude/d7749e24-662a-5a92-b69a-04f5fa9cb4bf/scratchpad/k07c/compact/primary"
+    ],
+    "files": [
+      "primary/anes2024__olmo__fdgpt",
+      "primary/anes2024__olmo__roberta",
+      "primary/anes2024__olmo__tfidf",
+      "primary/anes2024__phi__fdgpt",
+      "primary/anes2024__phi__roberta",
+      "primary/anes2024__phi__tfidf",
+      "primary/anes2024__qwen__fdgpt",
+      "primary/anes2024__qwen__roberta",
+      "primary/anes2024__qwen__tfidf",
+      "primary/beemo__expert_edited__fdgpt",
+      "primary/beemo__expert_edited__tfidf",
+      "primary/beemo__gpt4o_edited__fdgpt",
+      "primary/beemo__gpt4o_edited__tfidf",
+      "primary/beemo__llama31_edited__fdgpt",
+      "primary/beemo__llama31_edited__tfidf",
+      "primary/beemo__machine__fdgpt",
+      "primary/beemo__machine__tfidf",
+      "primary/daigt__chat_gpt_moth__fdgpt",
+      "primary/daigt__chat_gpt_moth__tfidf",
+      "primary/daigt__darragh_claude_v7__fdgpt",
+      "primary/daigt__darragh_claude_v7__tfidf",
+      "primary/daigt__falcon_180b_v1__fdgpt",
+      "primary/daigt__falcon_180b_v1__tfidf",
+      "primary/daigt__kingki19_palm__fdgpt",
+      "primary/daigt__kingki19_palm__tfidf",
+      "primary/daigt__llama2_chat__fdgpt",
+      "primary/daigt__llama2_chat__tfidf",
+      "primary/daigt__llama_70b_v1__fdgpt",
+      "primary/daigt__llama_70b_v1__tfidf",
+      "primary/daigt__mistral7binstruct_v1__fdgpt",
+      "primary/daigt__mistral7binstruct_v1__tfidf",
+      "primary/daigt__mistral7binstruct_v2__fdgpt",
+      "primary/daigt__mistral7binstruct_v2__tfidf",
+      "primary/hc3zh__baike-chatgpt__tfidfc",
+      "primary/hc3zh__baike-chatgpt__xlmr",
+      "primary/hc3zh__open_qa-chatgpt__tfidfc",
+      "primary/hc3zh__open_qa-chatgpt__xlmr",
+      "primary/m4__arabic-chatgpt__tfidfc",
+      "primary/m4__arabic-chatgpt__xlmr",
+      "primary/m4__bulgarian-chatgpt__tfidfc",
+      "primary/m4__bulgarian-chatgpt__xlmr",
+      "primary/m4__bulgarian-davinci__tfidfc",
+      "primary/m4__bulgarian-davinci__xlmr",
+      "primary/m4__german-chatgpt__tfidfc",
+      "primary/m4__german-chatgpt__xlmr",
+      "primary/m4__indonesian-chatgpt__tfidfc",
+      "primary/m4__indonesian-chatgpt__xlmr",
+      "primary/m4__russian-chatgpt__tfidfc",
+      "primary/m4__russian-chatgpt__xlmr",
+      "primary/m4__russian-davinci__tfidfc",
+      "primary/m4__russian-davinci__xlmr",
+      "primary/m4__urdu-chatgpt__tfidfc",
+      "primary/m4__urdu-chatgpt__xlmr",
+      "primary/raid__books-chatgpt-homoglyph__fdgpt (compact)",
+      "primary/raid__books-chatgpt-homoglyph__tfidf (compact)",
+      "primary/raid__books-chatgpt-paraphrase__fdgpt (compact)",
+      "primary/raid__books-chatgpt-paraphrase__tfidf (compact)",
+      "primary/raid__books-chatgpt-synonym__fdgpt (compact)",
+      "primary/raid__books-chatgpt-synonym__tfidf (compact)",
+      "primary/raid__books-chatgpt__fdgpt (compact)",
+      "primary/raid__books-chatgpt__tfidf (compact)",
+      "primary/raid__books-gpt4__fdgpt (compact)",
+      "primary/raid__books-gpt4__tfidf (compact)",
+      "primary/raid__books-llama-chat-homoglyph__fdgpt (compact)",
+      "primary/raid__books-llama-chat-homoglyph__tfidf (compact)",
+      "primary/raid__books-llama-chat-paraphrase__fdgpt (compact)",
+      "primary/raid__books-llama-chat-paraphrase__tfidf (compact)",
+      "primary/raid__books-llama-chat-synonym__fdgpt (compact)",
+      "primary/raid__books-llama-chat-synonym__tfidf (compact)",
+      "primary/raid__books-llama-chat__fdgpt (compact)",
+      "primary/raid__books-llama-chat__tfidf (compact)",
+      "primary/raid__books-mistral-chat__fdgpt (compact)",
+      "primary/raid__books-mistral-chat__tfidf (compact)",
+      "primary/raid__news-chatgpt-homoglyph__fdgpt (compact)",
+      "primary/raid__news-chatgpt-homoglyph__tfidf (compact)",
+      "primary/raid__news-chatgpt-paraphrase__fdgpt (compact)",
+      "primary/raid__news-chatgpt-paraphrase__tfidf (compact)",
+      "primary/raid__news-chatgpt-synonym__fdgpt (compact)",
+      "primary/raid__news-chatgpt-synonym__tfidf (compact)",
+      "primary/raid__news-chatgpt__fdgpt (compact)",
+      "primary/raid__news-chatgpt__tfidf (compact)",
+      "primary/raid__news-gpt4__fdgpt (compact)",
+      "primary/raid__news-gpt4__tfidf (compact)",
+      "primary/raid__news-llama-chat-homoglyph__fdgpt (compact)",
+      "primary/raid__news-llama-chat-homoglyph__tfidf (compact)",
+      "primary/raid__news-llama-chat-paraphrase__fdgpt (compact)",
+      "primary/raid__news-llama-chat-paraphrase__tfidf (compact)",
+      "primary/raid__news-llama-chat-synonym__fdgpt (compact)",
+      "primary/raid__news-llama-chat-synonym__tfidf (compact)",
+      "primary/raid__news-llama-chat__fdgpt (compact)",
+      "primary/raid__news-llama-chat__tfidf (compact)",
+      "primary/raid__news-mistral-chat__fdgpt (compact)",
+      "primary/raid__news-mistral-chat__tfidf (compact)",
+      "primary/raid__poetry-chatgpt-homoglyph__fdgpt (compact)",
+      "primary/raid__poetry-chatgpt-homoglyph__tfidf (compact)",
+      "primary/raid__poetry-chatgpt-paraphrase__fdgpt (compact)",
+      "primary/raid__poetry-chatgpt-paraphrase__tfidf (compact)",
+      "primary/raid__poetry-chatgpt-synonym__fdgpt (compact)",
+      "primary/raid__poetry-chatgpt-synonym__tfidf (compact)",
+      "primary/raid__poetry-chatgpt__fdgpt (compact)",
+      "primary/raid__poetry-chatgpt__tfidf (compact)",
+      "primary/raid__poetry-gpt4__fdgpt (compact)",
+      "primary/raid__poetry-gpt4__tfidf (compact)",
+      "primary/raid__poetry-llama-chat-homoglyph__fdgpt (compact)",
+      "primary/raid__poetry-llama-chat-homoglyph__tfidf (compact)",
+      "primary/raid__poetry-llama-chat-paraphrase__fdgpt (compact)",
+      "primary/raid__poetry-llama-chat-paraphrase__tfidf (compact)",
+      "primary/raid__poetry-llama-chat-synonym__fdgpt (compact)",
+      "primary/raid__poetry-llama-chat-synonym__tfidf (compact)",
+      "primary/raid__poetry-llama-chat__fdgpt (compact)",
+      "primary/raid__poetry-llama-chat__tfidf (compact)",
+      "primary/raid__poetry-mistral-chat__fdgpt (compact)",
+      "primary/raid__poetry-mistral-chat__tfidf (compact)",
+      "primary/raid__reddit-chatgpt-homoglyph__fdgpt (compact)",
+      "primary/raid__reddit-chatgpt-homoglyph__tfidf (compact)",
+      "primary/raid__reddit-chatgpt-paraphrase__fdgpt (compact)",
+      "primary/raid__reddit-chatgpt-paraphrase__tfidf (compact)",
+      "primary/raid__reddit-chatgpt-synonym__fdgpt (compact)",
+      "primary/raid__reddit-chatgpt-synonym__tfidf (compact)",
+      "primary/raid__reddit-chatgpt__fdgpt (compact)",
+      "primary/raid__reddit-chatgpt__tfidf (compact)",
+      "primary/raid__reddit-gpt4__fdgpt (compact)",
+      "primary/raid__reddit-gpt4__tfidf (compact)",
+      "primary/raid__reddit-llama-chat-homoglyph__fdgpt (compact)",
+      "primary/raid__reddit-llama-chat-homoglyph__tfidf (compact)",
+      "primary/raid__reddit-llama-chat-paraphrase__fdgpt (compact)",
+      "primary/raid__reddit-llama-chat-paraphrase__tfidf (compact)",
+      "primary/raid__reddit-llama-chat-synonym__fdgpt (compact)",
+      "primary/raid__reddit-llama-chat-synonym__tfidf (compact)",
+      "primary/raid__reddit-llama-chat__fdgpt (compact)",
+      "primary/raid__reddit-llama-chat__tfidf (compact)",
+      "primary/raid__reddit-mistral-chat__fdgpt (compact)",
+      "primary/raid__reddit-mistral-chat__tfidf (compact)",
+      "primary/raid__reviews-chatgpt-homoglyph__fdgpt (compact)",
+      "primary/raid__reviews-chatgpt-homoglyph__tfidf (compact)",
+      "primary/raid__reviews-chatgpt-paraphrase__fdgpt (compact)",
+      "primary/raid__reviews-chatgpt-paraphrase__tfidf (compact)",
+      "primary/raid__reviews-chatgpt-synonym__fdgpt (compact)",
+      "primary/raid__reviews-chatgpt-synonym__tfidf (compact)",
+      "primary/raid__reviews-chatgpt__fdgpt (compact)",
+      "primary/raid__reviews-chatgpt__tfidf (compact)",
+      "primary/raid__reviews-gpt4__fdgpt (compact)",
+      "primary/raid__reviews-gpt4__tfidf (compact)",
+      "primary/raid__reviews-llama-chat-homoglyph__fdgpt (compact)",
+      "primary/raid__reviews-llama-chat-homoglyph__tfidf (compact)",
+      "primary/raid__reviews-llama-chat-paraphrase__fdgpt (compact)",
+      "primary/raid__reviews-llama-chat-paraphrase__tfidf (compact)",
+      "primary/raid__reviews-llama-chat-synonym__fdgpt (compact)",
+      "primary/raid__reviews-llama-chat-synonym__tfidf (compact)",
+      "primary/raid__reviews-llama-chat__fdgpt (compact)",
+      "primary/raid__reviews-llama-chat__tfidf (compact)",
+      "primary/raid__reviews-mistral-chat__fdgpt (compact)",
+      "primary/raid__reviews-mistral-chat__tfidf (compact)"
+    ],
+    "cell": [
+      "corpus",
+      "pool",
+      "budget",
+      "eps",
+      "outcome"
+    ],
+    "unit": [
+      "corpus"
+    ]
+  }
+}
