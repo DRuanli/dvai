@@ -20,6 +20,7 @@ INK, MUTED = "#222222", "#888888"
 RULES = {"naive": ("Naive", "#9e9e9e"), "deletion": ("Detect-and-delete", "#d55e00"),
          "flag_ppi": ("Flag-PPI", "#56b4e9"), "itt": ("RC-PPI++ (ITT)", "#0072b2"),
          "policy_debiased": ("Policy", "#009e73")}
+SHORT = {"naive": "Naive", "deletion": "Deletion", "flag_ppi": "Flag-PPI", "itt": "RC-PPI++"}
 NAMES = {"anes2024": "ANES 2024", "beemo": "Beemo", "m4": "M4", "hc3zh": "HC3-Chinese",
          "daigt": "DAIGT", "raid": "RAID"}
 
@@ -34,7 +35,7 @@ def load(dirs):
 def regime_map(c, out):
     eps, bud = sorted(c.eps.unique()), sorted(c.budget.unique())
     rules = ["naive", "deletion", "flag_ppi", "itt"]
-    fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.6))
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.9))
     win = np.zeros((len(eps), len(bud)), dtype=int)
     share = np.zeros_like(win, dtype=float)
     cov = np.zeros_like(share)
@@ -51,18 +52,18 @@ def regime_map(c, out):
         for j in range(len(bud)):
             name, col = RULES[rules[win[i, j]]]
             ax.add_patch(plt.Rectangle((j, i), 1, 1, color=col, alpha=0.35 + 0.6 * share[i, j]))
-            ax.text(j + .5, i + .5, f"{name.split(' ')[0]}\n{share[i, j]:.0%}", ha="center",
-                    va="center", fontsize=6.5, color=INK)
+            ax.text(j + .5, i + .5, f"{SHORT[rules[win[i, j]]]}\n{share[i, j]:.0%}", ha="center",
+                    va="center", fontsize=8, color=INK)
     ax.set_xlim(0, len(bud)); ax.set_ylim(0, len(eps))
     ax.set_xticks(np.arange(len(bud)) + .5, [f"{b:.0%}" for b in bud])
     ax.set_yticks(np.arange(len(eps)) + .5, [f"{e:.0%}" for e in eps])
-    ax.set_xlabel("audit budget"); ax.set_ylabel("AI share ε")
+    ax.set_xlabel("audit budget"); ax.set_ylabel("contamination rate ε")
     ax.set_title("(a) rule with the lowest MSE (share of cells)", loc="left")
     ax = axes[1]
     im = ax.imshow(cov, origin="lower", cmap="Blues", vmin=0.85, vmax=1.0, aspect="auto")
     for i in range(len(eps)):
         for j in range(len(bud)):
-            ax.text(j, i, f"{cov[i, j]:.3f}", ha="center", va="center", fontsize=7,
+            ax.text(j, i, f"{cov[i, j]:.3f}", ha="center", va="center", fontsize=8.5,
                     color="white" if cov[i, j] > 0.95 else INK)
     ax.set_xticks(range(len(bud)), [f"{b:.0%}" for b in bud])
     ax.set_yticks(range(len(eps)), [f"{e:.0%}" for e in eps])
@@ -96,18 +97,19 @@ def corpus_ratios(c, out):
 
 
 def secondary(sec, out):
-    fig, axes = plt.subplots(1, 2, figsize=(7.4, 2.6), gridspec_kw={"wspace": 0.45})
+    fig, axes = plt.subplots(1, 2, figsize=(7.4, 3.2), gridspec_kw={"wspace": 0.35, "width_ratios": [1.15, 1]})
     d = sec[sec.grid == "designs"].copy()
-    d["lab"] = d.level.str.split("_").str[0].replace({"top": "top decile", "adaptive": "adaptive",
-                                                       "proportional": "proportional"})
+    d["lab"] = d.level.str.split("_").str[0].replace({"top": "top decile", "adaptive": "label-adaptive",
+                                                       "srs": "simple random", "pps": "PPS on score",
+                                                       "neyman": "two-stage Neyman"})
     d = d.sort_values("width_mean_sd")
     ax = axes[0]
-    ax.barh(d.lab, d.cover_mean, color=RULES["itt"][1], alpha=.8)
-    ax.scatter(d.cover_min, d.lab, color="#d55e00", s=12, zorder=3, label="lowest cell")
-    for y, (w, f) in enumerate(zip(d.width_mean_sd, d.feasible)):
-        ax.text(0.22, y, f"width {w:.2f} SD · RC-PPI++ feasible {f:.0%}", va="center", fontsize=6, color="white")
+    d["tick"] = [f"{l}\nwidth {w:.2f} SD, feasible {f:.0%}" for l, w, f in zip(d.lab, d.width_mean_sd, d.feasible)]
+    ax.barh(d.tick, d.cover_mean, color=RULES["itt"][1], alpha=.8, height=0.55)
+    ax.scatter(d.cover_min, d.tick, color="#d55e00", s=22, zorder=3, label="lowest cell")
+    ax.tick_params(axis="y", labelsize=7)
     ax.axvline(.95, color=MUTED, lw=.8, ls="--"); ax.set_xlim(0.2, 1.0)
-    ax.set_xlabel("ITT coverage (mean over cells)"); ax.legend(frameon=False, loc="upper left", bbox_to_anchor=(0, -0.22), fontsize=6)
+    ax.set_xlabel("ITT coverage (bar: mean over cells; dot: lowest cell)")
     ax.set_title("(a) audit designs, budget 5%", loc="left")
     v = sec[sec.grid == "verification_error"].copy()
     v[["p0", "p1"]] = v.level.str.extract(r"phi0=([\d.]+),phi1=([\d.]+)").astype(float)
@@ -118,7 +120,7 @@ def secondary(sec, out):
     s = v[v.p1 == 0].sort_values("p0")
     ax.plot(s.p0, s.srmse_deletion, "s--", ms=3, color=RULES["deletion"][1], label="detect-and-delete")
     ax.set_xlabel("φ0 (human recorded as AI)"); ax.set_ylabel("standardised RMSE")
-    ax.set_title("(b) verification error", loc="left"); ax.legend(frameon=False, fontsize=6)
+    ax.set_title("(b) verification error", loc="left"); ax.legend(frameon=False, fontsize=7, loc="lower right")
     fig.savefig(out / "fig_secondary.pdf"); fig.savefig(out / "fig_secondary.png")
 
 

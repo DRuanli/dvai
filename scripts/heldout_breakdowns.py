@@ -141,12 +141,25 @@ def main() -> None:
                             "pools_without_cells": sorted(k for k, v in excl.items() if not v["cells_run"]),
                             "pools_partly_run": len([k for k, v in excl.items() if v["cells_run"]])}
 
+    # coverage by detector and by outcome (Section 5.3)
+    res["coverage_by_detector"] = {k: {"mean": float(g.cover_itt.mean()), "min": float(g.cover_itt.min()),
+                                       "cells": int(len(g))} for k, g in cells.groupby("detector")}
+    res["coverage_by_outcome"] = {k: {"mean": float(g.cover_itt.mean()), "min": float(g.cover_itt.min()),
+                                      "cells": int(len(g))} for k, g in cells.groupby("outcome")}
+
     # lowest cells of the stratified audit designs (Section 5.4)
     des = pd.concat([pd.read_parquet(f) for f in glob.glob(str(root / "designs" / "*.sec.parquet"))])
     des["design"] = des["design"].astype(str)
     strat = des[des.design.str.startswith(("proportional", "neyman"))]
     res["designs_lowest_stratified"] = strat.nsmallest(6, "cover")[
         ["pool", "design", "eps", "outcome", "cover", "feasible"]].to_dict("records")
+
+    # designs by contamination rate (Section 5.4): sRMSE of the ITT rule
+    des["short"] = des.design.str.split("_").str[0]
+    des["srmse"] = np.sqrt(des.itt_mse)
+    tab = des.groupby(["eps", "short"]).agg(srmse=("srmse", "mean"), cover=("cover", "mean"))
+    res["designs_by_contamination"] = {f"{e}|{d}": {"srmse": float(r.srmse), "cover": float(r.cover)}
+                                       for (e, d), r in tab.iterrows()}
 
     Path(args.out).write_text(json.dumps(res, indent=1, default=float))
     print("written", args.out)
