@@ -6,7 +6,7 @@
   "features_sha256": "654cae6d6042612eb82a79a9dec3937f5d4acb220352a22cbe0eea39a86d08a0",
   "frozen_sha256": "4e0f3efc9da9aaa74b38ae75d0e279be1b3fc344df0a292119b136f7ff42b360",
   "d2vi": "2.0.0.dev7",
-  "git_commit": "d7dd9e269713ddb8a79880183150e89d4b80a98f",
+  "git_commit": "d3cabb5122c39bf22370590b49a29287d969a910",
   "rehearsal": false,
   "estimators": [
     "naive",
