@@ -27,6 +27,8 @@ Grids: ``primary`` (all primary endpoints) and the secondary grids ``small_budge
 
 Held-out data are run once: a pool whose output file exists is skipped and there is no
 overwrite option. A pool without records of one class is recorded as empty.
+``--done-elsewhere`` skips the pools recorded in the manifests of runs on other machines (the
+same seeds give the same results, so a pool is never run twice to choose between draws).
 ``--max-minutes`` stops before starting a new pool, so that a run can be split over sessions
 (seeds depend on the cell, not on the order of the pools, so the split does not change any
 result). ``--reps`` is for rehearsals only and requires ``--out-root`` outside
@@ -164,6 +166,8 @@ def main() -> None:
     ap.add_argument("--out-root", default=str(DEFAULT_ROOT))
     ap.add_argument("--max-minutes", type=float,
                     help="start no new pool after this many minutes (the run can be resumed)")
+    ap.add_argument("--done-elsewhere", nargs="*", default=[],
+                    help="manifests of runs on other machines: pools listed there are skipped")
     args = ap.parse_args()
     started = time.time()
     root = Path(args.out_root)
@@ -183,7 +187,12 @@ def main() -> None:
                  "d2vi": d2vi.__version__, "git_commit": commit.strip(),
                  "rehearsal": args.reps is not None, "estimators": ESTIMATORS}
     man_path.write_text(json.dumps(manifest, indent=2))
+    elsewhere = set()
+    for m in args.done_elsewhere:
+        elsewhere |= set(json.loads(Path(m).read_text())["pools"])
     for name, dom, group, det in pool_plan(cfg):
+        if name in elsewhere:
+            continue
         out = out_dir / f"{name}.parquet"
         if out.exists():
             print("exists, skipped:", out.name, flush=True)
