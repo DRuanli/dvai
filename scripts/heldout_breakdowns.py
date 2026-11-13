@@ -5,7 +5,7 @@
 Everything is computed from the compact tables (``results/compact/S5``) and the detector
 operating points, with the same definitions as the endpoints: an error ratio is a ratio of
 mean squared errors summed over cells (as PE1), coverage and feasibility are means over
-cells. The intention-to-treat rule (ITT) is ``rc_ppi_pp`` with its flag-PPI fallback.
+cells (the pooled ratio of PE1). The intention-to-treat rule (ITT) is ``rc_ppi_pp`` with its flag-PPI fallback.
 """
 
 from __future__ import annotations
@@ -140,6 +140,13 @@ def main() -> None:
     res["large_n_skips"] = {"pools_with_skips": len(excl),
                             "pools_without_cells": sorted(k for k, v in excl.items() if not v["cells_run"]),
                             "pools_partly_run": len([k for k, v in excl.items() if v["cells_run"]])}
+
+    # lowest cells of the stratified audit designs (Section 5.4)
+    des = pd.concat([pd.read_parquet(f) for f in glob.glob(str(root / "designs" / "*.sec.parquet"))])
+    des["design"] = des["design"].astype(str)
+    strat = des[des.design.str.startswith(("proportional", "neyman"))]
+    res["designs_lowest_stratified"] = strat.nsmallest(6, "cover")[
+        ["pool", "design", "eps", "outcome", "cover", "feasible"]].to_dict("records")
 
     Path(args.out).write_text(json.dumps(res, indent=1, default=float))
     print("written", args.out)

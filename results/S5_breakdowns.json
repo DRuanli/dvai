@@ -1114,5 +1114,55 @@
    "raid__reviews-mistral-chat__tfidf"
   ],
   "pools_partly_run": 80
- }
+ },
+ "designs_lowest_stratified": [
+  {
+   "pool": "raid__news-llama-chat-homoglyph__tfidf",
+   "design": "neyman_n_strata5",
+   "eps": 0.02,
+   "outcome": "read",
+   "cover": 0.504,
+   "feasible": 0.008
+  },
+  {
+   "pool": "raid__news-chatgpt-homoglyph__tfidf",
+   "design": "neyman_n_strata5",
+   "eps": 0.02,
+   "outcome": "read",
+   "cover": 0.508,
+   "feasible": 0.008
+  },
+  {
+   "pool": "raid__books-chatgpt-homoglyph__tfidf",
+   "design": "neyman_n_strata5",
+   "eps": 0.02,
+   "outcome": "subj",
+   "cover": 0.512,
+   "feasible": 0.012
+  },
+  {
+   "pool": "raid__books-llama-chat-homoglyph__tfidf",
+   "design": "neyman_n_strata5",
+   "eps": 0.02,
+   "outcome": "subj",
+   "cover": 0.522,
+   "feasible": 0.006
+  },
+  {
+   "pool": "raid__books-chatgpt-homoglyph__tfidf",
+   "design": "neyman_n_strata5",
+   "eps": 0.02,
+   "outcome": "read",
+   "cover": 0.522,
+   "feasible": 0.012
+  },
+  {
+   "pool": "raid__books-llama-chat-homoglyph__tfidf",
+   "design": "neyman_n_strata5",
+   "eps": 0.02,
+   "outcome": "read",
+   "cover": 0.538,
+   "feasible": 0.006
+  }
+ ]
 }
