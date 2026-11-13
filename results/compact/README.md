@@ -1,8 +1,9 @@
 # Compact S5 results
 
 Per-pool reductions of the held-out replication files (`scripts/compact_s5.py`), enough to
-reproduce every held-out number in the paper without the raw files (about 20 GB, archived on
-Zenodo):
+reproduce every held-out number in the paper without the raw replication files. The raw
+files can be regenerated with `scripts/run_s5.py` (seeds depend on the cell only, so a rerun
+gives the same numbers):
 
     python scripts/report_endpoints.py results/compact/S5/primary --out results/S5_endpoints.json
     python scripts/summarise_secondary.py results/compact/S5 --tag final

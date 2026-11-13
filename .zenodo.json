@@ -1,0 +1,14 @@
+{
+  "title": "D2VI: Detect, Then What? Valid Social Measurement from AI-Contaminated Response Data (software, frozen protocol and result tables)",
+  "upload_type": "software",
+  "description": "Python package d2vi, frozen experimental protocol, corpus configurations, tests, Kaggle/Colab notebooks and the compact result tables from which every held-out number of the paper is reproduced (results/compact/S5). Companion to the article submitted to Neurocomputing (NEUCOM-D-26-20926).",
+  "creators": [
+    {"name": "Le, Nguyen", "affiliation": "Faculty of Information Technology, Ton Duc Thang University"},
+    {"name": "Vu, My", "affiliation": "Faculty of Information Technology, Ton Duc Thang University"}
+  ],
+  "license": "MIT",
+  "keywords": ["AI-generated text detection", "data quality", "two-phase sampling", "prediction-powered inference", "survey research", "equivalence testing"],
+  "related_identifiers": [
+    {"identifier": "https://github.com/DRuanli/dvai", "relation": "isSupplementTo", "scheme": "url"}
+  ]
+}

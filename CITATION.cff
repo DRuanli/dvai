@@ -9,6 +9,16 @@ authors:
   - family-names: Vu
     given-names: My
     affiliation: "Faculty of Information Technology, Ton Duc Thang University"
-version: 2.0.0.dev0
+version: 2.0.0
 license: MIT
 repository-code: "https://github.com/DRuanli/dvai"
+preferred-citation:
+  type: article
+  title: "Detect, Then What? Valid Social Measurement from AI-Contaminated Response Data"
+  authors:
+    - family-names: Le
+      given-names: Nguyen
+    - family-names: Vu
+      given-names: My
+  journal: "Neurocomputing"
+  notes: "Under revision (NEUCOM-D-26-20926)."
