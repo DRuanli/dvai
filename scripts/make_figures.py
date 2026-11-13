@@ -79,11 +79,14 @@ def corpus_ratios(c, out):
         s = c[c.corpus == corp]
         per_pool = s.groupby("pool")[["mse_itt", "mse_flag_ppi"]].mean()
         r = per_pool.mse_itt / per_pool.mse_flag_ppi
-        ax.scatter(r, np.full(len(r), k) + np.random.default_rng(k).uniform(-.18, .18, len(r)),
-                   s=6, color=RULES["itt"][1], alpha=.35, lw=0)
+        y = np.full(len(r), k) + np.random.default_rng(k).uniform(-.18, .18, len(r))
+        inside = r <= 1.28
+        ax.scatter(r[inside], y[inside], s=6, color=RULES["itt"][1], alpha=.35, lw=0)
+        ax.scatter(np.full((~inside).sum(), 1.28), y[~inside], s=14, marker=">",
+                   color=RULES["itt"][1], lw=0)      # pools beyond the plotted range
         tot = s.mse_itt.mean() / s.mse_flag_ppi.mean()
         ax.plot([tot], [k], "|", ms=14, mew=2, color=INK)
-        ax.text(1.32, k, f"{tot:.2f}", va="center", fontsize=7)
+        ax.text(1.31, k, f"{tot:.2f}", va="center", fontsize=7)
     ax.axvline(1, color=MUTED, lw=.8, ls="--")
     ax.axvline(1.10, color="#d55e00", lw=.8, ls=":")
     ax.set_yticks(range(k + 1), [NAMES[o] for o in order if o in set(c.corpus)])
