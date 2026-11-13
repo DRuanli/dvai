@@ -1,0 +1,49 @@
+{
+  "pools": {
+    "raid__news-chatgpt-homoglyph__tfidf": {
+      "human": 1780,
+      "machine": 600,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.03333333333333333,
+      "cells_run": 6,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 127,
+      "git_commit": "05d80d74cd099a118073ba3eec8984a2f0af0bf0",
+      "platform": "vm"
+    },
+    "raid__reddit-chatgpt-homoglyph__tfidf": {
+      "human": 1779,
+      "machine": 600,
+      "unscorable_dropped": 0,
+      "flag_rate_human": 0.0,
+      "flag_rate_machine": 0.0033333333333333335,
+      "cells_run": 6,
+      "cells_skipped": [],
+      "replications": 500,
+      "seconds": 145,
+      "git_commit": "05d80d74cd099a118073ba3eec8984a2f0af0bf0",
+      "platform": "vm"
+    }
+  },
+  "corpus": "raid",
+  "grid": "mixtures",
+  "config_sha256": "2bb72f88c496ae2ccfc0a4945dee436b6b02caf7fcc612f3bde4f9ea7805a0a1",
+  "features_sha256": "654cae6d6042612eb82a79a9dec3937f5d4acb220352a22cbe0eea39a86d08a0",
+  "frozen_sha256": "4e0f3efc9da9aaa74b38ae75d0e279be1b3fc344df0a292119b136f7ff42b360",
+  "d2vi": "2.0.0.dev7",
+  "git_commit": "05d80d74cd099a118073ba3eec8984a2f0af0bf0",
+  "rehearsal": false,
+  "estimators": [
+    "naive",
+    "deletion",
+    "hajek",
+    "flag_ppi",
+    "rc_ppi_pp",
+    "moment",
+    "flag_ppi_pp",
+    "rc_ppi",
+    "greg"
+  ]
+}
