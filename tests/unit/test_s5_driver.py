@@ -140,3 +140,32 @@ def test_reports_from_compact_files_equal_reports_from_raw_files(tmp_path, monke
     a, b = (json.loads((tmp_path / f"{s}.json").read_text()) for s in ("raw", "compact"))
     a.pop("source"), b.pop("source")
     assert json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+
+
+def test_compact_writes_only_the_secondary_table_for_grids_with_several_designs(tmp_path):
+    """The mixtures, designs and verification-error grids have several designs in one
+    (budget, eps) cell; the endpoint tables are not defined there (K07 failed on them)."""
+    import subprocess
+    import sys
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import compact_s5
+
+    rows = []
+    for mix in ("iid", "clustered"):
+        for rep in range(3):
+            for est in ("naive", "rc_ppi_pp"):
+                rows.append({"corpus": "toy", "pool": "toy__g__d", "detector": "d",
+                             "budget": 0.05, "eps": 0.2, "n": 900, "design": "prop",
+                             "mixture": mix, "phi0": 0.0, "phi1": 0.0, "outcome": "o",
+                             "rep": rep, "estimator": est, "point": 0.1, "se": 0.05,
+                             "ci_low": 0.0, "ci_high": 0.2, "feasible": True, "truth": 0.1,
+                             "sd_h": 1.0})
+    raw = pd.DataFrame(rows)
+    assert not compact_s5.is_single_design(raw)
+    assert compact_s5.is_single_design(raw[raw.mixture == "iid"])
+    (tmp_path / "raw").mkdir()
+    raw.to_parquet(tmp_path / "raw" / "toy__g__d.parquet")
+    subprocess.run([sys.executable, str(ROOT / "scripts" / "compact_s5.py"),
+                    str(tmp_path / "raw"), str(tmp_path / "out")], check=True, cwd=ROOT)
+    assert sorted(p.name for p in (tmp_path / "out").iterdir()) == ["toy__g__d.sec.parquet"]
