@@ -29,7 +29,8 @@ Held-out data are run once: a pool whose output file exists is skipped and there
 overwrite option. A pool without records of one class is recorded as empty.
 ``--done-elsewhere`` skips the pools recorded in the manifests of runs on other machines (the
 same seeds give the same results, so a pool is never run twice to choose between draws).
-``--max-minutes`` stops before starting a new pool, so that a run can be split over sessions
+``--shard I/K`` runs every K-th pool of the plan, starting at I, so that K machines can share a
+grid. ``--max-minutes`` stops before starting a new pool, so that a run can be split over sessions
 (seeds depend on the cell, not on the order of the pools, so the split does not change any
 result). ``--reps`` is for rehearsals only and requires ``--out-root`` outside
 ``results/raw/S5``. Output: ``<out-root>/<grid>/<corpus>__<group>__<detector>.parquet`` and
@@ -166,6 +167,8 @@ def main() -> None:
     ap.add_argument("--out-root", default=str(DEFAULT_ROOT))
     ap.add_argument("--max-minutes", type=float,
                     help="start no new pool after this many minutes (the run can be resumed)")
+    ap.add_argument("--shard", default="0/1",
+                    help="I/K: run only the pools whose position in the plan is I modulo K")
     ap.add_argument("--done-elsewhere", nargs="*", default=[],
                     help="manifests of runs on other machines: pools listed there are skipped")
     args = ap.parse_args()
@@ -190,8 +193,9 @@ def main() -> None:
     elsewhere = set()
     for m in args.done_elsewhere:
         elsewhere |= set(json.loads(Path(m).read_text())["pools"])
-    for name, dom, group, det in pool_plan(cfg):
-        if name in elsewhere:
+    shard, n_shards = map(int, args.shard.split("/"))
+    for pos, (name, dom, group, det) in enumerate(pool_plan(cfg)):
+        if name in elsewhere or pos % n_shards != shard:
             continue
         out = out_dir / f"{name}.parquet"
         if out.exists():

@@ -169,3 +169,29 @@ def test_compact_writes_only_the_secondary_table_for_grids_with_several_designs(
     subprocess.run([sys.executable, str(ROOT / "scripts" / "compact_s5.py"),
                     str(tmp_path / "raw"), str(tmp_path / "out")], check=True, cwd=ROOT)
     assert sorted(p.name for p in (tmp_path / "out").iterdir()) == ["toy__g__d.sec.parquet"]
+
+
+def test_shards_split_the_pools_of_a_grid(tmp_path, monkeypatch):
+    rng = np.random.default_rng(2)
+    n_h, n_m = 1000, 400
+    feat = pd.DataFrame({
+        "doc_id": [f"d{i}" for i in range(n_h + 2 * n_m)], "a": [0.0] * n_h + [1.0] * (2 * n_m),
+        "source": ["human"] * n_h + ["g1"] * n_m + ["g2"] * n_m, "domain": "x",
+        "length": rng.integers(50, 400, n_h + 2 * n_m),
+        "y_o": rng.normal(0, 1, n_h + 2 * n_m), "score_d": rng.normal(0, 1, n_h + 2 * n_m)})
+    feat["flag_d"] = (feat["score_d"] > 1).astype(int)
+    feat.to_parquet(tmp_path / "f.parquet")
+    cfg = {"corpus": "toy", "features": str(tmp_path / "f.parquet"), "outcomes": ["o"],
+           "human": {"source": "human"}, "machine_groups": {"by": "source"},
+           "detectors": {"d": {"score": "score_d", "flag": "flag_d"}}}
+    (tmp_path / "c.yaml").write_text(yaml.safe_dump(cfg))
+    monkeypatch.chdir(ROOT)
+    made = []
+    for shard in ("0/2", "1/2"):
+        out = tmp_path / shard.replace("/", "of")
+        monkeypatch.setattr("sys.argv", ["run_s5.py", str(tmp_path / "c.yaml"), "--grid",
+                                         "small_budget", "--reps", "2", "--jobs", "1",
+                                         "--shard", shard, "--out-root", str(out)])
+        run_s5.main()
+        made.append(sorted(p.name for p in (out / "small_budget").glob("*.parquet")))
+    assert made == [["toy__g1__d.parquet"], ["toy__g2__d.parquet"]]
