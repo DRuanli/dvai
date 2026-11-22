@@ -60,6 +60,23 @@ def test_macros_quote_the_endpoint_file(fresh):
     assert all(re.fullmatch(r"[A-Za-z]+", k) for k in macros)      # valid macro names
 
 
+def _assert_same(a, b, where: str) -> None:
+    """Equal structure, labels and counts; floats to 1e-9 (the last digit of a sum of 12,012
+    cells depends on the numpy and pandas versions)."""
+    if isinstance(b, dict):
+        assert isinstance(a, dict) and a.keys() == b.keys(), where
+        for k in b:
+            _assert_same(a[k], b[k], f"{where}.{k}")
+    elif isinstance(b, list):
+        assert isinstance(a, list) and len(a) == len(b), where
+        for i, (x, y) in enumerate(zip(a, b, strict=True)):
+            _assert_same(x, y, f"{where}[{i}]")
+    elif isinstance(b, float):
+        assert a == pytest.approx(b, rel=1e-9, abs=1e-12), where
+    else:
+        assert a == b, where
+
+
 def test_posthoc_file_is_what_the_script_computes_from_the_cell_tables():
     post = _load("posthoc_descriptives")
     import glob
@@ -72,6 +89,6 @@ def test_posthoc_file_is_what_the_script_computes_from_the_cell_tables():
     committed = json.loads((ROOT / "results" / "S5_posthoc_descriptives.json").read_text())
     fresh = json.loads(json.dumps(post.cell_descriptives(cells), default=float))
     for key in ("cells", "pools", "best_single", "excess_srmse", "srmse", "mse_ratios"):
-        assert fresh[key] == committed[key], key
+        _assert_same(fresh[key], committed[key], key)
     shares = committed["best_single"]["overall"]
     assert sum(shares.values()) == pytest.approx(1.0)
