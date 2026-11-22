@@ -3,8 +3,9 @@
     python scripts/make_tables.py --out paper/generated
 
 Every number that the manuscript quotes from the held-out evaluation is written here, either
-in a table body (``tab_*.tex``, a ``tabular`` to ``\\input`` inside a ``table`` float) or as a
-macro in ``numbers.tex`` (``\\PEoneITT`` and so on), so that no figure is copied by hand.
+in a table body (``tab_*.tex``, a ``tabular`` to ``\\input`` inside a ``table`` float;
+``long_pools.tex``, a ``longtable`` with one row per pool) or as a macro in ``numbers.tex``
+(``\\PEoneITT`` and so on), so that no figure is copied by hand.
 Inputs: the committed summaries in ``results/`` and the run manifests in
 ``results/compact/S5``; nothing is simulated. Standardised RMSE (sRMSE) is in units of the
 human SD of the outcome; "ITT" is RC-PPI++ where feasible and flag-PPI on the same audit
@@ -57,7 +58,7 @@ RULE = {
     "deletion": "Deletion",
     "hajek": "H\\'ajek",
     "flag_ppi": "Flag-PPI",
-    "rc_ppi_pp": "RC-PPI++ (ITT)",
+    "rc_ppi_pp": "RC-PPI++",
     "policy_debiased": "Policy",
     "flag_ppi_pp": "Flag-PPI++",
     "rc_ppi": "RC-PPI",
@@ -67,9 +68,9 @@ RULE = {
 DESIGN = {
     "pps": "PPS on score rank",
     "srs": "Simple random",
-    "proportional_n_strata10": "Proportional, 10 score strata (default)",
+    "proportional_n_strata10": "Proportional (default)",
     "top_decile": "Top-decile split",
-    "neyman_n_strata5": "Two-stage Neyman, 5 strata",
+    "neyman_n_strata5": "Two-stage Neyman",
     "adaptive": "Label-adaptive two-stage",
 }
 SINGLES = ["naive", "deletion", "hajek", "flag_ppi", "rc_ppi_pp"]
@@ -246,8 +247,7 @@ def tab_endpoints(e: dict, b: dict) -> str:
         ],
         [
             "PE3",
-            "TOST ($\\tau = 0.2$ SD) controls false certification: upper 95\\% bound "
-            "$\\le 0.075$",
+            "TOST ($\\tau = 0.2$ SD) controls false certification: upper 95\\% bound $\\le 0.075$",
             f"{pct(bad['rate'], 2)} (upper {pct(bad['upper95_cluster_bootstrap'], 2)}); "
             f"near the boundary {pct(near['rate'], 2)} "
             f"(upper {pct(near['upper95_cluster_bootstrap'], 2)}); "
@@ -365,10 +365,10 @@ def tab_rules(cells: pd.DataFrame, ph: dict) -> str:
         [
             "Corpus",
             *[RULE[r] for r in SIX],
-            "ITT coverage",
+            "Coverage",
             "Del.\\ best",
             "Naive best",
-            "RC-PPI++ best",
+            "RC best",
         ],
         rows,
     )
@@ -507,12 +507,12 @@ def tab_robustness() -> str:
     sec = pd.read_csv(RES / "S5_final_secondary.csv")
     pick = [
         (
-            "Reference: iid mixture, $\\varepsilon \\in \\{0.05, 0.20\\}$, budget 5\\%",
+            "Reference: primary mixture",
             sec[(sec.grid == "verification_error") & (sec.level == "phi0=0.0,phi1=0.0")],
         ),
         ("Adversarial mixture", sec[(sec.grid == "mixtures") & (sec.level == "adversarial")]),
         (
-            "Clustered (bot-farm) mixture",
+            "Clustered mixture",
             sec[(sec.grid == "mixtures") & (sec.level == "clustered")],
         ),
         ("Multi-generator mixture", sec[(sec.grid == "mixtures") & (sec.level == "multigen")]),
@@ -544,7 +544,7 @@ def tab_robustness() -> str:
         [
             "Setting",
             "Pools",
-            "RC-PPI++ (ITT)",
+            "RC-PPI++",
             "Policy",
             "Flag-PPI",
             "Deletion",
@@ -576,8 +576,8 @@ def tab_verification() -> str:
     rows.append(["\\midrule"])
     rows.append(
         [
-            f"Deletion: {f(v.srmse_deletion.iloc[0])}; naive: {f(v.srmse_naive.iloc[0])} "
-            "(no audit, unaffected) \\\\"
+            "\\multicolumn{8}{@{}l}{Without audit, unaffected: deletion "
+            f"{f(v.srmse_deletion.iloc[0])}, naive {f(v.srmse_naive.iloc[0])}}} \\\\"
         ]
     )
     return tabular(
@@ -610,11 +610,11 @@ def tab_channels(ph: dict) -> str:
         "rrrrrr",
         [
             "$\\varepsilon$",
-            "Pool--outcome pairs",
-            "Bias $\\ge 0.1$ SD",
-            "Residual contamination larger",
-            "Human selection larger",
-            "Deletion bias $>$ naive bias",
+            "Pairs",
+            "Material bias",
+            "Residual larger",
+            "Selection larger",
+            "Worse than naive",
         ],
         rows,
     )
@@ -696,6 +696,421 @@ def tab_languages(b: dict) -> str:
 
 
 # ------------------------------------------------------------------------------ macros
+def tab_design_tests() -> str:
+    """Secondary tests of the design grid: each design against the default, corpora as units."""
+    t = pd.read_csv(RES / "S5_secondary_tests.csv")
+    t = t[t.family == "designs"].copy()
+    t["key"] = t.level.str.replace(r"^adaptive.*", "adaptive", regex=True)
+    rows = []
+    for k in [k for k in DESIGN if k != "proportional_n_strata10"]:
+        a = t[(t.key == k) & (t.metric == "srmse")].iloc[0]
+        c = t[(t.key == k) & (t.metric == "cover")].iloc[0]
+        rows.append(
+            [
+                DESIGN[k],
+                f"${a.mean_diff:+.3f}$ [${a.ci90_low:+.3f}$, ${a.ci90_high:+.3f}$]",
+                f"{int(a.corpora_worse)}/{int(a.corpora)}",
+                f(a.wilcoxon_p),
+                f(a.holm_p),
+                f"${c.mean_diff:+.3f}$ [${c.ci90_low:+.3f}$, ${c.ci90_high:+.3f}$]",
+                f"{int(c.corpora_worse)}/{int(c.corpora)}",
+                f(c.wilcoxon_p),
+                f(c.holm_p),
+            ]
+        )
+    return tabular(
+        "lrrrrrrrr",
+        [
+            "Design",
+            "sRMSE difference",
+            "Worse",
+            "$p$",
+            "Holm",
+            "Coverage difference",
+            "Lower",
+            "$p$",
+            "Holm",
+        ],
+        rows,
+    )
+
+
+def tab_cert_raid(b: dict) -> str:
+    """Certification of deletion in RAID by domain and audit budget."""
+    c = b["raid_certification_by_domain_budget"]
+    domains = sorted({k.split("|")[0] for k in c})
+    budgets = ["0.02", "0.05", "0.1"]
+    rows = [
+        [
+            d,
+            *[pct(c[f"{d}|{g}"]["certified_small_bias"], 0) for g in budgets],
+            *[pct(c[f"{d}|{g}"]["false_certification"]) for g in budgets],
+        ]
+        for d in domains
+    ]
+    head = " & ".join(f"{100 * float(g):g}\\%" for g in budgets)
+    return "\n".join(
+        [
+            "% generated by scripts/make_tables.py; do not edit",
+            "\\begin{tabular}{lrrrrrr}",
+            "\\toprule",
+            " & \\multicolumn{3}{c}{Bias below $\\tau/2$}"
+            " & \\multicolumn{3}{c}{Bias at least $\\tau$} \\\\",
+            "\\cmidrule(lr){2-4}\\cmidrule(lr){5-7}",
+            f"Domain & {head} & {head} \\\\",
+            "\\midrule",
+            *[" & ".join(r) + " \\\\" for r in rows],
+            "\\bottomrule",
+            "\\end{tabular}",
+            "",
+        ]
+    )
+
+
+def tab_protocol() -> str:
+    """The frozen configuration, read from ``configs/protocol/frozen.yaml``."""
+    import yaml
+
+    z = yaml.safe_load((ROOT / "configs" / "protocol" / "frozen.yaml").read_text())
+    a, pr, v, ce, g = z["audit"], z["propensity"], z["variance"], z["certification"], z["grid"]
+    d, ep = z["detectors"], z["endpoints"]
+
+    def lst(xs, as_pct=False):
+        return ", ".join(f"{100 * x:g}\\%" if as_pct else f"{x:g}" for x in xs)
+
+    fd, tf = d["fast_detectgpt"], d["tfidf_lr"]
+    names = {
+        "score": "the detector score",
+        "loglen": "log length",
+        "flag_ppi": "flag-PPI",
+        "t": "Student",
+    }
+    rows = [
+        [
+            "Default audit design",
+            f"{a['default_design']['name']}, {a['default_design']['n_strata']} score strata",
+        ],
+        [
+            "Audit budgets",
+            f"{lst(a['primary_budgets'], True)}; secondary {lst(a['secondary_budgets'], True)}",
+        ],
+        ["Two-stage weights", a["two_stage_weights"]],
+        [
+            "Predictor",
+            f"logistic regression on {' and '.join(names[x] for x in pr['features'])}; "
+            f"$C = {pr['c']:g}$; "
+            f"{pr['n_folds']} folds",
+        ],
+        [
+            "Feasibility of RC-PPI++",
+            f"at least {pr['min_class']} audited records of each class, "
+            f"{pr['min_class_fold']} in every training fold",
+        ],
+        ["Power tuning", f"$\\hat\\lambda$ clipped to [{lst(z['power_tuning']['clip'])}]"],
+        [
+            "Interval",
+            f"level {v['level']:g}; shrinkage with $\\kappa = {v['kappa']:g}$ pseudo-record, "
+            f"{v['target_prior'].capitalize()} stratum rates; Satterthwaite degrees of freedom",
+        ],
+        [
+            "When RC-PPI++ is infeasible",
+            f"{names[z['fallback_when_infeasible']]} on the same audit; intention to "
+            f"treat: {str(z['intention_to_treat']).lower()}",
+        ],
+        [
+            "Certification",
+            f"{ce['test'].upper()}, $\\alpha = {ce['alpha']:g}$, $\\tau = {ce['tau_sd']:g}$ SD "
+            f"(sensitivity values {lst(ce['sensitivity_tau_sd'])}); "
+            f"{names[ce['quantile']]} quantile",
+        ],
+        [
+            "Selection policy",
+            f"{z['policy']['bias_sq']} squared bias; certification required: "
+            f"{str(z['policy']['require_certification']).lower()}",
+        ],
+        [
+            "Primary grid",
+            f"$N = {g['primary']['N']}$; $\\varepsilon$ = {lst(g['primary']['eps'])}; "
+            f"{num(g['primary']['replications'])} replications",
+        ],
+        [
+            "Fast-DetectGPT",
+            f"{fd['model'].split('/')[-1]}, {fd['max_tokens']} tokens, threshold: 95th percentile "
+            "of human calibration scores",
+        ],
+        [
+            "Supervised detector",
+            f"TF-IDF of word {tf['ngram'][0]}--{tf['ngram'][1]}-grams, "
+            f"{num(tf['max_features'])} features, threshold {tf['threshold']:g}",
+        ],
+        ["Calibration split", f"{100 * d['calibration_share']:g}\\% (single-domain corpora)"],
+        [
+            "PE1",
+            f"margin {ep['PE1']['margin']:.2f}; one-sided signed-rank test at "
+            f"{ep['PE1']['alpha']:g}; per protocol: cells with at least "
+            f"{ep['PE1']['per_protocol_min_feasible_reps']} feasible replications",
+        ],
+        [
+            "PE2",
+            f"mean coverage at least {ep['PE2']['mean_coverage_min']:g}; coverage at least 0.90 "
+            f"in at least {100 * ep['PE2']['share_cells_ge_090_min']:g}\\% of cells",
+        ],
+        ["PE3", f"upper 95\\% bound at most {ep['PE3']['upper95_max']:g}"],
+        ["Root seed", str(z["seed"])],
+    ]
+    return tabular("lp{10.5cm}", ["Parameter", "Frozen value"], rows)
+
+
+def long_pools(cells: pd.DataFrame) -> str:
+    """One row per pool (a ``longtable``): operating point, pooled sRMSE of the rules,
+    coverage and the PE1 ratio on the primary grid."""
+    man = {k: v for c in manifests().values() for k, v in c["pools"].items()}
+    short = {
+        "fdgpt": "Fast-DetectGPT",
+        "tfidf": "TF-IDF word",
+        "roberta": "RoBERTa",
+        "xlmr": "XLM-R",
+        "tfidfc": "TF-IDF char.",
+    }
+    head = (
+        "Pool & Detector & FPR & Sens. & Naive & Deletion & Flag-PPI & RC-PPI++ & Policy & "
+        "Cov. & PE1 \\\\"
+    )
+    spec = "@{}llrrrrrrrrr@{}"
+    out = [
+        "% generated by scripts/make_tables.py; do not edit",
+        "% the manuscript defines \\poolscaption before it inputs this file",
+        f"\\begin{{longtable}}{{{spec}}}",
+        "\\caption{\\poolscaption}\\label{tab:pools} \\\\",
+        "\\toprule",
+        head,
+        "\\midrule",
+        "\\endfirsthead",
+        "\\toprule",
+        head,
+        "\\midrule",
+        "\\endhead",
+        "\\bottomrule",
+        "\\endfoot",
+    ]
+    for c in ORDER:
+        sub = cells[cells.corpus == c]
+        out.append(f"\\multicolumn{{11}}{{@{{}}l}}{{\\emph{{{CORPUS[c]}}}}} \\\\")
+        for pool in sorted(sub.pool.unique()):
+            s = sub[sub.pool == pool]
+            _, mid, det = pool.split("__")
+            info = man[pool]
+            vals = [
+                float(np.sqrt(s[f"mse_{r}"].mean()))
+                for r in ("naive", "deletion", "flag_ppi", "rc_ppi_pp", "policy_debiased")
+            ]
+            out.append(
+                " & ".join(
+                    [
+                        mid.replace("_", "\\_"),
+                        short[det],
+                        f(info["flag_rate_human"]),
+                        f(info["flag_rate_machine"]),
+                        *bold_min(vals),
+                        f(s.cover_itt.mean()),
+                        f(s.mse_rc_ppi_pp.mean() / s.mse_flag_ppi.mean(), 2),
+                    ]
+                )
+                + " \\\\"
+            )
+    out += ["\\end{longtable}", ""]
+    return "\n".join(out)
+
+
+def _operating_point(ops: pd.DataFrame, pool: str) -> tuple[float, float]:
+    """False-positive rate and sensitivity of the detector of a pool."""
+    corpus, mid, det = pool.split("__")
+    g = ops[(ops.corpus == corpus) & (ops.detector == det)]
+    for r in g[g.group != "human"].itertuples():
+        if mid == (r.group if r.domain == "all" else f"{r.domain}-{r.group}"):
+            h = g[(g.group == "human") & (g.domain == r.domain)].flagged.iloc[0]
+            return float(h), float(r.flagged)
+    raise KeyError(pool)
+
+
+def numbers_results(e: dict, b: dict, ph: dict, cells: pd.DataFrame) -> dict:
+    """Macros quoted in the text of the results section."""
+    ops = pd.read_csv(RES / "S5_heldout_operating_points.csv")
+    raid = json.loads((RES / "S2_raid_summary.json").read_text())["operating_points"]
+    raid = {(r["source"], r["version"]): r for r in raid}
+    opb = b["operating_points"]
+    sec = pd.read_csv(RES / "S5_final_secondary.csv")
+    tests = pd.read_csv(RES / "S5_secondary_tests.csv")
+    tests = tests[tests.family == "designs"]
+    est = pd.read_csv(RES / "S5_all_estimators.csv")
+    est = est[est.corpus == "all five"].set_index("estimator")
+    anes = json.loads((RES / "S5_anes_descriptives.json").read_text())
+    unit = e["PE1"]["itt"]["per_unit_ratio"]
+    by_eps = ph["mse_ratios"]["by_eps"]
+    p4 = e["PE4"]["pooled"]["rules"]
+    srm, exb = ph["srmse"], ph["excess_srmse"]["by_budget"]["0.02"]
+    ch = ph["deletion_channels"]
+    low = b["low_coverage_cells"]
+
+    # the five pools in which RC-PPI++ loses most to flag-PPI: detectors that are nearly perfect
+    worst = [k for k, v in b["pe1_pools_above_one"]["pools"].items() if v > 1.3]
+    worst_op = [_operating_point(ops, k) for k in worst]
+
+    # the ten cells with the lowest coverage: all of one kind
+    lowest = cells.sort_values("cover_itt").head(10)
+    assert lowest.pool.str.contains("homoglyph__tfidf").all() and lowest.eps.max() <= 0.02
+    assert lowest.feasible.max() < 0.01  # the interval there is that of flag-PPI
+    share = b["regime_winner_share"]
+    no_audit = min(
+        v["deletion"] + v["naive"] for k, v in share.items() if float(k.split("|")[1]) <= 0.02
+    )
+
+    def design(key: str):
+        d = sec[(sec.grid == "designs") & sec.level.str.startswith(key)].iloc[0]
+        t = tests[tests.level.str.startswith(key) & (tests.metric == "srmse")]
+        return d, (t.iloc[0] if len(t) else None)
+
+    dz = {k: design(k) for k in ("pps", "srs", "proportional", "top_decile", "neyman", "adaptive")}
+    ref = sec[(sec.grid == "verification_error") & (sec.level == "phi0=0.0,phi1=0.0")].iloc[0]
+    adv = sec[(sec.grid == "mixtures") & (sec.level == "adversarial")].iloc[0]
+    big = sec[sec.grid == "large_n"].iloc[0]
+    ver = sec[sec.grid == "verification_error"].set_index("level")
+
+    def beemo(grid: str, key: str, value: str) -> float:
+        d = pd.concat(
+            [pd.read_parquet(p) for p in sorted((COMPACT / grid).glob("beemo*.sec.parquet"))]
+        )
+        d = d[(d[key] == value) & (d.eps == 0.05)]
+        return float(np.sqrt(d.itt_mse).mean())
+
+    cert = b["raid_certification_by_domain_budget"]
+    power = {
+        g: [v["certified_small_bias"] for k, v in cert.items() if k.endswith("|" + g)]
+        for g in ("0.02", "0.05", "0.1")
+    }
+    lang = {**b["m4_by_language_detector"], **b["hc3zh_by_source_detector"]}
+    lang_tfidf = [v["deletion_vs_itt"] for k, v in lang.items() if k.endswith("|tfidfc")]
+    gaps = [abs(x) for d in anes["machine_minus_human_mean_sd"].values() for x in d.values()]
+    fd = anes["detectors"]["fdgpt"]["sensitivity_by_condition"]
+    a_cells = cells[cells.corpus == "anes2024"]
+    best = np.sqrt(a_cells[[f"mse_{s}" for s in SINGLES]]).min(axis=1)
+    l_cells = cells[cells.corpus.isin(["m4", "hc3zh"])]
+    beemo_fd = ops[(ops.corpus == "beemo") & (ops.detector == "fdgpt") & (ops.group != "human")]
+    raid_tfidf = ops[(ops.corpus == "raid") & (ops.detector == "tfidf") & (ops.group != "human")]
+    sel = ch["by_eps"]["0.2"]["dominant_by_corpus_detector"]
+    rd = b["raid_by_attack_detector"]
+    mode = anes["human_by_mode"]
+
+    def signed(x: float) -> str:
+        return f"${x:+.3f}$"
+
+    return {
+        "OpTfidfRaidMedian": f(raid_tfidf.flagged.median()),
+        "OpRaidFdgptChatgpt": pct(raid[("chatgpt", "none")]["flag_fdgpt"], 0),
+        "OpRaidFdgptHomoglyph": pct(raid[("chatgpt", "homoglyph")]["flag_fdgpt"], 0),
+        "OpXlmrFprIndonesian": pct(opb["m4|indonesian|xlmr|human"], 0),
+        "OpBeemoFdgptMin": pct(beemo_fd.flagged.min()),
+        "OpBeemoFdgptMax": pct(beemo_fd.flagged.max()),
+        "NoAuditBestLowEps": pct(no_audit, 0),
+        "PEoneRatioMin": f(min(unit.values()), 2),
+        "PEoneRatioMax": f(max(unit.values()), 2),
+        "PEoneMfour": f(unit["m4"], 2),
+        "AnesPEone": f(unit["anes2024"], 2),
+        "RatioEpsOne": f(by_eps["0.01"]["itt_vs_flag_ppi"], 2),
+        "RatioEpsFive": f(by_eps["0.05"]["itt_vs_flag_ppi"], 2),
+        "RatioEpsTen": f(by_eps["0.1"]["itt_vs_flag_ppi"], 2),
+        "RatioEpsFortyFive": f(by_eps["0.45"]["itt_vs_flag_ppi"], 2),
+        "FeasEpsOne": pct(by_eps["0.01"]["feasible"]),
+        "FeasEpsFive": pct(by_eps["0.05"]["feasible"], 0),
+        "PEoneWorstPoolsFprMax": pct(max(x[0] for x in worst_op)),
+        "PEoneWorstPoolsSensMin": pct(min(x[1] for x in worst_op), 0),
+        "RegretPolicyLo": f(p4["policy_debiased"]["boot90"][0]),
+        "RegretRCLo": f(p4["rc_ppi_pp"]["boot90"][0]),
+        "MeanCellPolicy": f(srm["overall"]["policy_debiased"]["mean_cell"]),
+        "MeanCellRC": f(srm["overall"]["rc_ppi_pp"]["mean_cell"]),
+        "MeanCellDeletion": f(srm["overall"]["deletion"]["mean_cell"]),
+        "MeanCellFlag": f(srm["overall"]["flag_ppi"]["mean_cell"]),
+        "MeanCellNaive": f(srm["overall"]["naive"]["mean_cell"]),
+        "MeanExcessPolicyTwo": f(exb["policy_debiased"]["mean"]),
+        "MeanExcessDeletionTwo": f(exb["deletion"]["mean"]),
+        "RaidDelItHomoFdgpt": f(rd["homoglyph|fdgpt"]["deletion_vs_itt"], 0),
+        "RaidDelItHomoTfidf": f(rd["homoglyph|tfidf"]["deletion_vs_itt"], 0),
+        "RaidDelItParaFdgpt": f(rd["paraphrase|fdgpt"]["deletion_vs_itt"], 2),
+        "ChannelPools": str(ch["pools"]),
+        "ChannelSelXlmr": str(sum(v.get("selection", 0) for k, v in sel.items() if "xlmr" in k)),
+        "ChannelSelBeemo": str(sel["beemo|tfidf"]["selection"]),
+        "ChannelWorseNaiveOne": pct(ch["by_eps"]["0.01"]["deletion_worse_than_naive"], 0),
+        "DesignPpsDiff": signed(dz["pps"][1].mean_diff),
+        "DesignSrsDiff": signed(dz["srs"][1].mean_diff),
+        "DesignNeymanDiff": signed(dz["neyman"][1].mean_diff),
+        "DesignAdaptiveDiff": signed(dz["adaptive"][1].mean_diff),
+        "DesignPpsCover": f(dz["pps"][0].cover_mean),
+        "DesignSrsCover": f(dz["srs"][0].cover_mean),
+        "DesignPropCover": f(dz["proportional"][0].cover_mean),
+        "DesignTopFeasible": pct(dz["top_decile"][0].feasible, 0),
+        "DesignPropFeasible": pct(dz["proportional"][0].feasible, 0),
+        "DesignAdaptiveWidth": f(dz["adaptive"][0].width_mean_sd, 2),
+        "DesignPropWidth": f(dz["proportional"][0].width_mean_sd, 2),
+        "CoverBudgetTwo": f(e["PE2"]["by_budget"]["0.02"]["mean_coverage"]),
+        "CoverBudgetTen": f(e["PE2"]["by_budget"]["0.1"]["mean_coverage"]),
+        "LowCellsDaigt": str(low["by_corpus"]["daigt"]),
+        "LowCellsTen": str(low["by_budget"]["0.1"]),
+        "LowCellsTfidf": str(low["by_detector"]["tfidf"]),
+        "LowCellsLowEps": str(low["at_eps_le_0.02"]),
+        "LowCellsTenth": f(lowest.cover_itt.iloc[-1]),
+        "CoverReadability": f(b["coverage_by_outcome"]["read"]["mean"]),
+        "CoverAnesMin": f(a_cells.cover_itt.min()),
+        "CoverLangMin": f(l_cells.cover_itt.min()),
+        "PEthreeWorstN": str(b["pe3_cells"]["worst"][0]["n_bad"]),
+        "PEthreeWorstLarge": pct(b["pe3_cells"]["worst_with_300_bad"][0]["rate"]),
+        "CertPowerTwoMin": pct(min(power["0.02"]), 0),
+        "CertPowerTwoMax": pct(max(power["0.02"]), 0),
+        "CertPowerFiveMin": pct(min(power["0.05"]), 0),
+        "CertPowerFiveMax": pct(max(power["0.05"]), 0),
+        "CertPowerTenMin": pct(min(power["0.1"]), 0),
+        "CertPowerTenMax": pct(max(power["0.1"]), 0),
+        "AnesGapMin": f(min(gaps), 2),
+        "AnesGapMax": f(max(gaps), 2),
+        "AnesFdgptPlain": f((fd["demographic-plain"] + fd["political-plain"]) / 2, 2),
+        "AnesFdgptHumanlike": f((fd["demographic-humanlike"] + fd["political-humanlike"]) / 2, 2),
+        "AnesDeletion": f(srm["by_corpus"]["anes2024"]["deletion"]["pooled"]),
+        "AnesPolicy": f(srm["by_corpus"]["anes2024"]["policy_debiased"]["pooled"]),
+        "AnesRC": f(srm["by_corpus"]["anes2024"]["rc_ppi_pp"]["pooled"]),
+        "AnesNaive": f(srm["by_corpus"]["anes2024"]["naive"]["pooled"]),
+        "AnesPolicyWorst": f(float((np.sqrt(a_cells.mse_policy_debiased) - best).max())),
+        "AnesInterviewer": str(mode["face-to-face"] + mode["phone"]),
+        "LangDelItTfidfMin": f(min(lang_tfidf), 2),
+        "LangDelItTfidfMax": f(max(lang_tfidf), 2),
+        "LangDelItXlmrBg": f(lang["bulgarian|xlmr"]["deletion_vs_itt"], 1),
+        "LangDelItXlmrRu": f(lang["russian|xlmr"]["deletion_vs_itt"], 1),
+        "RobRefITT": f(ref.srmse_itt),
+        "RobRefDeletion": f(ref.srmse_deletion),
+        "RobRefNaive": f(ref.srmse_naive),
+        "RobAdvITT": f(adv.srmse_itt),
+        "RobAdvDeletion": f(adv.srmse_deletion),
+        "RobAdvCover": f(adv.cover_mean),
+        "BeemoRefITT": f(beemo("verification_error", "phi", "phi0=0.0,phi1=0.0")),
+        "BeemoClusteredITT": f(beemo("mixtures", "mixture", "clustered")),
+        "BeemoMultigenITT": f(beemo("mixtures", "mixture", "multigen")),
+        "VerRef": f(ref.srmse_itt),
+        "VerPhiOneTen": f(ver.loc["phi0=0.0,phi1=0.1", "srmse_itt"]),
+        "VerPhiZeroThree": f(ver.loc["phi0=0.03,phi1=0.0", "srmse_itt"]),
+        "VerPhiZeroTen": f(ver.loc["phi0=0.1,phi1=0.0", "srmse_itt"]),
+        "VerPolicyRef": f(ref.srmse_policy_debiased),
+        "VerPolicyTen": f(ver.loc["phi0=0.1,phi1=0.0", "srmse_policy_debiased"]),
+        "VerCoverMin": f(ver.cover_mean.min()),
+        "LargeNFeasible": pct(big.feasible, 0),
+        "LargeNITT": f(big.srmse_itt),
+        "LargeNFlag": f(big.srmse_flag_ppi),
+        "LargeNDeletion": f(big.srmse_deletion),
+        "LargeNCover": f(big.cover_mean),
+        "LargeNPools": str(int(big.pools)),
+        "FlagTuneGain": pct(1 - est.loc["flag_ppi_pp", "mse_vs_flag_ppi"], 0),
+        "EstRC": f(est.loc["rc_ppi", "srmse"]),
+        "EstRCpp": f(est.loc["rc_ppi_pp", "srmse"]),
+    }
+
+
 def numbers(e: dict, b: dict, ph: dict, cells: pd.DataFrame) -> str:
     p1, p2, p3 = e["PE1"], e["PE2"], e["PE3"]
     p4 = e["PE4"]["pooled"]["rules"]
@@ -798,6 +1213,9 @@ def numbers(e: dict, b: dict, ph: dict, cells: pd.DataFrame) -> str:
             3,
         ),
     }
+    extra = numbers_results(e, b, ph, cells)
+    assert not set(extra) & set(m)
+    m.update(extra)
     lines = ["% generated by scripts/make_tables.py; do not edit"]
     lines += [f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in m.items()]
     return "\n".join(lines) + "\n"
@@ -829,11 +1247,15 @@ def main() -> None:
         "tab_channels": tab_channels(ph),
         "tab_raid": tab_raid(b),
         "tab_languages": tab_languages(b),
+        "tab_design_tests": tab_design_tests(),
+        "tab_cert_raid": tab_cert_raid(b),
+        "tab_protocol": tab_protocol(),
     }
     for name, tex in tables.items():
         (out / f"{name}.tex").write_text(tex)
+    (out / "long_pools.tex").write_text(long_pools(cells))
     (out / "numbers.tex").write_text(numbers(e, b, ph, cells))
-    print(f"written {len(tables)} tables and numbers.tex to {out}")
+    print(f"written {len(tables)} tables, long_pools.tex and numbers.tex to {out}")
 
 
 if __name__ == "__main__":

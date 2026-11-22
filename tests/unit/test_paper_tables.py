@@ -32,7 +32,7 @@ def fresh(tmp_path_factory):
 
 def test_committed_tables_equal_a_fresh_run(fresh):
     names = sorted(p.name for p in fresh.glob("*.tex"))
-    assert names == sorted(p.name for p in GENERATED.glob("*.tex")) and len(names) == 16
+    assert names == sorted(p.name for p in GENERATED.glob("*.tex")) and len(names) == 20
     for name in names:
         assert (fresh / name).read_text() == (GENERATED / name).read_text(), name
 
@@ -45,6 +45,13 @@ def test_every_row_of_a_table_has_the_declared_number_of_columns(fresh):
         for line in text.splitlines():
             if line.endswith("\\\\") and "\\multicolumn" not in line and "&" in line:
                 assert line.count("&") == n_cols - 1, (path.name, line)
+
+
+def test_the_pool_table_has_one_row_per_pool(fresh):
+    text = (fresh / "long_pools.tex").read_text()
+    rows = [ln for ln in text.splitlines() if ln.count("&") == 10 and not ln.startswith("Pool")]
+    assert len(rows) == 153
+    assert text.count("\\multicolumn{11}") == 6          # one heading per corpus
 
 
 def test_macros_quote_the_endpoint_file(fresh):
