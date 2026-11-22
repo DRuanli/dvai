@@ -23,8 +23,8 @@ estimates the human-population mean from a small **verification audit** instead:
 ## Status (23 November 2026)
 
 The held-out evaluation is complete (13 November). Every tunable choice was made on two
-development corpora and frozen at commit `d091b5b` (9 November, tag `protocol-freeze`)
-before six held-out corpora were run once: RAID, DAIGT, M4, ANES 2024, Beemo and
+development corpora and frozen at commit `d091b5b` (9 November) before six held-out
+corpora were run once: RAID, DAIGT, M4, ANES 2024, Beemo and
 HC3-Chinese; 153 pools, 12,012 cells, 1,000 replications per cell
 (`docs/EXPERIMENT_PROTOCOL.md`). The four pre-specified endpoints
 (`results/S5_endpoints.json`):
