@@ -19,8 +19,9 @@ ap.add_argument("--out", default="results/S5_all_estimators.csv")
 args = ap.parse_args()
 parts = []
 for f in sorted(glob.glob(f"{args.raw_dir}/*.parquet")):
-    d = pd.read_parquet(f, columns=["corpus", "pool", "budget", "eps", "outcome", "rep", "estimator",
-                                    "point", "ci_low", "ci_high", "feasible", "truth", "sd_h"])
+    d = pd.read_parquet(f, columns=["corpus", "pool", "budget", "eps", "outcome", "rep",
+                                    "estimator", "point", "ci_low", "ci_high", "feasible",
+                                    "truth", "sd_h"])
     d = d[d.estimator.isin(EST)]
     key = ["pool", "budget", "eps", "outcome", "rep"]
     fb = d[d.estimator == "flag_ppi"].set_index(key)[["point", "ci_low", "ci_high"]]
@@ -37,7 +38,8 @@ cells = pd.concat(parts)
 ref = cells[cells.estimator == "flag_ppi"].set_index(["pool", "budget", "eps", "outcome"]).mse
 cells = cells.join(ref.rename("mse_flag"), on=["pool", "budget", "eps", "outcome"])
 rows = []
-for (corpus, est), g in pd.concat([cells, cells.assign(corpus="all five")]).groupby(["corpus", "estimator"]):
+both = pd.concat([cells, cells.assign(corpus="all five")])
+for (corpus, est), g in both.groupby(["corpus", "estimator"]):
     rows.append({"corpus": corpus, "estimator": est, "cells": len(g),
                  "mse_vs_flag_ppi": g.mse.sum() / g.mse_flag.sum(),
                  "srmse": float(np.sqrt(g.mse.mean())), "coverage": g.cover.mean(),
