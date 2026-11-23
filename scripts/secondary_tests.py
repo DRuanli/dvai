@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import argparse
 import glob
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -50,7 +49,8 @@ def main() -> None:
     args = ap.parse_args()
     rows = []
     for grid, (col, ref) in FAMILIES.items():
-        sec = pd.concat([pd.read_parquet(f) for f in glob.glob(f"{args.root}/{grid}/*.sec.parquet")])
+        sec = pd.concat([pd.read_parquet(f)
+                         for f in glob.glob(f"{args.root}/{grid}/*.sec.parquet")])
         sec["level"] = sec[col].astype(str)
         sec["level"] = sec["level"].where(~sec["level"].str.startswith(ref), ref)
         sec["srmse"] = np.sqrt(sec["itt_mse"])
@@ -59,12 +59,14 @@ def main() -> None:
             levels = [c for c in tab.columns if c != ref]
             fried = stats.friedmanchisquare(*[tab[c].to_numpy() for c in tab.columns]).pvalue
             diffs = {lv: (tab[lv] - tab[ref]).to_numpy() for lv in levels}
-            p = np.array([stats.wilcoxon(d).pvalue if np.any(d != 0) else 1.0 for d in diffs.values()])
-            for (lv, d), padj, praw in zip(diffs.items(), holm(p), p):
+            p = np.array([stats.wilcoxon(d).pvalue if np.any(d != 0) else 1.0
+                          for d in diffs.values()])
+            for (lv, d), padj, praw in zip(diffs.items(), holm(p), p, strict=True):
                 lo, hi = boot_ci(d)
+                worse = (d > 0).sum() if metric == "srmse" else (d < 0).sum()
                 rows.append({"family": grid, "metric": metric, "reference": ref, "level": lv[:40],
                              "corpora": len(d), "mean_diff": d.mean(), "ci90_low": lo,
-                             "ci90_high": hi, "corpora_worse": int((d > 0).sum() if metric == "srmse" else (d < 0).sum()),
+                             "ci90_high": hi, "corpora_worse": int(worse),
                              "wilcoxon_p": praw, "holm_p": padj, "friedman_p": fried})
     out = pd.DataFrame(rows)
     out.to_csv(args.out, index=False)

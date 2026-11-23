@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -54,10 +55,12 @@ def regime_map(c, out):
             ax.add_patch(plt.Rectangle((j, i), 1, 1, color=col, alpha=0.35 + 0.6 * share[i, j]))
             ax.text(j + .5, i + .5, f"{SHORT[rules[win[i, j]]]}\n{share[i, j]:.0%}", ha="center",
                     va="center", fontsize=8, color=INK)
-    ax.set_xlim(0, len(bud)); ax.set_ylim(0, len(eps))
+    ax.set_xlim(0, len(bud))
+    ax.set_ylim(0, len(eps))
     ax.set_xticks(np.arange(len(bud)) + .5, [f"{b:.0%}" for b in bud])
     ax.set_yticks(np.arange(len(eps)) + .5, [f"{e:.0%}" for e in eps])
-    ax.set_xlabel("audit budget"); ax.set_ylabel("contamination rate ε")
+    ax.set_xlabel("audit budget")
+    ax.set_ylabel("contamination rate ε")
     ax.set_title("(a) rule with the lowest MSE (share of cells)", loc="left")
     ax = axes[1]
     im = ax.imshow(cov, origin="lower", cmap="Blues", vmin=0.85, vmax=1.0, aspect="auto")
@@ -67,9 +70,11 @@ def regime_map(c, out):
                     color="white" if cov[i, j] > 0.95 else INK)
     ax.set_xticks(range(len(bud)), [f"{b:.0%}" for b in bud])
     ax.set_yticks(range(len(eps)), [f"{e:.0%}" for e in eps])
-    ax.set_xlabel("audit budget"); ax.set_title("(b) coverage of the ITT 95% interval", loc="left")
+    ax.set_xlabel("audit budget")
+    ax.set_title("(b) coverage of the ITT 95% interval", loc="left")
     fig.colorbar(im, ax=ax, fraction=0.05)
-    fig.savefig(out / "fig_regime_map.pdf"); fig.savefig(out / "fig_regime_map.png")
+    fig.savefig(out / "fig_regime_map.pdf")
+    fig.savefig(out / "fig_regime_map.png")
 
 
 def corpus_ratios(c, out):
@@ -91,42 +96,60 @@ def corpus_ratios(c, out):
     ax.axvline(1, color=MUTED, lw=.8, ls="--")
     ax.axvline(1.10, color="#d55e00", lw=.8, ls=":")
     ax.set_yticks(range(k + 1), [NAMES[o] for o in order if o in set(c.corpus)])
-    ax.set_xlim(0.2, 1.3); ax.set_xlabel("MSE of RC-PPI++ (ITT) / MSE of flag-PPI")
+    ax.set_xlim(0.2, 1.3)
+    ax.set_xlabel("MSE of RC-PPI++ (ITT) / MSE of flag-PPI")
     ax.set_title("PE1: dots = pools, bar = corpus", loc="left")
-    fig.savefig(out / "fig_pe1_corpora.pdf"); fig.savefig(out / "fig_pe1_corpora.png")
+    fig.savefig(out / "fig_pe1_corpora.pdf")
+    fig.savefig(out / "fig_pe1_corpora.png")
 
 
 def secondary(sec, out):
-    fig, axes = plt.subplots(1, 2, figsize=(7.4, 3.2), gridspec_kw={"wspace": 0.35, "width_ratios": [1.15, 1]})
+    fig, axes = plt.subplots(1, 2, figsize=(7.4, 3.2),
+                             gridspec_kw={"wspace": 0.35, "width_ratios": [1.15, 1]})
     d = sec[sec.grid == "designs"].copy()
-    d["lab"] = d.level.str.split("_").str[0].replace({"top": "top decile", "adaptive": "label-adaptive",
-                                                       "srs": "simple random", "pps": "PPS on score",
-                                                       "neyman": "two-stage Neyman"})
+    d["lab"] = d.level.str.split("_").str[0].replace(
+        {"top": "top decile", "adaptive": "label-adaptive", "srs": "simple random",
+         "pps": "PPS on score", "neyman": "two-stage Neyman"})
     d = d.sort_values("width_mean_sd")
     ax = axes[0]
-    d["tick"] = [f"{l}\nwidth {w:.2f} SD, feasible {f:.0%}" for l, w, f in zip(d.lab, d.width_mean_sd, d.feasible)]
+    d["tick"] = [f"{lab}\nwidth {w:.2f} SD, feasible {f:.0%}"
+                 for lab, w, f in zip(d.lab, d.width_mean_sd, d.feasible, strict=True)]
     ax.barh(d.tick, d.cover_mean, color=RULES["itt"][1], alpha=.8, height=0.55)
     ax.scatter(d.cover_min, d.tick, color="#d55e00", s=22, zorder=3, label="lowest cell")
     ax.tick_params(axis="y", labelsize=7)
-    ax.axvline(.95, color=MUTED, lw=.8, ls="--"); ax.set_xlim(0.2, 1.0)
+    ax.axvline(.95, color=MUTED, lw=.8, ls="--")
+    ax.set_xlim(0.2, 1.0)
     ax.set_xlabel("ITT coverage (bar: mean over cells; dot: lowest cell)")
     ax.set_title("(a) audit designs, budget 5%", loc="left")
     v = sec[sec.grid == "verification_error"].copy()
     v[["p0", "p1"]] = v.level.str.extract(r"phi0=([\d.]+),phi1=([\d.]+)").astype(float)
     ax = axes[1]
-    for p1, col in zip(sorted(v.p1.unique()), plt.cm.Blues(np.linspace(.35, 1, 5))):
+    for p1, col in zip(sorted(v.p1.unique()), plt.cm.Blues(np.linspace(.35, 1, 5)),
+                       strict=True):
         s = v[v.p1 == p1].sort_values("p0")
         ax.plot(s.p0, s.srmse_itt, "o-", ms=3, color=col, label=f"φ1={p1:g}")
     s = v[v.p1 == 0].sort_values("p0")
-    ax.plot(s.p0, s.srmse_deletion, "s--", ms=3, color=RULES["deletion"][1], label="detect-and-delete")
-    ax.set_xlabel("φ0 (human recorded as AI)"); ax.set_ylabel("standardised RMSE")
-    ax.set_title("(b) verification error", loc="left"); ax.legend(frameon=False, fontsize=7, loc="lower right")
-    fig.savefig(out / "fig_secondary.pdf"); fig.savefig(out / "fig_secondary.png")
+    ax.plot(s.p0, s.srmse_deletion, "s--", ms=3, color=RULES["deletion"][1])
+    # the deletion line is labelled directly, below its right end, where no curve passes;
+    # a legend entry for it ("lower right") used to cover the line itself
+    ax.annotate("detect-and-delete (no audit)", (s.p0.max(), s.srmse_deletion.iloc[-1]),
+                xytext=(0, -9), textcoords="offset points", ha="right", va="top", fontsize=7,
+                color=RULES["deletion"][1])
+    ax.set_xlabel("φ0 (human recorded as AI)")
+    ax.set_ylabel("standardised RMSE")
+    ax.set_title("(b) verification error", loc="left")
+    ax.legend(frameon=False, fontsize=7, loc="upper left", title="RC-PPI++ (ITT)",
+              title_fontsize=7)
+    fig.savefig(out / "fig_secondary.pdf")
+    fig.savefig(out / "fig_secondary.png")
 
 
 if __name__ == "__main__":
-    out = Path(sys.argv[1]); out.mkdir(parents=True, exist_ok=True)
+    out = Path(sys.argv[1])
+    out.mkdir(parents=True, exist_ok=True)
     sec = pd.read_csv(sys.argv[2])
     cells = load(sys.argv[3:])
-    regime_map(cells, out); corpus_ratios(cells, out); secondary(sec, out)
+    regime_map(cells, out)
+    corpus_ratios(cells, out)
+    secondary(sec, out)
     print("cells", len(cells), "pools", cells.pool.nunique())

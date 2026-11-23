@@ -5,7 +5,8 @@
 Everything is computed from the compact tables (``results/compact/S5``) and the detector
 operating points, with the same definitions as the endpoints: an error ratio is a ratio of
 mean squared errors summed over cells (as PE1), coverage and feasibility are means over
-cells (the pooled ratio of PE1). The intention-to-treat rule (ITT) is ``rc_ppi_pp`` with its flag-PPI fallback.
+cells (the pooled ratio of PE1). The intention-to-treat rule (ITT) is ``rc_ppi_pp`` with its
+flag-PPI fallback.
 """
 
 from __future__ import annotations
@@ -82,18 +83,20 @@ def main() -> None:
         "min": float(cells.cover_itt.min())}
 
     # PE1 pools with ratio above one (Section 5.2)
-    per = cells.groupby(["corpus", "pool"]).agg(itt=("mse_rc_ppi_pp", "sum"), fl=("mse_flag_ppi", "sum"),
-                                                pp_rc=("mse_pp_rc", "sum"), pp_fb=("mse_pp_fb", "sum"),
-                                                feasible=("feasible", "mean"))
+    per = cells.groupby(["corpus", "pool"]).agg(
+        itt=("mse_rc_ppi_pp", "sum"), fl=("mse_flag_ppi", "sum"), pp_rc=("mse_pp_rc", "sum"),
+        pp_fb=("mse_pp_fb", "sum"), feasible=("feasible", "mean"))
     per["r"] = per.itt / per.fl
     per["r_pp"] = per.pp_rc / per.pp_fb
     above = per[per.r > 1]
     res["pe1_pools_above_one"] = {
         "n": int(len(above)), "of": int(len(per)),
         "per_protocol_also_above": int((above.r_pp > 1).sum()),
-        "feasible_mean_above": float(above.feasible.mean()), "feasible_mean_all": float(per.feasible.mean()),
+        "feasible_mean_above": float(above.feasible.mean()),
+        "feasible_mean_all": float(per.feasible.mean()),
         "max": float(per.r.max()), "n_above_1.3": int((per.r > 1.3).sum()),
-        "pools": {p: round(float(v), 3) for (_, p), v in above.r.sort_values(ascending=False).items()}}
+        "pools": {p: round(float(v), 3)
+                  for (_, p), v in above.r.sort_values(ascending=False).items()}}
 
     # regime map: which rule has the lowest MSE (Section 5.3)
     rules = ["naive", "deletion", "flag_ppi", "rc_ppi_pp"]
@@ -110,7 +113,8 @@ def main() -> None:
     res["raid_by_attack_detector"] = by(raid, ["attack", "detector"])
     res["raid_by_attack_detector_budget"] = by(raid, ["attack", "detector", "budget"])
     res["raid_by_domain_detector"] = by(raid, ["domain", "detector"])
-    rc = cert[cert.corpus == "raid"].groupby(["domain", "budget"])[["n_small", "k_small", "n_bad", "k_bad"]].sum()
+    rc = cert[cert.corpus == "raid"].groupby(["domain", "budget"])[
+        ["n_small", "k_small", "n_bad", "k_bad"]].sum()
     res["raid_certification_by_domain_budget"] = {
         f"{d}|{b}": {"certified_small_bias": float(r.k_small / r.n_small),
                      "false_certification": float(r.k_bad / max(r.n_bad, 1))}
@@ -125,9 +129,12 @@ def main() -> None:
     # PE3 cells (Section 5.5)
     c = cert[cert.n_bad >= 30].assign(rate=lambda x: x.k_bad / x.n_bad)
     worst = c.nlargest(5, "rate")[["pool", "budget", "eps", "outcome", "n_bad", "k_bad", "rate"]]
-    big = c[c.n_bad >= 300].nlargest(3, "rate")[["pool", "budget", "eps", "outcome", "n_bad", "k_bad", "rate"]]
-    res["pe3_cells"] = {"cells_with_30_bad": int(len(c)), "above_0.075": int((c.rate > 0.075).sum()),
-                        "worst": worst.to_dict("records"), "worst_with_300_bad": big.to_dict("records")}
+    big = c[c.n_bad >= 300].nlargest(3, "rate")[
+        ["pool", "budget", "eps", "outcome", "n_bad", "k_bad", "rate"]]
+    res["pe3_cells"] = {"cells_with_30_bad": int(len(c)),
+                        "above_0.075": int((c.rate > 0.075).sum()),
+                        "worst": worst.to_dict("records"),
+                        "worst_with_300_bad": big.to_dict("records")}
 
     # large-N exclusions (Section 5.8)
     excl = {}
@@ -138,17 +145,21 @@ def main() -> None:
                 excl[name] = {"cells_run": p.get("cells_run"),
                               "skipped": [(s["eps"], s["reason"][:80]) for s in p["cells_skipped"]]}
     res["large_n_skips"] = {"pools_with_skips": len(excl),
-                            "pools_without_cells": sorted(k for k, v in excl.items() if not v["cells_run"]),
+                            "pools_without_cells": sorted(k for k, v in excl.items()
+                                                          if not v["cells_run"]),
                             "pools_partly_run": len([k for k, v in excl.items() if v["cells_run"]])}
 
     # coverage by detector and by outcome (Section 5.3)
-    res["coverage_by_detector"] = {k: {"mean": float(g.cover_itt.mean()), "min": float(g.cover_itt.min()),
-                                       "cells": int(len(g))} for k, g in cells.groupby("detector")}
-    res["coverage_by_outcome"] = {k: {"mean": float(g.cover_itt.mean()), "min": float(g.cover_itt.min()),
-                                      "cells": int(len(g))} for k, g in cells.groupby("outcome")}
+    def coverage(g: pd.DataFrame) -> dict:
+        return {"mean": float(g.cover_itt.mean()), "min": float(g.cover_itt.min()),
+                "cells": int(len(g))}
+
+    res["coverage_by_detector"] = {k: coverage(g) for k, g in cells.groupby("detector")}
+    res["coverage_by_outcome"] = {k: coverage(g) for k, g in cells.groupby("outcome")}
 
     # lowest cells of the stratified audit designs (Section 5.4)
-    des = pd.concat([pd.read_parquet(f) for f in glob.glob(str(root / "designs" / "*.sec.parquet"))])
+    des = pd.concat([pd.read_parquet(f)
+                     for f in glob.glob(str(root / "designs" / "*.sec.parquet"))])
     des["design"] = des["design"].astype(str)
     strat = des[des.design.str.startswith(("proportional", "neyman"))]
     res["designs_lowest_stratified"] = strat.nsmallest(6, "cover")[
@@ -158,8 +169,9 @@ def main() -> None:
     des["short"] = des.design.str.split("_").str[0]
     des["srmse"] = np.sqrt(des.itt_mse)
     tab = des.groupby(["eps", "short"]).agg(srmse=("srmse", "mean"), cover=("cover", "mean"))
-    res["designs_by_contamination"] = {f"{e}|{d}": {"srmse": float(r.srmse), "cover": float(r.cover)}
-                                       for (e, d), r in tab.iterrows()}
+    res["designs_by_contamination"] = {
+        f"{e}|{d}": {"srmse": float(r.srmse), "cover": float(r.cover)}
+        for (e, d), r in tab.iterrows()}
 
     Path(args.out).write_text(json.dumps(res, indent=1, default=float))
     print("written", args.out)
