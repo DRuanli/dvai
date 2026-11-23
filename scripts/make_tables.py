@@ -984,6 +984,11 @@ def numbers_results(e: dict, b: dict, ph: dict, cells: pd.DataFrame) -> dict:
         return float(np.sqrt(d.itt_mse).mean())
 
     cert = b["raid_certification_by_domain_budget"]
+    exb5, exb10 = (ph["excess_srmse"]["by_budget"][g] for g in ("0.05", "0.1"))
+    # languages: English (RAID, DAIGT, Beemo, ANES), the languages of M4, and Chinese
+    langs = {"english", "chinese"} | {
+        p.split("__")[1].split("-")[0] for p in cells[cells.corpus == "m4"].pool.unique()
+    }
     power = {
         g: [v["certified_small_bias"] for k, v in cert.items() if k.endswith("|" + g)]
         for g in ("0.02", "0.05", "0.1")
@@ -1032,6 +1037,14 @@ def numbers_results(e: dict, b: dict, ph: dict, cells: pd.DataFrame) -> dict:
         "MeanCellFlag": f(srm["overall"]["flag_ppi"]["mean_cell"]),
         "MeanCellNaive": f(srm["overall"]["naive"]["mean_cell"]),
         "MeanExcessPolicyTwo": f(exb["policy_debiased"]["mean"]),
+        "MeanExcessPolicyFive": f(exb5["policy_debiased"]["mean"]),
+        "MeanExcessPolicyTen": f(exb10["policy_debiased"]["mean"]),
+        "MeanExcessDeletionFive": f(exb5["deletion"]["mean"]),
+        "MeanExcessDeletionTen": f(exb10["deletion"]["mean"]),
+        "nLanguages": str(len(langs)),
+        "CertPoetryTwo": pct(cert["poetry|0.02"]["certified_small_bias"], 0),
+        "CertPoetryFive": pct(cert["poetry|0.05"]["certified_small_bias"], 0),
+        "CertPoetryTen": pct(cert["poetry|0.1"]["certified_small_bias"], 0),
         "MeanExcessDeletionTwo": f(exb["deletion"]["mean"]),
         "RaidDelItHomoFdgpt": f(rd["homoglyph|fdgpt"]["deletion_vs_itt"], 0),
         "RaidDelItHomoTfidf": f(rd["homoglyph|tfidf"]["deletion_vs_itt"], 0),
