@@ -32,7 +32,7 @@ def fresh(tmp_path_factory):
 
 def test_committed_tables_equal_a_fresh_run(fresh):
     names = sorted(p.name for p in fresh.glob("*.tex"))
-    assert names == sorted(p.name for p in GENERATED.glob("*.tex")) and len(names) == 20
+    assert names == sorted(p.name for p in GENERATED.glob("*.tex")) and len(names) == 22
     for name in names:
         assert (fresh / name).read_text() == (GENERATED / name).read_text(), name
 
