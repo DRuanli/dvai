@@ -19,7 +19,7 @@ plt.rcParams.update({"font.size": 8, "axes.spines.top": False, "axes.spines.righ
                      "figure.dpi": 200, "savefig.bbox": "tight"})
 INK, MUTED = "#222222", "#888888"
 RULES = {"naive": ("Naive", "#9e9e9e"), "deletion": ("Detect-and-delete", "#d55e00"),
-         "flag_ppi": ("Flag-PPI", "#56b4e9"), "itt": ("RC-PPI++ (ITT)", "#0072b2"),
+         "flag_ppi": ("Flag-PPI", "#56b4e9"), "itt": ("Complete rule", "#0072b2"),
          "policy_debiased": ("Policy", "#009e73")}
 SHORT = {"naive": "Naive", "deletion": "Deletion", "flag_ppi": "Flag-PPI", "itt": "RC-PPI++"}
 NAMES = {"anes2024": "ANES 2024", "beemo": "Beemo", "m4": "M4", "hc3zh": "HC3-Chinese",
@@ -71,7 +71,7 @@ def regime_map(c, out):
     ax.set_xticks(range(len(bud)), [f"{b:.0%}" for b in bud])
     ax.set_yticks(range(len(eps)), [f"{e:.0%}" for e in eps])
     ax.set_xlabel("audit budget")
-    ax.set_title("(b) coverage of the ITT 95% interval", loc="left")
+    ax.set_title("(b) coverage of the 95% interval", loc="left")
     fig.colorbar(im, ax=ax, fraction=0.05)
     fig.savefig(out / "fig_regime_map.pdf")
     fig.savefig(out / "fig_regime_map.png")
@@ -97,8 +97,8 @@ def corpus_ratios(c, out):
     ax.axvline(1.10, color="#d55e00", lw=.8, ls=":")
     ax.set_yticks(range(k + 1), [NAMES[o] for o in order if o in set(c.corpus)])
     ax.set_xlim(0.2, 1.3)
-    ax.set_xlabel("MSE of RC-PPI++ (ITT) / MSE of flag-PPI")
-    ax.set_title("PE1: dots = pools, bar = corpus", loc="left")
+    ax.set_xlabel("MSE of the complete rule / MSE of flag-PPI")
+    ax.set_title("dots = pools, bars = corpora", loc="left")
     fig.savefig(out / "fig_pe1_corpora.pdf")
     fig.savefig(out / "fig_pe1_corpora.png")
 
@@ -119,7 +119,7 @@ def secondary(sec, out):
     ax.tick_params(axis="y", labelsize=7)
     ax.axvline(.95, color=MUTED, lw=.8, ls="--")
     ax.set_xlim(0.2, 1.0)
-    ax.set_xlabel("ITT coverage (bar: mean over cells; dot: lowest cell)")
+    ax.set_xlabel("coverage (bar: mean over cells; dot: lowest cell)")
     ax.set_title("(a) audit designs, budget 5%", loc="left")
     v = sec[sec.grid == "verification_error"].copy()
     v[["p0", "p1"]] = v.level.str.extract(r"phi0=([\d.]+),phi1=([\d.]+)").astype(float)
@@ -135,10 +135,10 @@ def secondary(sec, out):
     ax.annotate("detect-and-delete (no audit)", (s.p0.max(), s.srmse_deletion.iloc[-1]),
                 xytext=(0, -9), textcoords="offset points", ha="right", va="top", fontsize=7,
                 color=RULES["deletion"][1])
-    ax.set_xlabel("φ0 (human recorded as AI)")
-    ax.set_ylabel("standardised RMSE")
+    ax.set_xlabel("φ0 (human recorded as machine)")
+    ax.set_ylabel("standardized RMSE")
     ax.set_title("(b) verification error", loc="left")
-    ax.legend(frameon=False, fontsize=7, loc="upper left", title="RC-PPI++ (ITT)",
+    ax.legend(frameon=False, fontsize=7, loc="upper left", title="Complete rule",
               title_fontsize=7)
     fig.savefig(out / "fig_secondary.pdf")
     fig.savefig(out / "fig_secondary.png")
